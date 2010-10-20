@@ -18,7 +18,7 @@ class User extends Controller
 	function index()
 	{
 		$this->load->model('user_model');
-		$data['result'] = $this->user_model->get_data();
+		$data['result'] = $this->user_model->get_user();
 		$this->load->view('user_view', $data);
 	}
 	
@@ -26,7 +26,18 @@ class User extends Controller
 	{
 		$this->load->model('user_model');
 		$this->user_model->create_user( $_POST );
-		$this->load->view('user_view', $data);
+		redirect('index');
+	}
+	
+	function profile( $id = "" ) 
+	{
+		if( !empty( $id) ) {
+			$this->load->model('user_model');
+			$data['result'] = $this->user_model->get_user( $id );
+			$this->load->view('profile_view', $data);
+		} else {
+			redirect( 'user/index' );
+		}
 	}
 }
 

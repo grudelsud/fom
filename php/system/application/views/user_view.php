@@ -24,6 +24,6 @@
 	<input type="text" name="user_email" id="user_email" />
 </p>
 <p>
-	<input type="submit" name="submit" id="submit" value="Submit" />
+	<input type="submit" id="submit" value="Submit" />
 </p>
 </form>
