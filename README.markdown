@@ -29,6 +29,7 @@ le mettiamo in bella forma con la documentazione di request/response
 - create - params: lat, lon, datetime, timezone, (maybe an extra param to specify sources?)
 
 ## cluster
+- ? - specs still TBD
 qua dovete aiutarmi voi, che metodi sono necessari per l'accesso / modifica di questa informazione?
 
 ## log
