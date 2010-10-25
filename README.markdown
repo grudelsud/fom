@@ -26,7 +26,7 @@ le mettiamo in bella forma con la documentazione di request/response
 - term_delete - params:id_term
 
 ## query
-- create - params: lat, lon, datetime, timezone, (maybe an extra param to specify sources?)
+- create - params: terms, contexts, lat, lon, datetime, timezone, (maybe an extra param to specify sources?)
 
 ## cluster
 - ? - specs still TBD
