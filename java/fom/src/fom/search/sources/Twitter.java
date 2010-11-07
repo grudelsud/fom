@@ -1,48 +1,56 @@
 package fom.search.sources;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
-import model.domain.FeedTitle;
+import org.joda.time.DateTime;
+
+import twitter4j.GeoLocation;
 import twitter4j.Query;
 import twitter4j.QueryResult;
 import twitter4j.Tweet;
-import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
-import controller.helper.StringOperations;
 
-import fom.model.SearchResult;
+import fom.model.Post;
+import fom.utils.StringOperations;
 
 
 public class Twitter implements GeoCapableSource {
-
-	@Override
-	public List<SearchResult> searchPosts(List<String> terms, Date startTime,
-			Date endTime) {
-		// TODO Auto-generated method stub
-		return null;
+	
+	private List<Post> results;
+	
+	public Twitter(){
+		this.results = new ArrayList<Post>();
 	}
 
 	@Override
-	public List<SearchResult> geoSearchPosts(float lat, float lon, int radius,
-			Date startTime, Date endTime) {
+	public List<Post> searchPosts(List<String> terms, DateTime startTime, DateTime endTime) {
+		try{
+			search(terms, startTime, endTime, null);
+		}
+		catch(InterruptedException e){
+			e.printStackTrace();
+		}
+		return results;
+	}
+
+	@Override
+	public List<Post> geoSearchPosts(float lat, float lon, int radius, DateTime startTime, DateTime endTime) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	
-	//TODO!!!
-	private void search(String keyword, Calendar since, Long maxId) throws InterruptedException{
-		Twitter twitter = new TwitterFactory().getInstance();
+	private void search(List<String> terms, DateTime since, DateTime until, Long maxId) throws InterruptedException{
+		twitter4j.Twitter twitter = new TwitterFactory().getInstance();
 		Query query = new Query();
 		query.setRpp(100);
-		query.setQuery(StringOperations.hashtagify(keyword).concat(" twitpic OR tweetphoto"));
-		query.setSince(new SimpleDateFormat("yyyy-MM-dd").format(since.getTime()));
+		query.setQuery(StringOperations.concatStrings(terms));
+		query.setSince(new SimpleDateFormat("yyyy-MM-dd").format(since.toDate().getTime()));
+		query.setUntil(new SimpleDateFormat("yyyy-MM-dd").format(until.toDate().getTime()));
 		if(maxId!=null) query.setMaxId(maxId);
-		if(daysToSearch<7) query.setLang("en");
 		QueryResult result;
 		for(int i=1; i<16; i++){
 			query.setPage(i);
@@ -50,13 +58,13 @@ public class Twitter implements GeoCapableSource {
 				result = twitter.search(query);
 				System.out.println("Found " + result.getTweets().size() + " tweets");
 				for(Tweet tweet : result.getTweets()){
-					resultsQueue.put(new SearchResult(tweet, keyword, feedTitle));
+					saveTweet(tweet);
 				}
 				if(result.getTweets().size()<100){
 					break;
 				}
 				if(i==15 && result.getTweets().size()==100){
-					search(keyword, since, feedTitle, result.getTweets().get(result.getTweets().size()-1).getId());
+					search(terms, since, until, result.getTweets().get(result.getTweets().size()-1).getId());
 				}
 			}catch(TwitterException exc){
 				if(exc.getStatusCode()==420){
@@ -66,6 +74,17 @@ public class Twitter implements GeoCapableSource {
 				}
 			}
 		}
+	}
+	
+	private void saveTweet(Tweet tweet){
+		GeoLocation geoLoc = tweet.getGeoLocation();
+		double lat = geoLoc!=null?geoLoc.getLatitude():0;
+		double lon = geoLoc!=null?geoLoc.getLongitude():0;
+		
+		String content = tweet.getText();
+		DateTime created = new DateTime(tweet.getCreatedAt());
+		
+		results.add(new Post(lat, lon, content, created));
 	}
 	
 }

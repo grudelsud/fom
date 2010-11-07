@@ -1,12 +1,14 @@
 package fom.search.sources;
 
-import java.util.Date;
 import java.util.List;
 
-import fom.model.SearchResult;
+import org.joda.time.DateTime;
+
+import fom.model.Post;
+
 
 public interface GeoCapableSource extends Source{
 
-	public List<SearchResult> geoSearchPosts(float lat, float lon, int radius, Date startTime, Date endTime);
+	public List<Post> geoSearchPosts(float lat, float lon, int radius, DateTime startTime, DateTime endTime);
 	
 }

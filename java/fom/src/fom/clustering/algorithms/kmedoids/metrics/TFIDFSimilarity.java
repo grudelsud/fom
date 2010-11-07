@@ -8,9 +8,6 @@ import com.wcohen.ss.TFIDF;
 import com.wcohen.ss.api.StringWrapper;
 import com.wcohen.ss.tokens.SimpleTokenizer;
 
-import fom.utils.StringOperations;
-
-
 public class TFIDFSimilarity extends AbstractSimilarity<String> {
 
 	/**

@@ -1,11 +1,12 @@
 package fom.search.sources;
 
-import java.util.Date;
 import java.util.List;
 
-import fom.model.SearchResult;
+import org.joda.time.DateTime;
+
+import fom.model.Post;
 
 
 public interface Source {
-	public List<SearchResult> searchPosts(List<String> terms, Date startTime, Date endTime);
+	public List<Post> searchPosts(List<String> terms, DateTime startTime, DateTime endTime);
 }
