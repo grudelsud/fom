@@ -32,7 +32,7 @@ import java.util.Random;
 
 /**
  * Implementation of the K-medoids algorithm. K-medoids is a clustering algorithm that is very much like k-means. The main difference between the two algorithms is the cluster center they use. K-means uses the average of all instances in a cluster, while k-medoids uses the instance that is the closest to the mean, i.e. the most 'central' point of the cluster. Using an actual point of the data set to cluster makes the k-medoids algorithm more robust to outliers than the k-means algorithm. This is a modified version of the original class to support non-metric  spaces. It implements an approximated PAM (Partitioning Around Medoids)  clustering algorithm.
- * @author  Thomas Abeel, Federico Frappi
+ * @author    Thomas Abeel, Federico Frappi
  */
 class KMedoidsAlgorithm {
 	/* Distance measure to measure the distance between instances */
@@ -192,6 +192,10 @@ class KMedoidsAlgorithm {
 		return cost;
 	}
 
+	/**
+	 * @return
+	 * @uml.property  name="medoids"
+	 */
 	public Instance[] getMedoids(){
 		return this.medoids;
 	}

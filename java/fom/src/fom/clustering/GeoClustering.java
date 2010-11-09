@@ -1,5 +1,5 @@
 package fom.clustering;
 
-public class GeoClustering {
-
+public class GeoClustering {	
+	
 }

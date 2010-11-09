@@ -1,4 +1,4 @@
-package fom.main;
+package fom.application;
 
 public class Main {
 

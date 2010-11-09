@@ -17,7 +17,7 @@ import fom.model.Post;
 import fom.utils.StringOperations;
 
 
-public class Twitter implements GeoCapableSource {
+public class Twitter implements Source {
 	
 	private List<Post> results;
 	
@@ -37,9 +37,8 @@ public class Twitter implements GeoCapableSource {
 	}
 
 	@Override
-	public List<Post> geoSearchPosts(float lat, float lon, int radius, DateTime startTime, DateTime endTime) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Post> geoSearchPosts(double lat, double lon, int radius, DateTime startTime, DateTime endTime) {
+		return new ArrayList<Post>();
 	}
 
 	

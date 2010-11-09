@@ -5,7 +5,7 @@ import fom.clustering.algorithms.kmedoids.jmlcore.Instance;
 
 
 /**
- * @author  FedeX
+ * @author    FedeX
  */
 public abstract class AbstractMetric<ObjectType> implements DistanceMeasure {
 
@@ -34,7 +34,7 @@ public abstract class AbstractMetric<ObjectType> implements DistanceMeasure {
 	}
 	
 	/**
-	 * @param objects
+	 * @param  objects
 	 * @uml.property  name="objects"
 	 */
 	public void setObjects(ObjectType[] objects){

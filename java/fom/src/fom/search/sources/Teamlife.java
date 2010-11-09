@@ -1,5 +1,6 @@
 package fom.search.sources;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -7,18 +8,16 @@ import org.joda.time.DateTime;
 import fom.model.Post;
 
 
-public class Teamlife implements GeoCapableSource {
+public class Teamlife implements Source {
 
 	@Override
 	public List<Post> searchPosts(List<String> terms, DateTime startTime, DateTime endTime) {
-		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<Post>();
 	}
 
 	@Override
-	public List<Post> geoSearchPosts(float lat, float lon, int radius, DateTime startTime, DateTime endTime) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Post> geoSearchPosts(double lat, double lon, int radius, DateTime startTime, DateTime endTime) {
+		return new ArrayList<Post>();
 	}
 
 }

@@ -89,7 +89,7 @@ public class Clustering {
 		
 		String[] documents = {a,b,c,d,e,f};
 		
-		Clusterer<String> kmedoidsClusterer = new ClustererFactory<String>(documents).kMedoidsClusterer(2, new TFIDFSimilarity(), 100);
+		Clusterer<String> kmedoidsClusterer = new ClustererFactory<String>().kMedoidsClusterer(documents, 2, new TFIDFSimilarity(), 100);
 	
 		for(int i : kmedoidsClusterer.getClusterIndexes()){
 			System.out.println(i);

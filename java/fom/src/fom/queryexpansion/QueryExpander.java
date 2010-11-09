@@ -2,8 +2,21 @@ package fom.queryexpansion;
 
 import java.util.List;
 
-public interface QueryExpander {
+import fom.queryexpansion.engines.ExpansionEngineFactory;
+import fom.queryexpansion.engines.ExpansionEngine;
 
-	public List<String> expandQuery(String query);
+public class QueryExpander {
+	ExpansionEngine expEngine;
 	
+	public QueryExpander(String expEngineName){
+		this.expEngine = ExpansionEngineFactory.getExpansionEngine(expEngineName);
+	}
+	
+	public List<String> expandQuery(String query){
+		return expEngine.expandQuery(query);
+	}
+	
+	public void setExpansionEngine(String expEngineName){
+		this.expEngine = ExpansionEngineFactory.getExpansionEngine(expEngineName);
+	}
 }

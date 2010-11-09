@@ -2,7 +2,9 @@ package fom.model;
 
 import org.joda.time.DateTime;
 
+
 public class Post {
+ 
 	private long id;
 	private long userId;
 	private long placeId;
@@ -18,6 +20,7 @@ public class Post {
 		this.created = created;
 	}
 	
+
 	public long getId() {
 		return id;
 	}

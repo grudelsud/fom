@@ -9,7 +9,6 @@ import fom.clustering.algorithms.ClustererFactory;
 import fom.clustering.algorithms.kmedoids.metrics.TFIDFSimilarity;
 import fom.model.Post;
 import fom.search.Searcher;
-import fom.search.sources.Twitter;
 
 public class SearchAndCluster {
 
@@ -19,7 +18,7 @@ public class SearchAndCluster {
 		terms.add("vote");
 		
 		Searcher searcher = new Searcher();
-		searcher.addSource(new Twitter());
+		searcher.addSource("Twitter");
 		
 		DateTime startTime = new DateTime().minusDays(1);
 		DateTime endTime = new DateTime();
@@ -29,8 +28,7 @@ public class SearchAndCluster {
 			postContents.add(post.getContent());
 		}
 		
-		ClustererFactory<String> clusFact = new ClustererFactory<String>(postContents.toArray(new String[0]));
-		Clusterer<String> clusterer = clusFact.kMedoidsClusterer(postContents.size()/15, new  TFIDFSimilarity() , 1000);
+		Clusterer<String> clusterer = new ClustererFactory<String>().kMedoidsClusterer(postContents.toArray(new String[0]), postContents.size()/15, new  TFIDFSimilarity() , 1000);
 		
 		for(int clusterIndex=0; clusterIndex<postContents.size()/15; clusterIndex++){
 			System.out.println("*** CLUSTER " + clusterIndex + " ***");

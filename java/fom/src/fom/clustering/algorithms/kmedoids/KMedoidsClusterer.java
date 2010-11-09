@@ -15,13 +15,25 @@ import java.util.Map;
 
 /**
  * A wrapper around the javaml library implementation of K-Medoids. Allows easy clustering of any set of objects given  a distance or similarity measure.
- * @author  Federico Frappi
+ * @author    Federico Frappi
  * @param  < ObjectType  >  The type of the objects to be clustered.
  */
 public class KMedoidsClusterer<ObjectType> implements Clusterer<ObjectType> {
 	private ObjectType[] objects;
+	/**
+	 * @uml.property  name="dataset"
+	 * @uml.associationEnd  
+	 */
 	private Dataset dataset;
+	/**
+	 * @uml.property  name="clusters"
+	 * @uml.associationEnd  multiplicity="(0 -1)"
+	 */
 	private Dataset[] clusters = null;
+	/**
+	 * @uml.property  name="medoids"
+	 * @uml.associationEnd  multiplicity="(0 -1)"
+	 */
 	private Instance[] medoids = null;
 
 	
@@ -30,6 +42,10 @@ public class KMedoidsClusterer<ObjectType> implements Clusterer<ObjectType> {
 		super();
 	}
 	
+	/**
+	 * @uml.property  name="algorithm"
+	 * @uml.associationEnd  
+	 */
 	KMedoidsAlgorithm algorithm;
 	
 	public KMedoidsClusterer(ObjectType[] objects, AbstractMetric<ObjectType> distanceMeasure, int k, int maxIterations){

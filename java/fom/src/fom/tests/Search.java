@@ -6,7 +6,6 @@ import org.joda.time.DateTime;
 
 import fom.model.Post;
 import fom.search.Searcher;
-import fom.search.sources.Twitter;
 
 public class Search {
 
@@ -17,7 +16,7 @@ public class Search {
 		terms.add("vote");
 		
 		Searcher searcher = new Searcher();
-		searcher.addSource(new Twitter());
+		searcher.addSource("Twitter");
 		
 		DateTime startTime = new DateTime().minusDays(1);
 		DateTime endTime = new DateTime();

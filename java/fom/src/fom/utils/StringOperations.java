@@ -6,10 +6,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author  Federico Frappi
+ * @author    Federico Frappi
  */
 public class StringOperations {
 
+	/**
+	 * @uml.property  name="stopwords"
+	 * @uml.associationEnd  
+	 */
 	private static StopwordChecker stopwords = new StopwordChecker();
 
 	public static String hashtagify(String input){

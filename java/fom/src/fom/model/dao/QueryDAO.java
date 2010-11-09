@@ -1,7 +1,7 @@
 package fom.model.dao;
 
-import java.util.Date;
+import fom.model.Query;
 
 public interface QueryDAO {
-	public long create(float lat, float lon, Date datetime, int timezone);
+	public void create(Query query);
 }
