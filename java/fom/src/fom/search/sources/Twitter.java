@@ -14,6 +14,7 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 
 import fom.model.Post;
+import fom.model.TwitterPost;
 import fom.utils.StringOperations;
 
 
@@ -82,8 +83,9 @@ public class Twitter implements Source {
 		
 		String content = tweet.getText();
 		DateTime created = new DateTime(tweet.getCreatedAt());
+		int timezone = created.getZone().getOffset(created.getMillis())/(1000*60*60);
 		
-		results.add(new Post(lat, lon, content, created));
+		results.add(new TwitterPost(0, lat, lon, content, created, created, timezone, null, tweet.getId(), tweet.getFromUserId()));
 	}
 	
 }

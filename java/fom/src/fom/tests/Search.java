@@ -25,7 +25,7 @@ public class Search {
 			System.out.println("***POST***");
 			System.out.println("Content: " + post.getContent());
 			System.out.println("Created: " + post.getCreated().toString());
-			System.out.println("TimeZone: " + post.getCreated().getZone().toString());
+			System.out.println("TimeZone: " + post.getTimezone());
 			System.out.println("Lat: " + post.getLat());
 			System.out.println("Lon: " + post.getLon());
 			System.out.println("***********\n");
