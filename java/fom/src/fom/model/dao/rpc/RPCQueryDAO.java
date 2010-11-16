@@ -6,9 +6,16 @@ import fom.model.dao.QueryDAO;
 public class RPCQueryDAO implements QueryDAO {
 
 	@Override
-	public void create(Query query) {
+	public long create(Query query) {
 		// TODO Auto-generated method stub
-		
+		return 0;
 	}
+
+	@Override
+	public Query retrieve(long queryId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 }

@@ -7,7 +7,13 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/fom/lib/javadoc/joda-time-1.6.2-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/twitter4j-core-2.1.7-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/twitter4j-core-2.1.7-SNAPSHOT.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="http://twitter4j.org/en/oldjavadocs/2.1.7-SNAPSHOT/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/secondstring-20060615.jar"/>
+	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.13-bin.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-all-1.6.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

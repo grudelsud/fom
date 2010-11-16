@@ -38,7 +38,7 @@ public class QueryHandler {
 			}
 		}
 		
-		saveData(expandedQuery, sourceNames, startTime, endTime, posts, timeClusters, geoClusters, semanticClusters);
+		saveData(query, expandedQuery, sourceNames, startTime, endTime, posts, timeClusters, geoClusters, semanticClusters);
 	}
 	
 
@@ -62,8 +62,8 @@ public class QueryHandler {
 		return null;
 	}
 	
-	private void saveData(List<String> expandedQuery, List<String> sourceNames, DateTime startTime, DateTime endTime, List<Post> posts, List<Cluster> timeClusters, List<Cluster> geoClusters, List<Cluster> semanticClusters){
-		Query query = new Query();
+	private void saveData(String originalQuery, List<String> expandedQuery, List<String> sourceNames, DateTime startTime, DateTime endTime, List<Post> posts, List<Cluster> timeClusters, List<Cluster> geoClusters, List<Cluster> semanticClusters){
+		Query query = new Query(originalQuery, startTime, endTime, "???", 0,0,"???",new DateTime(),0);
 		daoFactory.getQueryDAO().create(query);
 	}
 }

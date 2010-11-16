@@ -24,7 +24,7 @@ public interface Clusterer<ObjectType> {
 	/**
 	 * 
 	 * Performs the clustering (if not already done) and returns 
-	 * a map wich associates each clustered element with his cluster index.
+	 * a map which associates each clustered element with his cluster index.
 	 * 
 	 * @return A Map containing each clustered element and his cluster index.
 	 */

@@ -1,29 +1,21 @@
 package fom.model.dao.rpc;
 
-import java.util.List;
-
 import fom.model.Media;
-import fom.model.Post;
 import fom.model.dao.MediaDAO;
 
 public class RPCMediaDAO implements MediaDAO {
 
 	@Override
-	public void create(Media media) {
+	public long create(Media media) {
 		// TODO Auto-generated method stub
-		
+		return 0;
 	}
 
 	@Override
-	public List<Media> read(Post post) {
+	public Media retrieve(long mediaId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
-	public void update(Media media, Post post) {
-		// TODO Auto-generated method stub
-		
-	}
 
 }

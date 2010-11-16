@@ -9,6 +9,14 @@ public class Media {
 	private String description;
 	private DateTime created;
 	
+	public Media(String relPath, String fileName, String fileType, String description, DateTime created) {
+		this.relPath = relPath;
+		this.fileName = fileName;
+		this.fileType = fileType;
+		this.description = description;
+		this.created = created;
+	}
+	
 	public String getRelPath() {
 		return relPath;
 	}

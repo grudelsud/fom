@@ -3,7 +3,6 @@ package fom.model.dao;
 import fom.model.Cluster;
 
 public interface ClusterDAO {
-
-	public void create(Cluster theCluster);
-	
+	public long create(Cluster theCluster);
+	public Cluster retrieve(long clusterId);
 }

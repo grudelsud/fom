@@ -15,14 +15,14 @@ public abstract class Post {
 	private DateTime created;
 	private DateTime modified;
 	private int timezone;
-	private Place location;
+	private Place place;
 	private List<Media> media;
 	private List<Term> terms;
 	
 	public abstract Map<String, String> getMeta();
 	public abstract String getSourceName();
 
-	public Post(long id, double lat, double lon, String content, DateTime created, DateTime modified, int timezone, Place location){
+	public Post(long id, double lat, double lon, String content, DateTime created, DateTime modified, int timezone, Place place){
 		this.id = id;
 		this.lat = lat;
 		this.lon = lon;
@@ -30,16 +30,18 @@ public abstract class Post {
 		this.created = created;
 		this.modified = modified;
 		this.timezone = timezone;
-		this.location = location;
+		this.place = place;
 		media = new ArrayList<Media>();
 		terms = new ArrayList<Term>();
 	}
 	
-
 	public long getId() {
 		return id;
 	}
 
+	public void setId(long id) {
+		this.id = id;
+	}
 	public double getLat() {
 		return lat;
 	}
@@ -64,8 +66,8 @@ public abstract class Post {
 		return timezone;
 	}
 
-	public Place getLocation() {
-		return location;
+	public Place getPlace() {
+		return place;
 	}
 	
 	

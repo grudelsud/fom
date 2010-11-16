@@ -9,7 +9,7 @@ public abstract class Cluster {
 
 	public abstract Map<String, String> getMeta();
 	
-	// public abstract List<Term> getClusterTerms; TODO!!!!
+	public abstract List<Term> getClusterTerms();
 	
 	public Cluster(){
 		this.posts = new ArrayList<Post>();

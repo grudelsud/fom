@@ -2,28 +2,27 @@ package fom.model.dao.localdb;
 
 import java.sql.Connection;
 
-import fom.model.Media;
-import fom.model.dao.MediaDAO;
+import fom.model.Term;
+import fom.model.dao.TermDAO;
 
-public class LocalDBMediaDAO implements MediaDAO {
+public class LocalDBTermDAO implements TermDAO {
 
 	Connection conn;
 	
-	public LocalDBMediaDAO(Connection conn) {
+	public LocalDBTermDAO(Connection conn) {
 		this.conn = conn;
 	}
 
 	@Override
-	public long create(Media media) {
+	public long create(Term term) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public Media retrieve(long mediaId) {
+	public Term retrieve(long termId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 
 }

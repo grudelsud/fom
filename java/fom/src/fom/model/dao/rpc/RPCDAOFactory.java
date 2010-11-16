@@ -3,33 +3,47 @@ package fom.model.dao.rpc;
 import fom.model.dao.ClusterDAO;
 import fom.model.dao.DAOFactory;
 import fom.model.dao.MediaDAO;
+import fom.model.dao.PlaceDAO;
 import fom.model.dao.PostDAO;
 import fom.model.dao.QueryDAO;
+import fom.model.dao.TermDAO;
+import fom.model.dao.VocabularyDAO;
 
-public class RPCDAOFactory implements DAOFactory {
+public class RPCDAOFactory extends DAOFactory {
 
 	@Override
 	public ClusterDAO getClusterDAO() {
-		// TODO Auto-generated method stub
-		return null;
+		return new RPCClusterDAO();
 	}
 
 	@Override
 	public MediaDAO getMediaDAO() {
-		// TODO Auto-generated method stub
-		return null;
+		return new RPCMediaDAO();
 	}
 
 	@Override
 	public PostDAO getPostDAO() {
-		// TODO Auto-generated method stub
-		return null;
+		return new RPCPostDAO();
 	}
 
 	@Override
 	public QueryDAO getQueryDAO() {
-		// TODO Auto-generated method stub
-		return null;
+		return new RPCQueryDAO();
+	}
+
+	@Override
+	public PlaceDAO getPlaceDAO() {
+		return new RPCPlaceDAO();
+	}
+
+	@Override
+	public TermDAO getTermDAO() {
+		return new RPCTermDAO();
+	}
+
+	@Override
+	public VocabularyDAO getVocabularyDAO() {
+		return new RPCVocabularyDAO();
 	}
 
 }
