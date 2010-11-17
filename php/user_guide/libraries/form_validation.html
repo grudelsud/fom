@@ -27,7 +27,7 @@
 <div id="masthead">
 <table cellpadding="0" cellspacing="0" border="0" style="width:100%">
 <tr>
-<td><h1>CodeIgniter User Guide Version 1.7.2</h1></td>
+<td><h1>CodeIgniter User Guide Version 2.0.0</h1></td>
 <td id="breadcrumb_right"><a href="../toc.html">Table of Contents Page</a></td>
 </tr>
 </table>
@@ -57,9 +57,6 @@ Form Validation
 <h1>Form Validation</h1>
 
 <p>CodeIgniter provides a comprehensive form validation and data prepping class that helps minimize the amount of code you'll write.</p>
-
-<p class="important"><strong>Note:</strong>&nbsp; As of CodeIgniter 1.7.0, this Form Validation class supercedes the old Validation class, which is now deprecated.  We
-have left the old class in the library so applications currently using it will not break, but you are encouraged to migrate to this new version.</p>
 
 <ul>
 <li><a href="#overview">Overview</a></li>
@@ -106,7 +103,7 @@ have left the old class in the library so applications currently using it will n
 <ol>
 <li>A form is displayed.</li>
 <li>You fill it in and submit it.</li>
-<li>If you submitted something invalid, or perhaps missed a required item, the form is redisplayed containing your data 
+<li>If you submitted something invalid, or perhaps missed a required item, the form is redisplayed containing your data
 along with an error message describing the problem.</li>
 <li>This process continues until you have submitted a valid form.</li>
 </ol>
@@ -224,14 +221,14 @@ folder:</p>
 
 <textarea class="textarea" style="width:100%" cols="50" rows="21">&lt;?php
 
-class Form extends Controller {
-	
+class Form extends CI_Controller {
+
 	function index()
 	{
 		$this->load->helper(array('form', 'url'));
-		
+
 		$this->load->library('form_validation');
-				
+
 		if ($this->form_validation->run() == FALSE)
 		{
 			$this->load->view('myform');
@@ -315,19 +312,19 @@ $this->form_validation->set_rules('email', 'Email', 'required');<br />
 
 <textarea class="textarea" style="width:100%" cols="50" rows="28">&lt;?php
 
-class Form extends Controller {
-	
+class Form extends CI_Controller {
+
 	function index()
 	{
 		$this->load->helper(array('form', 'url'));
-		
+
 		$this->load->library('form_validation');
-			
+
 		$this->form_validation->set_rules('username', 'Username', 'required');
 		$this->form_validation->set_rules('password', 'Password', 'required');
 		$this->form_validation->set_rules('passconf', 'Password Confirmation', 'required');
 		$this->form_validation->set_rules('email', 'Email', 'required');
-			
+
 		if ($this->form_validation->run() == FALSE)
 		{
 			$this->load->view('myform');
@@ -449,7 +446,7 @@ that permit you to do this. The one you will use most commonly is:</p>
 
 <p>Open your <dfn>myform.php</dfn> view file and update the <strong>value</strong> in each field using the <dfn>set_value()</dfn> function:</p>
 
-<p><strong>Don't forget to include each. field name in the <dfn>set_value()</dfn> functions!</strong></p>
+<p><strong>Don't forget to include each field name in the <dfn>set_value()</dfn> functions!</strong></p>
 
 
 <textarea class="textarea" style="width:100%" cols="50" rows="30">
@@ -517,19 +514,19 @@ create a callback function that does that.  Let's create a example of this.</p>
 
 <textarea class="textarea" style="width:100%" cols="50" rows="44">&lt;?php
 
-class Form extends Controller {
-	
+class Form extends CI_Controller {
+
 	function index()
 	{
 		$this->load->helper(array('form', 'url'));
-		
+
 		$this->load->library('form_validation');
-			
+
 		$this->form_validation->set_rules('username', 'Username', 'callback_username_check');
 		$this->form_validation->set_rules('password', 'Password', 'required');
 		$this->form_validation->set_rules('passconf', 'Password Confirmation', 'required');
 		$this->form_validation->set_rules('email', 'Email', 'required');
-					
+
 		if ($this->form_validation->run() == FALSE)
 		{
 			$this->load->view('myform');
@@ -539,7 +536,7 @@ class Form extends Controller {
 			$this->load->view('formsuccess');
 		}
 	}
-	
+
 	function username_check($str)
 	{
 		if ($str == 'test')
@@ -552,7 +549,7 @@ class Form extends Controller {
 			return TRUE;
 		}
 	}
-	
+
 }
 ?></textarea>
 
@@ -616,7 +613,7 @@ $this->form_validation->set_rules('first_name', '<kbd>lang:</kbd>first_name', 'r
 <a name="errordelimiters"></a>
 <h2>Changing the Error Delimiters</h2>
 
-<p>By default, the Form Validation class adds a paragraph tag (&lt;p&gt;) around each error message shown. You can either change these delimiters globally or 
+<p>By default, the Form Validation class adds a paragraph tag (&lt;p&gt;) around each error message shown. You can either change these delimiters globally or
 individually.</p>
 
 <ol>
@@ -808,7 +805,7 @@ have a controller named <kbd>Member</kbd> and a function named <kbd>signup</kbd>
 
 <code>
 &lt;?php<br /><br />
-class <kbd>Member</kbd> extends Controller {<br />
+class <kbd>Member</kbd> extends CI_Controller {<br />
 <br />
 &nbsp;&nbsp;&nbsp;function <kbd>signup</kbd>()<br />
 &nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
@@ -1214,7 +1211,7 @@ Previous Topic:&nbsp;&nbsp;<a href="file_uploading.html">File Uploading Class</a
 <a href="../index.html">User Guide Home</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
 Next Topic:&nbsp;&nbsp;<a href="ftp.html">FTP Class</a>
 </p>
-<p><a href="http://codeigniter.com">CodeIgniter</a> &nbsp;&middot;&nbsp; Copyright &#169; 2006-2010 &nbsp;&middot;&nbsp; <a href="http://ellislab.com/">Ellislab, Inc.</a></p>
+<p><a href="http://codeigniter.com">CodeIgniter</a> &nbsp;&middot;&nbsp; Copyright &#169; 2006-2010 &nbsp;&middot;&nbsp; <a href="http://ellislab.com/">EllisLab, Inc.</a></p>
 </div>
 
 </body>

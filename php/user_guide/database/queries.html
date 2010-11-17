@@ -28,7 +28,7 @@
 <div id="masthead">
 <table cellpadding="0" cellspacing="0" border="0" style="width:100%">
 <tr>
-<td><h1>CodeIgniter User Guide Version 1.7.2</h1></td>
+<td><h1>CodeIgniter User Guide Version 2.0.0</h1></td>
 <td id="breadcrumb_right"><a href="../toc.html">Table of Contents Page</a></td>
 </tr>
 </table>
@@ -113,7 +113,7 @@ Most of the time you'll use the above function rather than this one. Use the fun
 conditions so that LIKE wildcards ('%', '_') in the string are also properly escaped.
 
 <code>$search = '20% raise';<br />
-$sql = "SELECT id FROM table WHERE column LIKE '%".$this->db->escape_like_str($search)."%'";</code>
+$sql = "SELECT id FROM table WHERE column LIKE '%".$this->db->escape_like_str($search)."%'";</code></li>
 
 </ol>
 
@@ -132,7 +132,7 @@ $this->db->query($sql, array(3, 'live', 'Rick'));
 <p>The question marks in the query are automatically replaced with the values in the array in the second parameter of the query function.</p>
 <p class="important">The secondary benefit of using binds is that the values are automatically escaped, producing safer queries.  You don't have to remember to manually escape data; the engine does it automatically for you.</p>
 
-	
+
 
 </div>
 <!-- END CONTENT -->
@@ -146,7 +146,7 @@ Previous Topic:&nbsp;&nbsp;<a href="connecting.html">Connecting to your Database
 <a href="../index.html">User Guide Home</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
 Next Topic:&nbsp;&nbsp;<a href="results.html">Query Results</a>
 </p>
-<p><a href="http://codeigniter.com">CodeIgniter</a> &nbsp;&middot;&nbsp; Copyright &#169; 2006-2010 &nbsp;&middot;&nbsp; <a href="http://ellislab.com/">Ellislab, Inc.</a></p>
+<p><a href="http://codeigniter.com">CodeIgniter</a> &nbsp;&middot;&nbsp; Copyright &#169; 2006-2010 &nbsp;&middot;&nbsp; <a href="http://ellislab.com/">EllisLab, Inc.</a></p>
 </div>
 
 </body>

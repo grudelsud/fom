@@ -28,7 +28,7 @@
 <div id="masthead">
 <table cellpadding="0" cellspacing="0" border="0" style="width:100%">
 <tr>
-<td><h1>CodeIgniter User Guide Version 1.7.2</h1></td>
+<td><h1>CodeIgniter User Guide Version 2.0.0</h1></td>
 <td id="breadcrumb_right"><a href="../toc.html">Table of Contents Page</a></td>
 </tr>
 </table>
@@ -69,7 +69,7 @@ Pagination Class
 <p>Here is a simple example showing how to create pagination in one of your <a href="../general/controllers.html">controller</a> functions:</p>
 
 <code>
-$this->load->library('pagination');<br /><br />	
+$this->load->library('pagination');<br /><br />
 $config['base_url'] = 'http://example.com/index.php/test/page/';<br />
 $config['total_rows'] = '200';<br />
 $config['per_page']  = '20';
@@ -139,7 +139,7 @@ something different you can specify it.</p>
 <h2>Customizing the First Link</h2>
 
 <h4>$config['first_link'] = 'First';</h4>
-<p>The text you would like shown in the "first" link on the left.</p>
+<p>The text you would like shown in the "first" link on the left. If you do not want this link rendered, you can set its value to FALSE.</p>
 
 <h4>$config['first_tag_open'] = '&lt;div>';</h4>
 <p>The opening tag for the "first" link.</p>
@@ -150,7 +150,7 @@ something different you can specify it.</p>
 <h2>Customizing the Last Link</h2>
 
 <h4>$config['last_link'] = 'Last';</h4>
-<p>The text you would like shown in the "last" link on the right.</p>
+<p>The text you would like shown in the "last" link on the right. If you do not want this link rendered, you can set its value to FALSE.</p>
 
 <h4>$config['last_tag_open'] = '&lt;div>';</h4>
 <p>The opening tag for the "last" link.</p>
@@ -161,7 +161,7 @@ something different you can specify it.</p>
 <h2>Customizing the "Next" Link</h2>
 
 <h4>$config['next_link'] = '&amp;gt;';</h4>
-<p>The text you would like shown in the "next" page link.</p>
+<p>The text you would like shown in the "next" page link. If you do not want this link rendered, you can set its value to FALSE.</p>
 
 <h4>$config['next_tag_open'] = '&lt;div>';</h4>
 <p>The opening tag for the "next" link.</p>
@@ -172,7 +172,7 @@ something different you can specify it.</p>
 <h2>Customizing the "Previous" Link</h2>
 
 <h4>$config['prev_link'] = '&amp;lt;';</h4>
-<p>The text you would like shown in the "previous" page link.</p>
+<p>The text you would like shown in the "previous" page link. If you do not want this link rendered, you can set its value to FALSE.</p>
 
 <h4>$config['prev_tag_open'] = '&lt;div>';</h4>
 <p>The opening tag for the "previous" link.</p>
@@ -196,8 +196,19 @@ something different you can specify it.</p>
 
 <h4>$config['num_tag_close'] = '&lt;/div>';</h4>
 <p>The closing tag for the "digit" link.</p>
-		
 
+<h2>Hiding the Pages</h2>
+
+<p>If you wanted to not list the specific pages (for example, you only want "next" and "previous" links), you can suppress their rendering by adding:</p>
+
+<code>
+$config['display_pages'] = FALSE;
+</code>
+
+
+<h2>Adding a class to every anchor</h2>
+
+<p>If you want to add a class attribute to every link rendered by the pagination class, you can set the config "anchor_class" equal to the classname you want.</p>
 
 </div>
 <!-- END CONTENT -->
@@ -211,7 +222,7 @@ Previous Topic:&nbsp;&nbsp;<a href="output.html">Output Class</a>
 <a href="../index.html">User Guide Home</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
 Next Topic:&nbsp;&nbsp;<a href="sessions.html">Session Class</a>
 </p>
-<p><a href="http://codeigniter.com">CodeIgniter</a> &nbsp;&middot;&nbsp; Copyright &#169; 2006-2010 &nbsp;&middot;&nbsp; <a href="http://ellislab.com/">Ellislab, Inc.</a></p>
+<p><a href="http://codeigniter.com">CodeIgniter</a> &nbsp;&middot;&nbsp; Copyright &#169; 2006-2010 &nbsp;&middot;&nbsp; <a href="http://ellislab.com/">EllisLab, Inc.</a></p>
 </div>
 
 </body>

@@ -27,7 +27,7 @@
 <div id="masthead">
 <table cellpadding="0" cellspacing="0" border="0" style="width:100%">
 <tr>
-<td><h1>CodeIgniter User Guide Version 1.7.2</h1></td>
+<td><h1>CodeIgniter User Guide Version 2.0.0</h1></td>
 <td id="breadcrumb_right"><a href="../toc.html">Table of Contents Page</a></td>
 </tr>
 </table>
@@ -134,9 +134,9 @@ will be added automatically from the information specified in your config file. 
 
 <p>Here are some examples:</p>
 
-<code>echo anchor('news/local/123', 'title="My News"');</code>
+<code>echo anchor('news/local/123', 'My News', 'title="News title"');</code>
 
-<p>Would produce: &lt;a href="http://example.com/index.php/news/local/123" title="My News">My News&lt;/a></p>
+<p>Would produce: &lt;a href="http://example.com/index.php/news/local/123" title="News title">My News&lt;/a></p>
 
 <code>echo anchor('news/local/123', 'My News', array('title' => 'The best news!'));</code>
 
@@ -236,7 +236,7 @@ $url_title = url_title($title, 'underscore', TRUE);<br />
 </code>
 
 <h3>prep_url()</h3>
-<p>This function will add <kbd>http://</kbd> in the event it is missing from a URL.  Pass the URL string to the function like this:</p>
+<p>This function will add <kbd>http://</kbd> in the event that a scheme is missing from a URL.  Pass the URL string to the function like this:</p>
 <code>
 $url = "example.com";<br /><br />
 $url = prep_url($url);</code>
@@ -246,9 +246,8 @@ $url = prep_url($url);</code>
 
 <h2>redirect()</h2>
 
-<p>Does a "header redirect" to the local URI specified. Just like other functions in this helper, this one is designed
-to redirect to a local URL within your site.  You will <strong>not</strong> specify the full site URL, but rather simply the URI segments
-to the controller you want to direct to. The function will build the URL based on your config file values.</p>
+<p>Does a "header redirect" to the URI specified. If you specify the full site URL that link will be build, but for local links simply providing the URI segments
+to the controller you want to direct to will create the link. The function will build the URL based on your config file values.</p>
 
 <p>The optional second parameter allows you to choose between the "location"
 method (default) or the "refresh" method.  Location is faster, but on Windows servers it can sometimes be a problem.  The optional third parameter allows you to send a specific HTTP Response Code - this could be used for example to create 301 redirects for search engine purposes. The default Response Code is 302. The third parameter is <em>only</em> available with 'location' redirects, and not 'refresh'. Examples:</p>
@@ -282,7 +281,7 @@ Previous Topic:&nbsp;&nbsp;<a href="typography_helper.html">Typography Helper</a
 <a href="../index.html">User Guide Home</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
 Next Topic:&nbsp;&nbsp;<a href="xml_helper.html">XML Helper</a>
 </p>
-<p><a href="http://codeigniter.com">CodeIgniter</a> &nbsp;&middot;&nbsp; Copyright &#169; 2006-2010 &nbsp;&middot;&nbsp; <a href="http://ellislab.com/">Ellislab, Inc.</a></p>
+<p><a href="http://codeigniter.com">CodeIgniter</a> &nbsp;&middot;&nbsp; Copyright &#169; 2006-2010 &nbsp;&middot;&nbsp; <a href="http://ellislab.com/">EllisLab, Inc.</a></p>
 </div>
 
 </body>

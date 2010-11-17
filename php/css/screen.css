@@ -1,0 +1,38 @@
+* { margin: 0; padding: 0; }
+
+body { font-family: Trebuchet, Arial, sans-serif; font-size: 0.9em; color: #111; }
+
+a { text-decoration: none; color: #30a8c0; }
+a:hover { text-decoration: underline; }
+h1, h2, h3, h4, h5, h6 { font-size: 1em; font-weight: normal; font-variant: small-caps; }
+h1 { font-size: 1.2em; }
+h2 { font-size: 1.1em; }
+
+/**
+ * structure IDs
+ * - wrapper
+ * -- header
+ * -- content
+ * -- footer
+ */
+
+#wrapper { width: 1100px; padding: 5px; position: relative; }
+
+#header { border-bottom: 1px solid #DDD; padding: 15px 0; }
+#content { padding: 15px 0; }
+#footer {}
+
+/**
+ * ID presentation
+ */
+#header img { border: 0; }
+
+#form_query {}
+#form_query label { position: absolute; width: 100px; text-align: right; padding: 5px; }
+#form_query input, #form_query select { border: 1px solid #DDD; padding: 5px; margin: 0 10px 10px 120px; }
+#form_query button { border: 1px solid #DDD; padding: 5px; }
+
+#trends { position: absolute; top: 80px; right: 5px; width: 300px; }
+#trends h1 { background: #30a8c0; color: #FFF; padding: 1px 5px; }
+#trends ul { list-style-type: none; }
+#trends li { float: left; margin-right: 5px; }	
