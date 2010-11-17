@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Nov 17, 2010 at 02:26 PM
+-- Generation Time: Nov 17, 2010 at 02:43 PM
 -- Server version: 5.0.41
 -- PHP Version: 5.2.6
 
@@ -162,9 +162,10 @@ CREATE TABLE IF NOT EXISTS `fom_post` (
   `timezone` int(11) default NULL,
   `meta` mediumtext COMMENT 'contains: src, stauts, tw_statusid, tw_replyto',
   `src` varchar(255) default NULL,
-  `src_id` bigint(20) default NULL COMMENT 'reference to original id in source',
+  `src_id` bigint(20) unsigned default NULL COMMENT 'reference to original id in source',
   PRIMARY KEY  (`id_post`),
-  KEY `fk_post_place` (`id_place`)
+  KEY `fk_post_place` (`id_place`),
+  KEY `src_id` (`src_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='contains all sources indexed for search and clustering' AUTO_INCREMENT=1 ;
 
 --
