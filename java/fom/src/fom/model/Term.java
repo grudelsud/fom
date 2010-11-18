@@ -19,31 +19,21 @@ public class Term {
 	public String getName() {
 		return name;
 	}
-	public void setName(String name) {
-		this.name = name;
-	}
+
 	public String getUrl() {
 		return url;
 	}
-	public void setUrl(String url) {
-		this.url = url;
-	}
+
 	public Term getSyn() {
 		return syn;
 	}
-	public void setSyn(Term syn) {
-		this.syn = syn;
-	}
+
 	public Term getParent() {
 		return parent;
 	}
-	public void setParent(Term parent) {
-		this.parent = parent;
-	}
+
 	public Vocabulary getVocabulary() {
 		return vocabulary;
 	}
-	public void setVocabulary(Vocabulary vocabulary) {
-		this.vocabulary = vocabulary;
-	}
+
 }

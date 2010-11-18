@@ -23,8 +23,8 @@ import fom.model.Post;
 import fom.model.TeamlifePost;
 import fom.model.Term;
 import fom.model.TwitterPost;
-import fom.model.dao.DAOFactory;
-import fom.model.dao.PostDAO;
+import fom.model.dao.interfaces.DAOFactory;
+import fom.model.dao.interfaces.PostDAO;
 
 public class LocalDBPostDAO implements PostDAO {
 
@@ -37,8 +37,8 @@ public class LocalDBPostDAO implements PostDAO {
 	@Override
 	public long create(Post post) {
 		try {
-			PreparedStatement stm = conn.prepareStatement("INSERT INTO fom_post(lat,lon,content,created,modified,timezone,meta,src,id_place) VALUES(?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-			if(post.getLat()!=0 && post.getLon()!=0){
+			PreparedStatement stm = conn.prepareStatement("INSERT INTO fom_post(lat,lon,content,created,modified,timezone,meta,src,id_place,src_id) VALUES(?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+			if(post.getLat()!=0 || post.getLon()!=0){
 				stm.setDouble(1, post.getLat());
 				stm.setDouble(2, post.getLon());				
 			} else {
@@ -61,6 +61,9 @@ public class LocalDBPostDAO implements PostDAO {
 			} else {
 				stm.setNull(9, java.sql.Types.BIGINT);
 			}
+			
+			stm.setLong(10, post.getSourceId());
+			
 			stm.executeUpdate();
 			ResultSet generatedKeys = stm.getGeneratedKeys();
 			if(generatedKeys.next()){
@@ -103,7 +106,6 @@ public class LocalDBPostDAO implements PostDAO {
 			stm.setLong(1, postId);
 			ResultSet res = stm.executeQuery();
 			if(res.next()){
-				long id = res.getLong("id_post");
 				Place place = DAOFactory.getFactory().getPlaceDAO().retrieve(res.getLong("id_place"));
 				double lat = res.getFloat("lat");
 				double lon = res.getFloat("lon");
@@ -114,9 +116,9 @@ public class LocalDBPostDAO implements PostDAO {
 				Map<String, String> meta = new ObjectMapper().readValue(res.getString("meta"), new TypeReference<Map<String,String>>() { });
 				String source = res.getString("src");
 				if(source.equalsIgnoreCase("twitter")){
-					post = new TwitterPost(id, lat, lon, content, created, modified, timezone, place, new Long(meta.get("tweetId")), new Integer(meta.get("twitterUserId")));
+					post = new TwitterPost(postId, lat, lon, content, created, modified, timezone, place, new Long(meta.get("tweetId")), new Integer(meta.get("twitterUserId")));
 				} else if(source.equalsIgnoreCase("teamlife")){
-					post = new TeamlifePost(id, lat, lon, content, created, modified, timezone, place);
+					post = new TeamlifePost(postId, lat, lon, content, created, modified, timezone, place);
 				}
 				
 				PreparedStatement getMediaStm = conn.prepareStatement("SELECT id_media FROM fom_postmedia WHERE id_post=?");
@@ -134,26 +136,14 @@ public class LocalDBPostDAO implements PostDAO {
 				}
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return post;
 	}
-
-	@Override
-	public void attachMedia(long postId, Media media) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
 }

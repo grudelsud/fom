@@ -1,7 +1,6 @@
 package fom.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 public class GeoCluster extends Cluster {
@@ -11,35 +10,17 @@ public class GeoCluster extends Cluster {
 	private double varLat;
 	private double varLon;
 
-	public GeoCluster(double meanLat, double meanLon, double varLat,
-			double varLon) {
-		super();
+	public GeoCluster(Query originatingQuery) {
+		super(originatingQuery);
+	}
+
+	public GeoCluster(Query originatingQuery, double meanLat, double meanLon, double varLat, double varLon) {
+		super(originatingQuery);
 		this.meanLat = meanLat;
 		this.meanLon = meanLon;
 		this.varLat = varLat;
 		this.varLon = varLon;
 	}
-
-
-	public void setMeanLat(double meanLat) {
-		this.meanLat = meanLat;
-	}
-
-
-	public void setMeanLon(double meanLon) {
-		this.meanLon = meanLon;
-	}
-
-
-	public void setVarLat(double varLat) {
-		this.varLat = varLat;
-	}
-
-
-	public void setVarLon(double varLon) {
-		this.varLon = varLon;
-	}
-
 
 	public double getMeanLat() {
 		return meanLat;
@@ -59,18 +40,16 @@ public class GeoCluster extends Cluster {
 	public double getVarLon() {
 		return varLon;
 	}
-
+	
 
 	@Override
 	public Map<String, String> getMeta() {
-		// TODO Auto-generated method stub
-		return null;
+		Map<String, String> meta = new HashMap<String, String>();
+		meta.put("type", "geo");
+		meta.put("meanLat", new Double(getMeanLat()).toString());
+		meta.put("meanLon", new Double(getMeanLon()).toString());
+		meta.put("varLat", new Double(getVarLat()).toString());
+		meta.put("varLon", new Double(getVarLon()).toString());
+		return meta;
 	}
-
-
-	@Override
-	public List<Term> getClusterTerms() {
-		return new ArrayList<Term>();
-	}
-
 }

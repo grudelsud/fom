@@ -22,4 +22,10 @@ public class TeamlifePost extends Post {
 		return "teamlife";
 	}
 
+	@Override
+	public long getSourceId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

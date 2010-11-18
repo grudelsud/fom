@@ -21,6 +21,7 @@ public abstract class Post {
 	
 	public abstract Map<String, String> getMeta();
 	public abstract String getSourceName();
+	public abstract long getSourceId();
 
 	public Post(long id, double lat, double lon, String content, DateTime created, DateTime modified, int timezone, Place place){
 		this.id = id;

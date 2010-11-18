@@ -1,4 +1,4 @@
-package fom.model.dao;
+package fom.model.dao.interfaces;
 
 import fom.model.Media;
 

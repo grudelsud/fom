@@ -1,13 +1,25 @@
 package fom.application;
 
-import fom.model.dao.ClusterDAO;
-import fom.model.dao.DAOFactory;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.joda.time.DateTime;
 
 public class Main {
 
 	public static void main(String[] args) {
-		DAOFactory fac = DAOFactory.getFactory();
-		ClusterDAO clusDAO = fac.getClusterDAO();
-		clusDAO.retrieve(0);
+		String queryString = "great movie";
+		
+		String expEngineName = "wikiminer";
+
+		List<String> sourceNames = new ArrayList<String>();
+		sourceNames.add("twitter");
+
+		DateTime startTime = new DateTime().minusDays(1);
+		DateTime endTime = new DateTime();
+		
+		QueryHandler qHandler = new QueryHandler(queryString, expEngineName, sourceNames, startTime, endTime);
+		
+		qHandler.executeQuery();
 	}
 }

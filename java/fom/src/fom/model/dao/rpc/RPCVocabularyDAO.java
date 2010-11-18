@@ -1,7 +1,7 @@
 package fom.model.dao.rpc;
 
 import fom.model.Vocabulary;
-import fom.model.dao.VocabularyDAO;
+import fom.model.dao.interfaces.VocabularyDAO;
 
 public class RPCVocabularyDAO implements VocabularyDAO {
 

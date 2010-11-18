@@ -1,13 +1,14 @@
 package fom.model.dao.rpc;
 
-import fom.model.dao.ClusterDAO;
-import fom.model.dao.DAOFactory;
-import fom.model.dao.MediaDAO;
-import fom.model.dao.PlaceDAO;
-import fom.model.dao.PostDAO;
-import fom.model.dao.QueryDAO;
-import fom.model.dao.TermDAO;
-import fom.model.dao.VocabularyDAO;
+import fom.model.dao.interfaces.ClusterDAO;
+import fom.model.dao.interfaces.DAOFactory;
+import fom.model.dao.interfaces.MediaDAO;
+import fom.model.dao.interfaces.PlaceDAO;
+import fom.model.dao.interfaces.PostDAO;
+import fom.model.dao.interfaces.QueryDAO;
+import fom.model.dao.interfaces.TermDAO;
+import fom.model.dao.interfaces.UserDAO;
+import fom.model.dao.interfaces.VocabularyDAO;
 
 public class RPCDAOFactory extends DAOFactory {
 
@@ -44,6 +45,11 @@ public class RPCDAOFactory extends DAOFactory {
 	@Override
 	public VocabularyDAO getVocabularyDAO() {
 		return new RPCVocabularyDAO();
+	}
+
+	@Override
+	public UserDAO getUserDAO() {
+		return new RPCUserDAO();
 	}
 
 }

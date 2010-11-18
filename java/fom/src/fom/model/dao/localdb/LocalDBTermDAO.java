@@ -3,7 +3,7 @@ package fom.model.dao.localdb;
 import java.sql.Connection;
 
 import fom.model.Term;
-import fom.model.dao.TermDAO;
+import fom.model.dao.interfaces.TermDAO;
 
 public class LocalDBTermDAO implements TermDAO {
 

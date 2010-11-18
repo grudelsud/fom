@@ -1,7 +1,7 @@
 package fom.model.dao.rpc;
 
 import fom.model.Cluster;
-import fom.model.dao.ClusterDAO;
+import fom.model.dao.interfaces.ClusterDAO;
 
 public class RPCClusterDAO implements ClusterDAO {
 

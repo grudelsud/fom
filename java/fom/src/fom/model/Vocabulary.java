@@ -7,11 +7,13 @@ public class Vocabulary {
 	private String desc;
 	private String owl;
 	private List<Term> terms;
+	private List<TermRelation> relations;
 	
 	public Vocabulary(String desc, String owl){
 		this.desc = desc;
 		this.owl = owl;
 		this.terms = new ArrayList<Term>();
+		this.relations = new ArrayList<TermRelation>();
 	}
 
 	public String getDesc() {
@@ -22,10 +24,6 @@ public class Vocabulary {
 		return owl;
 	}
 
-	public void setTerms(List<Term> terms) {
-		this.terms = terms;
-	}
-
 	public List<Term> getTerms() {
 		return terms;
 	}
@@ -34,4 +32,11 @@ public class Vocabulary {
 		this.terms.add(theTerm);
 	}
 
+	public List<TermRelation> getRelations(){
+		return relations;
+	}
+	
+	public void addRelation(TermRelation termRel){
+		relations.add(termRel);
+	}
 }

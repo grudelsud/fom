@@ -1,7 +1,7 @@
 package fom.model.dao.rpc;
 
 import fom.model.Media;
-import fom.model.dao.MediaDAO;
+import fom.model.dao.interfaces.MediaDAO;
 
 public class RPCMediaDAO implements MediaDAO {
 

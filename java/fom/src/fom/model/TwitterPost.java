@@ -29,4 +29,9 @@ public class TwitterPost extends Post {
 		return "twitter";
 	}
 
+	@Override
+	public long getSourceId() {
+		return tweetId;
+	}
+
 }

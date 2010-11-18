@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.joda.time.DateTime;
 
 import fom.model.Post;
-import fom.model.dao.DAOFactory;
+import fom.model.dao.interfaces.DAOFactory;
 import fom.search.Searcher;
 
 public class SearchAndSave {

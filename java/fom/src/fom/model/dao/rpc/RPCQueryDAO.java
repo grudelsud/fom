@@ -1,7 +1,7 @@
 package fom.model.dao.rpc;
 
 import fom.model.Query;
-import fom.model.dao.QueryDAO;
+import fom.model.dao.interfaces.QueryDAO;
 
 public class RPCQueryDAO implements QueryDAO {
 

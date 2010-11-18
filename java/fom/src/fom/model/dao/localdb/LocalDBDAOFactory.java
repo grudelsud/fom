@@ -1,21 +1,20 @@
 package fom.model.dao.localdb;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import fom.model.dao.ClusterDAO;
-import fom.model.dao.DAOFactory;
-import fom.model.dao.MediaDAO;
-import fom.model.dao.PlaceDAO;
-import fom.model.dao.PostDAO;
-import fom.model.dao.QueryDAO;
-import fom.model.dao.TermDAO;
-import fom.model.dao.VocabularyDAO;
+import fom.model.dao.interfaces.ClusterDAO;
+import fom.model.dao.interfaces.DAOFactory;
+import fom.model.dao.interfaces.MediaDAO;
+import fom.model.dao.interfaces.PlaceDAO;
+import fom.model.dao.interfaces.PostDAO;
+import fom.model.dao.interfaces.QueryDAO;
+import fom.model.dao.interfaces.TermDAO;
+import fom.model.dao.interfaces.UserDAO;
+import fom.model.dao.interfaces.VocabularyDAO;
+import fom.properties.PropertyHandler;
 
 public class LocalDBDAOFactory extends DAOFactory {
 
@@ -26,17 +25,12 @@ public class LocalDBDAOFactory extends DAOFactory {
 	}
 	
 	private Connection getConnection() {
-		Properties prop = new Properties();
+		Properties prop = PropertyHandler.getInstance().getProperties();
 		try {
-			prop.load(new FileInputStream("properties/properties.properties"));
 			String connURL = prop.getProperty("LocalDBConnectionURL");
 			String username = prop.getProperty("LocalDBUser");
 			String pass = prop.getProperty("localDBPass");
-			return DriverManager.getConnection(connURL, username, pass);			
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+			return DriverManager.getConnection(connURL, username, pass);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -76,6 +70,11 @@ public class LocalDBDAOFactory extends DAOFactory {
 	@Override
 	public VocabularyDAO getVocabularyDAO() {
 		return new LocalDBVocabularyDAO(conn);
+	}
+
+	@Override
+	public UserDAO getUserDAO() {
+		return new LocalDBUserDAO(conn);
 	}
 
 }

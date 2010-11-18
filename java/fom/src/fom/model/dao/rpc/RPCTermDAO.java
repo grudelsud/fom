@@ -1,7 +1,7 @@
 package fom.model.dao.rpc;
 
 import fom.model.Term;
-import fom.model.dao.TermDAO;
+import fom.model.dao.interfaces.TermDAO;
 
 public class RPCTermDAO implements TermDAO {
 

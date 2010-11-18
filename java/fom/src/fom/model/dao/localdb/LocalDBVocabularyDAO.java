@@ -3,7 +3,7 @@ package fom.model.dao.localdb;
 import java.sql.Connection;
 
 import fom.model.Vocabulary;
-import fom.model.dao.VocabularyDAO;
+import fom.model.dao.interfaces.VocabularyDAO;
 
 public class LocalDBVocabularyDAO implements VocabularyDAO {
 

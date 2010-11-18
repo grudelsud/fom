@@ -1,7 +1,7 @@
 package fom.model.dao.rpc;
 
 import fom.model.Place;
-import fom.model.dao.PlaceDAO;
+import fom.model.dao.interfaces.PlaceDAO;
 
 public class RPCPlaceDAO implements PlaceDAO {
 
