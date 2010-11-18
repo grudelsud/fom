@@ -28,16 +28,46 @@ import fom.model.dao.interfaces.PostDAO;
 
 public class LocalDBPostDAO implements PostDAO {
 
-	Connection conn;
+	private PreparedStatement checkAlreadySavedStm;
+	private PreparedStatement stm;
+	private PreparedStatement saveMediaStm;
+	private	PreparedStatement saveTermStm;
+	private PreparedStatement savePostStm;
+	private PreparedStatement getMediaStm;
+	private PreparedStatement getTermsStm;
+	private ObjectMapper objMapper;
+
 	
 	public LocalDBPostDAO(Connection conn) {
-		this.conn = conn;
+		try {
+			checkAlreadySavedStm = conn.prepareStatement("SELECT id_post FROM fom_post WHERE src = ? AND src_id = ?");
+			stm = conn.prepareStatement("INSERT INTO fom_post(lat,lon,content,created,modified,timezone,meta,src,id_place,src_id) VALUES(?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+			saveMediaStm = conn.prepareStatement("INSERT INTO fom_postmedia(id_media,id_post) VALUES (?,?)");
+			saveTermStm = conn.prepareStatement("INSERT INTO fom_posttag(id_term,id_post) VALUES(?,?)");
+			savePostStm  = conn.prepareStatement("SELECT * FROM fom_post WHERE fom_post.id_post=?");
+			getMediaStm = conn.prepareStatement("SELECT id_media FROM fom_postmedia WHERE id_post=?");
+			getTermsStm = conn.prepareStatement("SELECT id_term FROM fom_posttag WHERE id_post=?");
+			objMapper = new ObjectMapper();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override
 	public long create(Post post) {
 		try {
-			PreparedStatement stm = conn.prepareStatement("INSERT INTO fom_post(lat,lon,content,created,modified,timezone,meta,src,id_place,src_id) VALUES(?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+			if(post.getId()!=0){
+				return post.getId();
+			}
+			checkAlreadySavedStm.setString(1, post.getSourceName());
+			checkAlreadySavedStm.setLong(2, post.getSourceId());
+			ResultSet checkAlreadySavedRes = checkAlreadySavedStm.executeQuery();
+			if(checkAlreadySavedRes.next()){
+				return checkAlreadySavedRes.getLong("id_post");
+			}
+			
 			if(post.getLat()!=0 || post.getLon()!=0){
 				stm.setDouble(1, post.getLat());
 				stm.setDouble(2, post.getLon());				
@@ -51,7 +81,6 @@ public class LocalDBPostDAO implements PostDAO {
 			stm.setInt(6, post.getTimezone());
 			
 			StringWriter strWriter = new StringWriter();
-			ObjectMapper objMapper = new ObjectMapper();
 			objMapper.writeValue(strWriter, post.getMeta());
 			stm.setString(7, strWriter.toString());
 			
@@ -69,13 +98,11 @@ public class LocalDBPostDAO implements PostDAO {
 			if(generatedKeys.next()){
 				post.setId(generatedKeys.getLong(1));			
 				for(Media media : post.getMedia()){
-					PreparedStatement saveMediaStm = conn.prepareStatement("INSERT INTO fom_postmedia(id_media,id_post) VALUES (?,?)");
 					saveMediaStm.setLong(1,DAOFactory.getFactory().getMediaDAO().create(media));
 					saveMediaStm.setLong(2, post.getId());
 					saveMediaStm.execute();
 				}
 				for(Term term : post.getTerms()){
-					PreparedStatement saveTermStm = conn.prepareStatement("INSERT INTO fom_posttag(id_term,id_post) VALUES(?,?)");
 					saveTermStm.setLong(1, DAOFactory.getFactory().getTermDAO().create(term));
 					saveTermStm.setLong(2, post.getId());
 					saveTermStm.execute();
@@ -102,9 +129,8 @@ public class LocalDBPostDAO implements PostDAO {
 	public Post retrieve(long postId) {
 		Post post = null;
 		try {
-			PreparedStatement stm = conn.prepareStatement("SELECT * FROM fom_post WHERE fom_post.id_post=?");
-			stm.setLong(1, postId);
-			ResultSet res = stm.executeQuery();
+			savePostStm.setLong(1, postId);
+			ResultSet res = savePostStm.executeQuery();
 			if(res.next()){
 				Place place = DAOFactory.getFactory().getPlaceDAO().retrieve(res.getLong("id_place"));
 				double lat = res.getFloat("lat");
@@ -113,7 +139,7 @@ public class LocalDBPostDAO implements PostDAO {
 				DateTime created = new DateTime(res.getTimestamp("created"));
 				DateTime modified = new DateTime(res.getTimestamp("modified"));
 				int timezone = res.getInt("timezone");
-				Map<String, String> meta = new ObjectMapper().readValue(res.getString("meta"), new TypeReference<Map<String,String>>() { });
+				Map<String, String> meta = objMapper.readValue(res.getString("meta"), new TypeReference<Map<String,String>>() { });
 				String source = res.getString("src");
 				if(source.equalsIgnoreCase("twitter")){
 					post = new TwitterPost(postId, lat, lon, content, created, modified, timezone, place, new Long(meta.get("tweetId")), new Integer(meta.get("twitterUserId")));
@@ -121,14 +147,12 @@ public class LocalDBPostDAO implements PostDAO {
 					post = new TeamlifePost(postId, lat, lon, content, created, modified, timezone, place);
 				}
 				
-				PreparedStatement getMediaStm = conn.prepareStatement("SELECT id_media FROM fom_postmedia WHERE id_post=?");
 				getMediaStm.setLong(1, post.getId());
 				ResultSet mediaResSet = getMediaStm.executeQuery();
 				while(mediaResSet.next()){
 					post.addMedia(DAOFactory.getFactory().getMediaDAO().retrieve(mediaResSet.getLong("id_media")));
 				}
 				
-				PreparedStatement getTermsStm = conn.prepareStatement("SELECT id_term FROM fom_posttag WHERE id_post=?");
 				getTermsStm.setLong(1, post.getId());
 				ResultSet termsResSet = getTermsStm.executeQuery();
 				while(termsResSet.next()){

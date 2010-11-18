@@ -28,20 +28,37 @@ import fom.model.dao.interfaces.DAOFactory;
 
 public class LocalDBClusterDAO implements ClusterDAO {
 	
-	Connection conn;
-
+	private PreparedStatement stm;
+	private PreparedStatement saveTermStm;
+	private PreparedStatement saveClusterPost;
+	private PreparedStatement saveClusterStm;
+	private PreparedStatement statementPosts;
+	private PreparedStatement statementTerms;
+	ObjectMapper objMapper;
+	
 	public LocalDBClusterDAO(Connection conn) {
-		this.conn = conn;
+		try {
+			stm = conn.prepareStatement("INSERT INTO fom_cluster(meta,terms_meta,posts_meta,id_query) VALUES(?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+			saveTermStm = conn.prepareStatement("INSERT INTO fom_clusterterm(id_term,id_cluster) VALUES(?,?)");
+			saveClusterPost = conn.prepareStatement("INSERT INTO fom_clusterpost(id_cluster,id_post) VALUES(?,?)");
+			saveClusterStm = conn.prepareStatement("SELECT meta,id_query FROM fom_cluster WHERE id_cluster=?");
+			statementPosts = conn.prepareStatement("SELECT id_post FROM fom_clusterpost WHERE id_cluster=?");
+			statementTerms = conn.prepareStatement("SELECT id_post FROM fom_clusterterm WHERE id_cluster=?");
+			objMapper = new ObjectMapper();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override
 	public long create(Cluster cluster) {
 		long clusterId = 0;
 		try {
-			PreparedStatement stm = conn.prepareStatement("INSERT INTO fom_cluster(meta,terms_meta,posts_meta,id_query) VALUES(?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 			
 			StringWriter strWriter = new StringWriter();
-			ObjectMapper objMapper = new ObjectMapper();
 			objMapper.writeValue(strWriter, cluster.getMeta());
 			stm.setString(1, strWriter.toString());
 			
@@ -54,14 +71,12 @@ public class LocalDBClusterDAO implements ClusterDAO {
 			if(generatedKeys.next()){
 				clusterId = generatedKeys.getLong(1);
 				for(Term term : cluster.getTerms()){
-					PreparedStatement saveTermStm = conn.prepareStatement("INSERT INTO fom_clusterterm(id_term,id_cluster) VALUES(?,?)");
 					saveTermStm.setLong(1, DAOFactory.getFactory().getTermDAO().create(term));
 					saveTermStm.setLong(2, clusterId);
 					saveTermStm.execute();
 				}
 				for(Post post : cluster.getPosts()){
 					long postId = DAOFactory.getFactory().getPostDAO().create(post);
-					PreparedStatement saveClusterPost = conn.prepareStatement("INSERT INTO fom_clusterpost(id_cluster,id_post) VALUES(?,?)");
 					saveClusterPost.setLong(1, clusterId);
 					saveClusterPost.setLong(2, postId);
 					saveClusterPost.execute();
@@ -90,11 +105,10 @@ public class LocalDBClusterDAO implements ClusterDAO {
 	public Cluster retrieve(long clusterId) {
 		Cluster cluster = null;
 		try {
-			PreparedStatement stm = conn.prepareStatement("SELECT meta,id_query FROM fom_cluster WHERE id_cluster=?");
-			stm.setLong(1, clusterId);
-			ResultSet res = stm.executeQuery();
+			saveClusterStm.setLong(1, clusterId);
+			ResultSet res = saveClusterStm.executeQuery();
 			if(res.next()){
-				Map<String, String> meta = new ObjectMapper().readValue(res.getString("meta"), new TypeReference<Map<String,String>>() { });
+				Map<String, String> meta = objMapper.readValue(res.getString("meta"), new TypeReference<Map<String,String>>() { });
 		//		Map<String, String> terms_meta = new ObjectMapper().readValue(res.getString("terms_meta"), new TypeReference<Map<String,String>>() { });
 		//		Map<String, String> posts_meta = new ObjectMapper().readValue(res.getString("posts_meta"), new TypeReference<Map<String,String>>() { });
 				Query originatingQuery = DAOFactory.getFactory().getQueryDAO().retrieve(res.getLong("id_query"));
@@ -111,14 +125,14 @@ public class LocalDBClusterDAO implements ClusterDAO {
 					DateTime endTime = new DateTime(meta.get("endTime"));
 					cluster = new TimeCluster(originatingQuery, startTime, endTime);
 				}
-				PreparedStatement statementPosts = conn.prepareStatement("SELECT id_post FROM fom_clusterpost WHERE id_cluster=?");
+
 				statementPosts.setLong(1, clusterId);
 				ResultSet resPosts = statementPosts.executeQuery();
 				while(resPosts.next()){
 					Post post = DAOFactory.getFactory().getPostDAO().retrieve(resPosts.getLong("id_post"));
 					cluster.addPost(post);
 				}
-				PreparedStatement statementTerms = conn.prepareStatement("SELECT id_post FROM fom_clusterterm WHERE id_cluster=?");
+			
 				statementTerms.setLong(1, clusterId);
 				ResultSet resTerms = statementTerms.executeQuery();
 				while(resTerms.next()){

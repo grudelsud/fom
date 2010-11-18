@@ -10,17 +10,24 @@ import fom.model.dao.interfaces.PlaceDAO;
 
 public class LocalDBPlaceDAO implements PlaceDAO {
 
-	Connection conn;
+	private PreparedStatement stm;
+	private PreparedStatement savePlaceStm;
 	
 	public LocalDBPlaceDAO(Connection conn) {
-		this.conn = conn;
+		try {
+			stm  = conn.prepareStatement("INSERT INTO fom_place(lat, lon, description, granularity) VALUES (?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+			savePlaceStm  = conn.prepareStatement("SELECT * FROM fom_place WHERE id_place=?");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override
 	public long create(Place place) {
 		long placeId = 0;
 		try {
-			PreparedStatement stm = conn.prepareStatement("INSERT INTO fom_place(lat, lon, description, granularity) VALUES (?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 			stm.setDouble(1, place.getLat());
 			stm.setDouble(2, place.getLon());
 			stm.setString(3, place.getDescription());
@@ -43,9 +50,8 @@ public class LocalDBPlaceDAO implements PlaceDAO {
 	public Place retrieve(long placeId) {
 		Place place = null;
 		try{
-			PreparedStatement stm = conn.prepareStatement("SELECT * FROM fom_place WHERE id_place=?");
-			stm.setLong(1, placeId);
-			ResultSet res = stm.executeQuery();
+			savePlaceStm.setLong(1, placeId);
+			ResultSet res = savePlaceStm.executeQuery();
 			while(res.next()){
 				double lat = res.getDouble("lat");
 				double lon = res.getDouble("lon");

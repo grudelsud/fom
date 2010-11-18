@@ -7,7 +7,6 @@ import fom.model.dao.interfaces.PlaceDAO;
 import fom.model.dao.interfaces.PostDAO;
 import fom.model.dao.interfaces.QueryDAO;
 import fom.model.dao.interfaces.TermDAO;
-import fom.model.dao.interfaces.UserDAO;
 import fom.model.dao.interfaces.VocabularyDAO;
 
 public class RPCDAOFactory extends DAOFactory {
@@ -45,11 +44,6 @@ public class RPCDAOFactory extends DAOFactory {
 	@Override
 	public VocabularyDAO getVocabularyDAO() {
 		return new RPCVocabularyDAO();
-	}
-
-	@Override
-	public UserDAO getUserDAO() {
-		return new RPCUserDAO();
 	}
 
 }

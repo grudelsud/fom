@@ -5,11 +5,11 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 
+import fom.clustering.GeoClustering;
+import fom.clustering.SemanticClustering;
 import fom.model.Cluster;
-import fom.model.GeoCluster;
 import fom.model.Post;
 import fom.model.Query;
-import fom.model.SemanticCluster;
 import fom.model.TimeCluster;
 import fom.model.dao.interfaces.DAOFactory;
 import fom.queryexpansion.QueryExpander;
@@ -22,10 +22,10 @@ public class QueryHandler {
 	private List<String> sourceNames;
 	
 
-	public QueryHandler(String queryString, String expEngineName, List<String> sourceNames, DateTime startTime, DateTime endTime){
+	public QueryHandler(long userId, String queryString, String expEngineName, List<String> sourceNames, DateTime startTime, DateTime endTime){
 		this.expEngineName = expEngineName;
 		this.sourceNames = sourceNames;
-		query = new Query(0, 1, queryString, startTime, endTime, "time_gran", 0, 0, "geo_gran", new DateTime(), new DateTime().getZone().getOffset(new DateTime().getMillis())/(1000*60*60));
+		query = new Query(userId, queryString, startTime, endTime, "time_gran", 0, 0, "geo_gran", new DateTime(), new DateTime().getZone().getOffset(new DateTime().getMillis())/(1000*60*60));
 	}
 	
 	
@@ -46,11 +46,11 @@ public class QueryHandler {
 		for(Cluster timeCluster : timeClusters){
 			query.addCluster(timeCluster);
 			
-			geoClusters.addAll(geoClustering(timeCluster.getPosts()));
+			geoClusters.addAll(new GeoClustering(query, timeCluster.getPosts()).performClustering());
 			for(Cluster geoCluster : geoClusters){
 				query.addCluster(geoCluster);
 				
-				semanticClusters.addAll(semanticClustering(geoCluster.getPosts()));
+				semanticClusters.addAll(new SemanticClustering(query, geoCluster.getPosts()).performClustering());
 				for(Cluster semCluster : semanticClusters){
 					query.addCluster(semCluster);
 				}
@@ -77,25 +77,5 @@ public class QueryHandler {
 		}
 		timeClusters.add(cluster);
 		return timeClusters;
-	}
-	
-	private List<Cluster> geoClustering(List<Post> posts){
-		List<Cluster> geoClusters = new ArrayList<Cluster>();
-		GeoCluster cluster = new GeoCluster(query);
-		for(Post post : posts){
-			cluster.addPost(post);
-		}
-		geoClusters.add(cluster);
-		return geoClusters;
-	}
-	
-	private List<Cluster> semanticClustering(List<Post> posts){
-		List<Cluster> semClusters = new ArrayList<Cluster>();
-		SemanticCluster cluster = new SemanticCluster(query);
-		for(Post post : posts){
-			cluster.addPost(post);
-		}
-		semClusters.add(cluster);
-		return semClusters;
 	}
 }

@@ -22,6 +22,22 @@ public class Query {
 	
 	
 	
+	public Query(long userId, String query, DateTime startTime, DateTime endTime, String timeGranularity, double lat, double lon, String geoGranularity, DateTime created, int timezone) {
+		super();
+		this.userId = userId;
+		this.query = query;
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.timeGranularity = timeGranularity;
+		this.lat = lat;
+		this.lon = lon;
+		this.geoGranularity = geoGranularity;
+		this.created = created;
+		this.timezone = timezone;
+		this.clusters = new ArrayList<Cluster>();
+		this.terms = new ArrayList<Term>();
+	}
+
 	public Query(long id, long userId, String query, DateTime startTime, DateTime endTime, String timeGranularity, double lat, double lon, String geoGranularity, DateTime created, int timezone) {
 		super();
 		this.id = id;

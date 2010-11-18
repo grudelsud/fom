@@ -28,7 +28,7 @@ public class SearchAndCluster {
 			postContents.add(post.getContent());
 		}
 		
-		Clusterer<String> clusterer = new ClustererFactory<String>().kMedoidsClusterer(postContents.toArray(new String[0]), postContents.size()/15, new  TFIDFSimilarity() , 1000);
+		Clusterer<String> clusterer = ClustererFactory.getKMedoidsClusterer(postContents.toArray(new String[0]), postContents.size()/15, new  TFIDFSimilarity() , 1000);
 		
 		for(int clusterIndex=0; clusterIndex<postContents.size()/15; clusterIndex++){
 			System.out.println("*** CLUSTER " + clusterIndex + " ***");

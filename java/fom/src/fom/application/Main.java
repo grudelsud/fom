@@ -8,7 +8,7 @@ import org.joda.time.DateTime;
 public class Main {
 
 	public static void main(String[] args) {
-		String queryString = "great movie";
+		String queryString = "#music";
 		
 		String expEngineName = "wikiminer";
 
@@ -18,7 +18,9 @@ public class Main {
 		DateTime startTime = new DateTime().minusDays(1);
 		DateTime endTime = new DateTime();
 		
-		QueryHandler qHandler = new QueryHandler(queryString, expEngineName, sourceNames, startTime, endTime);
+		long userId = 1;
+		
+		QueryHandler qHandler = new QueryHandler(userId, queryString, expEngineName, sourceNames, startTime, endTime);
 		
 		qHandler.executeQuery();
 	}

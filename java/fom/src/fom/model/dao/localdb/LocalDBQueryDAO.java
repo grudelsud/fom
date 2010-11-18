@@ -16,18 +16,32 @@ import fom.model.dao.interfaces.DAOFactory;
 import fom.model.dao.interfaces.QueryDAO;
 
 public class LocalDBQueryDAO implements QueryDAO {
-
-	Connection conn;
+	
+	private PreparedStatement stm;
+	private PreparedStatement saveTermStm;
+	private PreparedStatement saveQueryStm;
+	private PreparedStatement getClusterStm;
+	private PreparedStatement getTermsStm;
 	
 	public LocalDBQueryDAO(Connection conn) {
-		this.conn = conn;
+		try {
+			stm = conn.prepareStatement("INSERT INTO fom_query(id_user, query, t_start, t_end, t_granularity, lat, lon, geo_granularity, created, timezone) VALUES(?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+			saveTermStm = conn.prepareStatement("INSERT INTO fom_querytag(id_term,id_query) VALUES(?,?)");
+			saveQueryStm = conn.prepareStatement("SELECT * FROM fom_query WHERE id_query=?");
+			getClusterStm = conn.prepareStatement("SELECT id_cluster FROM fom_cluster WHERE id_query=?");
+			getTermsStm = conn.prepareStatement("SELECT id_term FROM fom_querytag WHERE id_query=?");
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override
 	public long create(Query query) {
 		long queryId=0;
 		try {
-			PreparedStatement stm = conn.prepareStatement("INSERT INTO fom_query(id_user, query, t_start, t_end, t_granularity, lat, lon, geo_granularity, created, timezone) VALUES(?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 			stm.setLong(1, query.getUserId());
 			stm.setString(2, query.getQuery());
 			stm.setTimestamp(3, new Timestamp(query.getStartTime().toDate().getTime()));
@@ -45,7 +59,6 @@ public class LocalDBQueryDAO implements QueryDAO {
 				queryId=generatedKeys.getLong(1);
 				query.setId(queryId);
 				for(Term term : query.getTerms()){
-					PreparedStatement saveTermStm = conn.prepareStatement("INSERT INTO fom_querytag(id_term,id_query) VALUES(?,?)");
 					saveTermStm.setLong(1, DAOFactory.getFactory().getTermDAO().create(term));
 					saveTermStm.setLong(2, query.getId());
 					saveTermStm.execute();
@@ -68,9 +81,8 @@ public class LocalDBQueryDAO implements QueryDAO {
 		Query query = null;
 		
 		try {
-			PreparedStatement stm = conn.prepareStatement("SELECT * FROM fom_query WHERE id_query=?");
-			stm.setLong(1, queryId);
-			ResultSet res = stm.executeQuery();
+			saveQueryStm.setLong(1, queryId);
+			ResultSet res = saveQueryStm.executeQuery();
 			while(res.next()){
 				long userId = res.getLong("id_user");
 				String originalQuery = res.getString("query");
@@ -84,14 +96,12 @@ public class LocalDBQueryDAO implements QueryDAO {
 				int timezone = res.getInt("timezone");
 				query = new Query(queryId, userId, originalQuery, startTime, endTime, timeGranularity, lat, lon, geoGranularity, created, timezone);
 				
-				PreparedStatement getClusterStm = conn.prepareStatement("SELECT id_cluster FROM fom_cluster WHERE id_query=?");
 				getClusterStm.setLong(1, queryId);
 				ResultSet getClusterRes = getClusterStm.executeQuery();
 				while(getClusterRes.next()){
 					query.addCluster(DAOFactory.getFactory().getClusterDAO().retrieve(getClusterRes.getLong("id_cluster")));
 				}
 				
-				PreparedStatement getTermsStm = conn.prepareStatement("SELECT id_term FROM fom_querytag WHERE id_query=?");
 				getTermsStm.setLong(1, queryId);
 				ResultSet getTermsRes = getTermsStm.executeQuery();
 				while(getTermsRes.next()){

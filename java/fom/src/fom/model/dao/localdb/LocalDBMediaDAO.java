@@ -14,17 +14,24 @@ import fom.model.dao.interfaces.MediaDAO;
 
 public class LocalDBMediaDAO implements MediaDAO {
 
-	Connection conn;
-	
+		private PreparedStatement stm;
+		private PreparedStatement saveMediaStm;
+		
 	public LocalDBMediaDAO(Connection conn) {
-		this.conn = conn;
+		try {
+			stm = conn.prepareStatement("INSERT INTO fom_media(relpath,filename,filetype,description,created,modified) VALUES (?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+			saveMediaStm = conn.prepareStatement("SELECT * FROM fom_media WHERE id_media=?");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override
 	public long create(Media media) {
 		long mediaId = 0;
 		try {
-			PreparedStatement stm = conn.prepareStatement("INSERT INTO fom_media(relpath,filename,filetype,description,created,modified) VALUES (?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 			stm.setString(1, media.getRelPath());
 			stm.setString(2, media.getFileName());
 			stm.setString(3, media.getFileType());
@@ -49,9 +56,8 @@ public class LocalDBMediaDAO implements MediaDAO {
 	public Media retrieve(long mediaId) {
 		Media media = null;
 		try{
-			PreparedStatement stm = conn.prepareStatement("SELECT * FROM fom_media WHERE id_media=?");
-			stm.setLong(1, mediaId);
-			ResultSet res = stm.executeQuery();
+			saveMediaStm.setLong(1, mediaId);
+			ResultSet res = saveMediaStm.executeQuery();
 			while(res.next()){
 				String relPath = res.getString("relpath");
 				String fileName = res.getString("filename");

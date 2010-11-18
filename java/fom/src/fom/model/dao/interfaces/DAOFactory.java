@@ -34,6 +34,5 @@ public abstract class DAOFactory {
 	public abstract QueryDAO getQueryDAO();
 	public abstract TermDAO getTermDAO();
 	public abstract VocabularyDAO getVocabularyDAO();
-	public abstract UserDAO getUserDAO();
 	
 }

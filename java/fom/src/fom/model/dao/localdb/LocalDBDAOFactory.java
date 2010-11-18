@@ -12,16 +12,28 @@ import fom.model.dao.interfaces.PlaceDAO;
 import fom.model.dao.interfaces.PostDAO;
 import fom.model.dao.interfaces.QueryDAO;
 import fom.model.dao.interfaces.TermDAO;
-import fom.model.dao.interfaces.UserDAO;
 import fom.model.dao.interfaces.VocabularyDAO;
 import fom.properties.PropertyHandler;
 
 public class LocalDBDAOFactory extends DAOFactory {
 
-	Connection conn;
+	LocalDBClusterDAO clusterDAO;
+	LocalDBMediaDAO mediaDAO;
+	LocalDBPlaceDAO placeDAO;
+	LocalDBPostDAO postDAO;
+	LocalDBQueryDAO queryDAO;
+	LocalDBTermDAO termDAO;
+	LocalDBVocabularyDAO vocabularyDAO;
 	
 	public LocalDBDAOFactory(){
-		this.conn = getConnection();
+		Connection conn = getConnection();
+		clusterDAO = new LocalDBClusterDAO(conn);
+		mediaDAO = new LocalDBMediaDAO(conn);
+		placeDAO = new LocalDBPlaceDAO(conn);
+		postDAO = new LocalDBPostDAO(conn);
+		queryDAO = new LocalDBQueryDAO(conn);
+		termDAO = new LocalDBTermDAO(conn);
+		vocabularyDAO = new LocalDBVocabularyDAO(conn);
 	}
 	
 	private Connection getConnection() {
@@ -39,42 +51,37 @@ public class LocalDBDAOFactory extends DAOFactory {
 
 	@Override
 	public ClusterDAO getClusterDAO() {
-		return new LocalDBClusterDAO(conn);
+		return clusterDAO;
 	}
 
 	@Override
 	public MediaDAO getMediaDAO() {
-		return new LocalDBMediaDAO(conn);
+		return mediaDAO;
 	}
 
 	@Override
 	public PostDAO getPostDAO() {
-		return new LocalDBPostDAO(conn);
+		return postDAO;
 	}
 
 	@Override
 	public QueryDAO getQueryDAO() {
-		return new LocalDBQueryDAO(conn);
+		return queryDAO;
 	}
 
 	@Override
 	public PlaceDAO getPlaceDAO() {
-		return new LocalDBPlaceDAO(conn);
+		return placeDAO;
 	}
 
 	@Override
 	public TermDAO getTermDAO() {
-		return new LocalDBTermDAO(conn);
+		return termDAO;
 	}
 
 	@Override
 	public VocabularyDAO getVocabularyDAO() {
-		return new LocalDBVocabularyDAO(conn);
-	}
-
-	@Override
-	public UserDAO getUserDAO() {
-		return new LocalDBUserDAO(conn);
+		return vocabularyDAO;
 	}
 
 }
