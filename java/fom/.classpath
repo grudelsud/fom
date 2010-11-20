@@ -15,5 +15,6 @@
 	<classpathentry kind="lib" path="lib/secondstring-20060615.jar"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.13-bin.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-all-1.6.2.jar"/>
+	<classpathentry kind="lib" path="lib/json.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

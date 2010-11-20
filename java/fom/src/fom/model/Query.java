@@ -55,6 +55,20 @@ public class Query {
 		this.terms = new ArrayList<Term>();
 	}
 
+	@Override
+	public String toString() {
+		return new String("Query Details:\n\t" +
+							"userId: " + userId + "\n\t" +
+							"query: " + query + "\n\t" +
+							"startTime: " + startTime + "\n\t" +
+							"endTime: " + endTime + "\n\t" +
+							"timeGranularity: " + timeGranularity + "\n\t" +
+							"lat: " + lat + "\n\t" +
+							"lon: " + lon + "\n\t" +
+							"geoGranularity: " + geoGranularity + "\n\t" +
+							"created: " + created + "\n");
+	}
+	
 	public long getId() {
 		return id;
 	}

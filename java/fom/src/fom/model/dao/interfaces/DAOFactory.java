@@ -12,11 +12,11 @@ public abstract class DAOFactory {
 		if(factoryInstance==null){
 			String dataSourceProp = PropertyHandler.getInstance().getProperties().getProperty("DataSource");
 			if(dataSourceProp.equalsIgnoreCase("local")){					
-				System.out.println("Created Local DAO");
+		//		System.out.println("Created Local DAO");
 				factoryInstance = new LocalDBDAOFactory();
 			}
 			else if(dataSourceProp.equalsIgnoreCase("rpc")){
-				System.out.println("Created RPC DAO");
+		//		System.out.println("Created RPC DAO");
 				factoryInstance = new RPCDAOFactory();
 			}
 			else{

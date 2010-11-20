@@ -30,7 +30,7 @@ public class SemanticClustering {
 			for(int i=0; i<posts.size(); i++){
 				objects[i] = posts.get(i).getContent();
 			}
-			int k = (posts.size()/15)>0?(posts.size()/15):1;
+			int k = (int)Math.ceil((double)posts.size()/(double)15);
 			AbstractMetric<String> metric = new TFIDFSimilarity();
 			
 			clusterer = ClustererFactory.getKMedoidsClusterer(objects, k, metric, 1000);

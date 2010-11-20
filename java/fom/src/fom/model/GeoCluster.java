@@ -5,40 +5,69 @@ import java.util.Map;
 
 public class GeoCluster extends Cluster {
 
-	private double meanLat;
-	private double meanLon;
-	private double varLat;
-	private double varLon;
-
 	public GeoCluster(Query originatingQuery) {
 		super(originatingQuery);
 	}
 
-	public GeoCluster(Query originatingQuery, double meanLat, double meanLon, double varLat, double varLon) {
-		super(originatingQuery);
-		this.meanLat = meanLat;
-		this.meanLon = meanLon;
-		this.varLat = varLat;
-		this.varLon = varLon;
-	}
-
 	public double getMeanLat() {
+		if(this.getPosts().size()==0)
+			return 0;					//TODO: exception?
+
+		double meanLat = 0;
+		for(Post post: this.getPosts()){
+			meanLat+=post.getLat();
+		}
+		meanLat = meanLat/this.getPosts().size();
 		return meanLat;
 	}
 
 
 	public double getMeanLon() {
+		if(this.getPosts().size()==0)
+			return 0;					//TODO: exception?
+
+		double meanLon = 0;
+		for(Post post: this.getPosts()){
+			meanLon+=post.getLon();
+		}
+		meanLon = meanLon/this.getPosts().size();
 		return meanLon;
 	}
 
 
 	public double getVarLat() {
-		return varLat;
+		if(this.getPosts().size()<=1)
+			return 0;					//TODO: exception?
+		
+		double variance = 0;
+		int n=0;
+		int sum=0;
+		int squaresum=0;
+		for(Post post:this.getPosts()){
+			n++;
+			sum+=post.getLat();
+			squaresum+=post.getLat()*post.getLat();
+		}
+		variance = (squaresum - sum*(sum/n))/(n-1);
+		return Math.sqrt(variance);
 	}
 
 
 	public double getVarLon() {
-		return varLon;
+		if(this.getPosts().size()<=1)
+			return 0;					//TODO: exception?
+
+		double variance = 0;
+		int n=0;
+		int sum=0;
+		int squaresum=0;
+		for(Post post:this.getPosts()){
+			n++;
+			sum+=post.getLon();
+			squaresum+=post.getLon()*post.getLon();
+		}
+		variance = (squaresum - sum*(sum/n))/(n-1);
+		return Math.sqrt(variance);
 	}
 	
 

@@ -27,7 +27,7 @@ public class GeoClustering {
 	
 	public List<GeoCluster> performClustering(){
 		
-		GeoCluster notGeoTagged = new GeoCluster(originatingQuery, 0, 0, 0, 0);
+		GeoCluster notGeoTagged = new GeoCluster(originatingQuery);
 		List<Post> toBeClustered = new ArrayList<Post>();
 		
 		for(Post post:posts){
@@ -38,12 +38,12 @@ public class GeoClustering {
 			}
 		}
 		
-		System.out.println("Not geotagged: " + notGeoTagged.getPosts().size());
-		System.out.println("Geotagged: " + toBeClustered.size());
+//		System.out.println("Not geotagged: " + notGeoTagged.getPosts().size());
+//		System.out.println("Geotagged: " + toBeClustered.size());
 		
 		if(toBeClustered.size()>0){
 			Post[] toBeClusteredArray = toBeClustered.toArray(new Post[0]);
-			int k = (toBeClustered.size()/10)>0?(toBeClustered.size()/10):1;
+			int k = (int)Math.ceil((double)toBeClustered.size()/(double)100);
 			AbstractMetric<Post> metric = new PostGeoDistance();
 			
 			clusterer = ClustererFactory.getKMedoidsClusterer(toBeClusteredArray, k, metric, 1000);

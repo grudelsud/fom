@@ -14,7 +14,6 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
-import org.joda.time.DateTime;
 
 import fom.model.Cluster;
 import fom.model.GeoCluster;
@@ -113,17 +112,11 @@ public class LocalDBClusterDAO implements ClusterDAO {
 		//		Map<String, String> posts_meta = new ObjectMapper().readValue(res.getString("posts_meta"), new TypeReference<Map<String,String>>() { });
 				Query originatingQuery = DAOFactory.getFactory().getQueryDAO().retrieve(res.getLong("id_query"));
 				if(meta.get("type").equalsIgnoreCase("geo")){
-					double meanLat = new Double(meta.get("meanLat"));
-					double meanLon = new Double(meta.get("meanLon"));
-					double varLat = new Double(meta.get("varLat"));
-					double varLon = new Double(meta.get("varLon"));
-					cluster = new GeoCluster(originatingQuery, meanLat, meanLon, varLat, varLon);
+					cluster = new GeoCluster(originatingQuery);
 				} else if(meta.get("type").equalsIgnoreCase("semantic")){
 					cluster = new SemanticCluster(originatingQuery);
 				} else if(meta.get("type").equalsIgnoreCase("time")){
-					DateTime startTime = new DateTime(meta.get("startTime"));
-					DateTime endTime = new DateTime(meta.get("endTime"));
-					cluster = new TimeCluster(originatingQuery, startTime, endTime);
+					cluster = new TimeCluster(originatingQuery);
 				}
 
 				statementPosts.setLong(1, clusterId);
