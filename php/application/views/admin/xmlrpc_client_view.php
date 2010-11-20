@@ -4,7 +4,7 @@
 $attributes = array( 'id' => 'form_xmlrpctester' );
 
 $form_field['function'] = array('query' => 'query');
-$form_field['server'] = array('name' => 'server', 'id' => 'server', 'value' => 'http://vampireweekend.local/fom/index.php/xmlrpc');
+$form_field['server'] = array('name' => 'server', 'id' => 'server', 'value' => site_url('xmlrpc'));
 
 $form_field['param1'] = array('name' => 'param1', 'id' => 'param1');
 $form_field['param2'] = array('name' => 'param2', 'id' => 'param2');
