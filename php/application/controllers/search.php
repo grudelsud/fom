@@ -20,7 +20,7 @@ class Search extends CI_Controller
 		$this->load->view('search_view', $data);
 	}
 
-	// TODO: execute search methods as external library
+	// TODO: fix results
 	function query_post()
 	{
 		$terms = $this->input->post('terms');
@@ -29,12 +29,6 @@ class Search extends CI_Controller
 		$where = $this->input->post('where');
 		$granularity = $this->input->post('granularity');
 		$source = $this->input->post('source');
-
-		$query = array();
-
-		$term_array = explode( ' ', $terms );
-		$term_array = array_filter( $term_array, 'urlencode' );
-		$terms = implode( '+', $term_array );
 
 		$this->load->library('fom_search');
 		$data['results'] = $this->fom_search->query( $terms, $since, $until, $where, $granularity, $source );

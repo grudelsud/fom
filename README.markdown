@@ -6,10 +6,21 @@ ho creato una lista di funzioni, se concordiamo che queste sono a grandi linee q
 che l'applicazione java possa interfacciarsi direttamente con esse senza bisogno di accedere al database. una volta concordata la lista e i parametri
 le mettiamo in bella forma con la documentazione di request/response
 
+tutti i metodi implementati sono accessibili attraverso form di test attualmente visualizzata sul default controller
+
 ## post:
-- create - params: lat, lon, datetime, timezone, content, source, tw_statusid, tw_replyid
-- read - params: lat, lon, geo_granularity, t_start, t_end, t_granularity
-- delete - params: (define parameters)
+### create 
+- params: lat, lon, datetime, timezone, content, source, tw_statusid, tw_replyid
+*Implemented* $this->Post_model->create($content, $source, $datetime, $timezone, $id_user, $lat, $lon, $tw_statusid);
+
+### read 
+- params: lat, lon, geo_granularity, t_start, t_end, t_granularity
+*Implemented* $result = $this->Post_model->read( $lat, $lon, $geo_granularity, $t_start, $t_end, $t_granularity );
+
+### delete 
+- params: (define parameters)
+*Implemented* $this->Post_model->delete( $id );
+
 - ? - do we need an "attach media" for already existent files?
 
 ## media
@@ -26,7 +37,9 @@ le mettiamo in bella forma con la documentazione di request/response
 - term_delete - params:id_term
 
 ## query
-- create - params: terms, contexts, lat, lon, datetime, timezone, (maybe an extra param to specify sources?)
+### create 
+- params: terms, contexts, lat, lon, datetime, timezone, (maybe an extra param to specify sources?)
+*Implemented* $result = $this->fom_search->query( $terms, $since, $until, $where, $granularity, $source );
 
 ## cluster
 - ? - specs still TBD
@@ -34,6 +47,7 @@ qua dovete aiutarmi voi, che metodi sono necessari per l'accesso / modifica di q
 
 ## log
 - create - params: id_user, action, meta (can be our notation for specific queries, e.g. query_id, terms, ...)
+*Implemented* $this->fom_logger->log('', $action, $meta);
 
 # Reference
 

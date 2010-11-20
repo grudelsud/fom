@@ -3,7 +3,11 @@
 <?php
 $attributes = array( 'id' => 'form_xmlrpctester' );
 
-$form_field['function'] = array('query' => 'query');
+$form_field['function'] = array(
+	'post' => array('post_create'=>'create','post_read'=>'read','post_delete'=>'delete'), 
+	'query' => array('query'=>'query'),
+	'log' => array('log'=>'log')
+);
 $form_field['server'] = array('name' => 'server', 'id' => 'server', 'value' => site_url('xmlrpc'));
 
 $form_field['param1'] = array('name' => 'param1', 'id' => 'param1');
@@ -12,12 +16,14 @@ $form_field['param3'] = array('name' => 'param3', 'id' => 'param3');
 $form_field['param4'] = array('name' => 'param4', 'id' => 'param4');
 $form_field['param5'] = array('name' => 'param5', 'id' => 'param5');
 $form_field['param6'] = array('name' => 'param6', 'id' => 'param6');
+$form_field['param7'] = array('name' => 'param7', 'id' => 'param7');
+$form_field['param8'] = array('name' => 'param8', 'id' => 'param8');
 
 echo form_open('xmlrpc_client/post_params', $attributes);
 
 ?><div id="result"><p>Result</p>
 <?php
-echo '<textarea name="result" id="result" cols="80" rows="15">'.$result.'</textarea>';
+echo '<textarea name="result" id="result">'.$result.'</textarea>';
 ?>
 </div><?php
 
@@ -51,6 +57,14 @@ echo "<br />";
 
 echo form_label('Param 6', 'param6');
 echo form_input( $form_field['param6'] );
+echo "<br />";
+
+echo form_label('Param 7', 'param7');
+echo form_input( $form_field['param7'] );
+echo "<br />";
+
+echo form_label('Param 8', 'param8');
+echo form_input( $form_field['param8'] );
 echo "<br />";
 
 echo form_submit('submit', 'Call function!');

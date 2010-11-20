@@ -26,12 +26,12 @@ class Xmlrpc_client extends CI_Controller
 		$function = $this->input->post('function');
 		$server = $this->input->post('server');
 
-		$param1 = $this->input->post('param1');
-		$param2 = $this->input->post('param2');
-		$param3 = $this->input->post('param3');
-		$param4 = $this->input->post('param4');
-		$param5 = $this->input->post('param5');
-		$param6 = $this->input->post('param6');
+		$param0 = $this->input->post('param1');
+		$param1 = $this->input->post('param2');
+		$param2 = $this->input->post('param3');
+		$param3 = $this->input->post('param4');
+		$param4 = $this->input->post('param5');
+		$param5 = $this->input->post('param6');
 		
 		$request = array();
 
@@ -40,12 +40,12 @@ class Xmlrpc_client extends CI_Controller
 		if( FALSE !== $function && !empty( $function ) ) $this->xmlrpc->method($function, 80);
 		if( FALSE !== $server && !empty( $server ) ) $this->xmlrpc->server($server, 80);
 		
+		if( FALSE !== $param0 && !empty( $param0 ) ) $request[] = $param0;
 		if( FALSE !== $param1 && !empty( $param1 ) ) $request[] = $param1;
 		if( FALSE !== $param2 && !empty( $param2 ) ) $request[] = $param2;
 		if( FALSE !== $param3 && !empty( $param3 ) ) $request[] = $param3;
 		if( FALSE !== $param4 && !empty( $param4 ) ) $request[] = $param4;
 		if( FALSE !== $param5 && !empty( $param5 ) ) $request[] = $param5;
-		if( FALSE !== $param6 && !empty( $param6 ) ) $request[] = $param6;
 
 		$this->xmlrpc->request($request);
 		$this->xmlrpc->send_request();
