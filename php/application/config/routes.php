@@ -32,7 +32,7 @@
 | would be loaded.
 */
 
-$route['default_controller'] = "search";
+$route['default_controller'] = "xmlrpc_client";
 
 
 /* End of file routes.php */

@@ -7,6 +7,9 @@ a:hover { text-decoration: underline; }
 h1, h2, h3, h4, h5, h6 { font-size: 1em; font-weight: normal; font-variant: small-caps; }
 h1 { font-size: 1.2em; }
 h2 { font-size: 1.1em; }
+p { padding-bottom: 5px; }
+input, select, textarea, button { border: 1px solid #DDD; padding: 5px; }
+textarea { font-size: 0.9em; }
 
 /**
  * structure IDs
@@ -28,9 +31,11 @@ h2 { font-size: 1.1em; }
 #header img { border: 0; }
 
 #form_query {}
-#form_query label { position: absolute; width: 100px; text-align: right; padding: 5px; }
-#form_query input, #form_query select { border: 1px solid #DDD; padding: 5px; margin: 0 10px 10px 120px; }
-#form_query button { border: 1px solid #DDD; padding: 5px; }
+#form_xmlrpctester label, #form_query label { position: absolute; width: 100px; text-align: right; padding: 5px; }
+#form_query input, #form_query select { margin: 0 10px 10px 120px; }
+#form_xmlrpctester input, #form_xmlrpctester select { width: 300px; margin: 0 10px 10px 120px; }
+#form_xmlrpctester #result { float: right; }
+#form_xmlrpctester #result textarea { width: 600px; height: 350px; }
 
 #trends { position: absolute; top: 80px; right: 5px; width: 300px; }
 #trends h1 { background: #30a8c0; color: #FFF; padding: 1px 5px; }

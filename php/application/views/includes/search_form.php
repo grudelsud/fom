@@ -8,7 +8,7 @@ $form_field['where']       = array('name' => 'where', 'id' => 'where');
 $form_field['granularity'] = array('poi' => 'poi', 'neighborhood' => 'neighborhood', 'city' => 'city', 'admin' => 'admin', 'country' => 'country');
 $form_field['source']      = array('all' => 'all', 'twitter' => 'twitter', 'teamlife' => 'teamlife');
 
-echo form_open('search/query', $attributes);
+echo form_open('search/query_post', $attributes);
 
 echo form_label('Terms', 'terms');
 echo form_input( $form_field['terms'] );
