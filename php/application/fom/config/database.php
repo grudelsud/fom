@@ -57,10 +57,10 @@ $db['default']['swap_pre'] = '';
 $db['default']['autoinit'] = TRUE;
 $db['default']['stricton'] = FALSE;
 
-$db['test']['hostname'] = 'localhost';
-$db['test']['username'] = '';
-$db['test']['password'] = '';
-$db['test']['database'] = '';
+$db['test']['hostname'] = 'devdroidfom.db.6122217.hostedresource.com';
+$db['test']['username'] = 'devdroidfom';
+$db['test']['password'] = 'd3vDr01dF0M';
+$db['test']['database'] = 'devdroidfom';
 $db['test']['dbdriver'] = 'mysql';
 $db['test']['dbprefix'] = 'fom_';
 $db['test']['pconnect'] = TRUE;

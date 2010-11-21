@@ -32,6 +32,8 @@ class Xmlrpc_client extends CI_Controller
 		$param3 = $this->input->post('param4');
 		$param4 = $this->input->post('param5');
 		$param5 = $this->input->post('param6');
+		$param6 = $this->input->post('param7');
+		$param7 = $this->input->post('param8');
 		
 		$request = array();
 
@@ -46,6 +48,8 @@ class Xmlrpc_client extends CI_Controller
 		if( FALSE !== $param3 && !empty( $param3 ) ) $request[] = $param3;
 		if( FALSE !== $param4 && !empty( $param4 ) ) $request[] = $param4;
 		if( FALSE !== $param5 && !empty( $param5 ) ) $request[] = $param5;
+		if( FALSE !== $param6 && !empty( $param6 ) ) $request[] = $param6;
+		if( FALSE !== $param7 && !empty( $param7 ) ) $request[] = $param7;
 
 		$this->xmlrpc->request($request);
 		$this->xmlrpc->send_request();

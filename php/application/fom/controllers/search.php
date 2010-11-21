@@ -1,9 +1,10 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
-* Class Search: main entry point
+* Class Search: search entry point for web frontend
 * 
 * @author TMA
+* @version 1.0
 */
 class Search extends CI_Controller
 {

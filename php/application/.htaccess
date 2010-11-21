@@ -1,1 +1,2 @@
-Deny from all
+# TODO: warning, this was commented to allow loading of contents from assets folder
+# Deny from all
