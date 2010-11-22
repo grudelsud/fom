@@ -6,7 +6,7 @@ import java.util.Map;
 public class SemanticCluster extends Cluster {
 		
 	public SemanticCluster(Query originatingQuery) {
-		super(originatingQuery);
+		super(originatingQuery);		
 	}
 
 	@Override

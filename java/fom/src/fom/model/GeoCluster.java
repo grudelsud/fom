@@ -4,11 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GeoCluster extends Cluster {
+	
 
 	public GeoCluster(Query originatingQuery) {
 		super(originatingQuery);
 	}
-
+	
 	public double getMeanLat() {
 		if(this.getPosts().size()==0)
 			return 0;					//TODO: exception?
@@ -35,14 +36,14 @@ public class GeoCluster extends Cluster {
 	}
 
 
-	public double getVarLat() {
+	public double getStdDevLat() {
 		if(this.getPosts().size()<=1)
 			return 0;					//TODO: exception?
 		
 		double variance = 0;
 		int n=0;
-		int sum=0;
-		int squaresum=0;
+		double sum=0;
+		double squaresum=0;
 		for(Post post:this.getPosts()){
 			n++;
 			sum+=post.getLat();
@@ -53,14 +54,14 @@ public class GeoCluster extends Cluster {
 	}
 
 
-	public double getVarLon() {
+	public double getStdDevLon() {
 		if(this.getPosts().size()<=1)
 			return 0;					//TODO: exception?
 
 		double variance = 0;
 		int n=0;
-		int sum=0;
-		int squaresum=0;
+		double sum=0;
+		double squaresum=0;
 		for(Post post:this.getPosts()){
 			n++;
 			sum+=post.getLon();
@@ -77,8 +78,8 @@ public class GeoCluster extends Cluster {
 		meta.put("type", "geo");
 		meta.put("meanLat", new Double(getMeanLat()).toString());
 		meta.put("meanLon", new Double(getMeanLon()).toString());
-		meta.put("varLat", new Double(getVarLat()).toString());
-		meta.put("varLon", new Double(getVarLon()).toString());
+		meta.put("stdDevLat", new Double(getStdDevLat()).toString());
+		meta.put("stdDevLon", new Double(getStdDevLon()).toString());
 		return meta;
 	}
 }

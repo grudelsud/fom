@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class Cluster {
+	private long id;
 	private Query originatingQuery;
 	private List<Post> posts;
 	private List<Term> terms;
@@ -35,6 +36,14 @@ public abstract class Cluster {
 	
 	public Query getOriginatingQuery() {
 		return originatingQuery;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public long getId() {
+		return id;
 	}
 	
 }

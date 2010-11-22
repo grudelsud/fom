@@ -10,6 +10,10 @@ import fom.clustering.algorithms.kmedoids.metrics.TFIDFSimilarity;
 import fom.model.Post;
 import fom.model.Query;
 import fom.model.SemanticCluster;
+import fom.model.Term;
+import fom.model.Vocabulary;
+import fom.termextraction.YahooTermExtractor;
+import fom.utils.StringOperations;
 
 public class SemanticClustering {
 	private Clusterer<String> clusterer;
@@ -41,6 +45,15 @@ public class SemanticClustering {
 					if(clusterer.getClusterIndexes()[postIndex]==clusterIndex){
 						currentCluster.addPost(posts.get(postIndex));
 					}
+				}
+				
+				String clusterText = new String();
+				for(Post post: currentCluster.getPosts()){
+					clusterText = clusterText.concat(StringOperations.removeStopwords(post.getContent()) + " ");
+				}
+				List<String> clusterTerms = new YahooTermExtractor().extractKeywords(clusterText);
+				for(String term : clusterTerms){
+					currentCluster.addTerm(new Term(term, "", null, null, new Vocabulary("MainVoc", "")));
 				}
 				clusters.add(currentCluster);
 			}		

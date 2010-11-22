@@ -44,6 +44,7 @@ public class Twitter implements Source {
 
 	
 	private void search(List<String> terms, DateTime since, DateTime until, Long maxId) throws InterruptedException{
+		System.setProperty("twitter4j.loggerFactory", "twitter4j.internal.logging.NullLoggerFactory");
 		twitter4j.Twitter twitter = new TwitterFactory().getInstance();
 		Query query = new Query();
 		query.setRpp(100);
@@ -56,7 +57,8 @@ public class Twitter implements Source {
 			query.setPage(i);
 			try{
 				result = twitter.search(query);
-				System.out.println("Found " + result.getTweets().size() + " tweets");
+		//		System.out.println("Found " + result.getTweets().size() + " tweets");
+				System.out.print(".");
 				for(Tweet tweet : result.getTweets()){
 					saveTweet(tweet);
 				}

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Vocabulary {
+	private long id;
 	private String desc;
 	private String owl;
 	private List<Term> terms;
@@ -38,5 +39,13 @@ public class Vocabulary {
 	
 	public void addRelation(TermRelation termRel){
 		relations.add(termRel);
+	}
+
+	public long getId() {
+		return id;
+	}
+	
+	public void setId(long id){
+		this.id = id;
 	}
 }

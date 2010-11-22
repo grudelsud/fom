@@ -1,6 +1,8 @@
 package fom.model;
 
 public class Term {
+
+	private long id;
 	private String name;
 	private String url;
 	private Term syn;
@@ -34,6 +36,14 @@ public class Term {
 
 	public Vocabulary getVocabulary() {
 		return vocabulary;
+	}
+
+	public long getId(){
+		return id;
+	}
+	
+	public void setId(long termId) {
+		this.id = termId;		
 	}
 
 }

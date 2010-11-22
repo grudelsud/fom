@@ -11,12 +11,12 @@ import fom.model.dao.interfaces.PlaceDAO;
 public class LocalDBPlaceDAO implements PlaceDAO {
 
 	private PreparedStatement stm;
-	private PreparedStatement savePlaceStm;
+	private PreparedStatement getPlaceStm;
 	
 	public LocalDBPlaceDAO(Connection conn) {
 		try {
 			stm  = conn.prepareStatement("INSERT INTO fom_place(lat, lon, description, granularity) VALUES (?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-			savePlaceStm  = conn.prepareStatement("SELECT * FROM fom_place WHERE id_place=?");
+			getPlaceStm  = conn.prepareStatement("SELECT * FROM fom_place WHERE id_place=?");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -50,8 +50,8 @@ public class LocalDBPlaceDAO implements PlaceDAO {
 	public Place retrieve(long placeId) {
 		Place place = null;
 		try{
-			savePlaceStm.setLong(1, placeId);
-			ResultSet res = savePlaceStm.executeQuery();
+			getPlaceStm.setLong(1, placeId);
+			ResultSet res = getPlaceStm.executeQuery();
 			while(res.next()){
 				double lat = res.getDouble("lat");
 				double lon = res.getDouble("lon");

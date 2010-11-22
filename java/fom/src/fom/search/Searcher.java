@@ -26,9 +26,11 @@ public class Searcher {
 	}
 	
 	public List<Post> search(List<String> terms, DateTime startTime, DateTime endTime){
+		System.out.println("Searching for posts matching the query " + terms + "...");
 		for(Source source : sources){
 				posts.addAll(source.searchPosts(terms, startTime, endTime));
 		}
+		System.out.println("...found " + posts.size() + " posts");
 		return posts;
 	}
 	

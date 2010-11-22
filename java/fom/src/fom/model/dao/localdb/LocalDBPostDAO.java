@@ -65,7 +65,8 @@ public class LocalDBPostDAO implements PostDAO {
 			checkAlreadySavedStm.setLong(2, post.getSourceId());
 			ResultSet checkAlreadySavedRes = checkAlreadySavedStm.executeQuery();
 			if(checkAlreadySavedRes.next()){
-				return checkAlreadySavedRes.getLong("id_post");
+				post.setId(checkAlreadySavedRes.getLong("id_post"));
+				return post.getId();
 			}
 			
 			if(post.getLat()!=0 || post.getLon()!=0){
