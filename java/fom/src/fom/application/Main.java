@@ -9,7 +9,7 @@ public class Main {
 
 	public static void main(String[] args) {
 				
-		String queryString = "xfactor winner";
+		String queryString = "shepherds bush empire";
 		
 		String expEngineName = "wikiminer";
 
@@ -19,7 +19,7 @@ public class Main {
 		sourceNames.add("twitter");
 
 		DateTime startTime = new DateTime().minusDays(8);
-		DateTime endTime = new DateTime();
+		DateTime endTime = new DateTime().minusDays(0);
 		
 		long userId = 1;
 		

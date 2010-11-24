@@ -1,4 +1,4 @@
-package fom.resultlogging;
+package fom.resultlogging.logengines;
 
 import fom.model.GeoCluster;
 import fom.model.Query;
@@ -6,7 +6,7 @@ import fom.model.SemanticCluster;
 import fom.model.Term;
 import fom.model.TimeCluster;
 
-public class CSVLogger implements ResultLogger{
+public class CSVLogger implements LogEngine{
 	
 	private String csvLog;
 	private int timeClusterCount;

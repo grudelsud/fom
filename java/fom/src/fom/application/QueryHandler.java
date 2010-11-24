@@ -17,8 +17,9 @@ import fom.model.TimeCluster;
 import fom.model.Vocabulary;
 import fom.model.dao.interfaces.DAOFactory;
 import fom.queryexpansion.QueryExpander;
-import fom.resultlogging.CSVLogger;
 import fom.resultlogging.ResultLogger;
+import fom.resultlogging.logengines.CSVLogger;
+import fom.resultlogging.logengines.RPCRemoteLogger;
 import fom.search.Searcher;
 
 public class QueryHandler {
@@ -37,7 +38,7 @@ public class QueryHandler {
 	}
 	
 	
-	public String executeQuery(){
+	public void executeQuery(){
 		System.out.println(query.toString());
 		
 		System.out.println("Expanding query...");
@@ -47,8 +48,11 @@ public class QueryHandler {
 		}
 		
 		List<Post> posts = searchPosts(expandedQuery);
-
-		ResultLogger logger = new CSVLogger();
+		
+		ResultLogger logger = new ResultLogger();
+		logger.addLogEngine(new CSVLogger());
+		logger.addLogEngine(new RPCRemoteLogger());
+		
 		logger.startLogging(query);
 		
 		System.out.println("Clustering...");
@@ -81,10 +85,8 @@ public class QueryHandler {
 			}
 		}
 		logger.endLog();
-		System.out.println("\n\nCSV LOG:");
-		System.out.println(logger.getLog());
+		System.out.println("Logs:\n" + logger.getLogs());
 		DAOFactory.getFactory().getQueryDAO().create(query);
-		return logger.getLog();
 	}
 	
 

@@ -20,10 +20,12 @@ import fom.utils.StringOperations;
 
 public class Twitter implements Source {
 	
+	private twitter4j.Twitter twitter;
 	private List<Post> results;
 	
 	public Twitter(){
 		this.results = new ArrayList<Post>();
+		twitter = new TwitterFactory().getInstance();
 	}
 
 	@Override
@@ -45,7 +47,6 @@ public class Twitter implements Source {
 	
 	private void search(List<String> terms, DateTime since, DateTime until, Long maxId) throws InterruptedException{
 		System.setProperty("twitter4j.loggerFactory", "twitter4j.internal.logging.NullLoggerFactory");
-		twitter4j.Twitter twitter = new TwitterFactory().getInstance();
 		Query query = new Query();
 		query.setRpp(100);
 		query.setQuery(StringOperations.concatStrings(terms));
@@ -78,7 +79,12 @@ public class Twitter implements Source {
 		}
 	}
 	
-	private void saveTweet(Tweet tweet){
+	private void saveTweet(Tweet tweet) throws TwitterException{
+
+	//	Status status = twitter.showStatus(tweet.getId());
+		
+	//	System.out.println(status.getPlace());
+		
 		GeoLocation geoLoc = tweet.getGeoLocation();
 		double lat = geoLoc!=null?geoLoc.getLatitude():0;
 		double lon = geoLoc!=null?geoLoc.getLongitude():0;
