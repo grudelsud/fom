@@ -15,47 +15,43 @@ class Xmlrpc_client extends CI_Controller
 		$this->load->library('xmlrpc');
 	}
 	
-	function index()
+	function index( $max_params = '' )
 	{
+		if( empty( $max_params ) || !is_numeric( $max_params ) ) {
+			$data['max_params'] = 12;
+		} else {
+			$data['max_params'] = $max_params;
+		}
 		$data['result'] = 'Set params and submit this form to call XML-RPC server';
 		$this->load->view('admin/xmlrpc_client_view', $data);
 	}
 
 	function post_params()
 	{
+		// $this->xmlrpc->set_debug(TRUE);
 		$function = $this->input->post('function');
 		$server = $this->input->post('server');
+		$max_params = $this->input->post('max_params');
 
-		$param0 = $this->input->post('param1');
-		$param1 = $this->input->post('param2');
-		$param2 = $this->input->post('param3');
-		$param3 = $this->input->post('param4');
-		$param4 = $this->input->post('param5');
-		$param5 = $this->input->post('param6');
-		$param6 = $this->input->post('param7');
-		$param7 = $this->input->post('param8');
-		
 		$request = array();
-
-		// $this->xmlrpc->set_debug(TRUE);
 
 		if( FALSE !== $function && !empty( $function ) ) $this->xmlrpc->method($function, 80);
 		if( FALSE !== $server && !empty( $server ) ) $this->xmlrpc->server($server, 80);
 		
-		if( FALSE !== $param0 && !empty( $param0 ) ) $request[] = $param0;
-		if( FALSE !== $param1 && !empty( $param1 ) ) $request[] = $param1;
-		if( FALSE !== $param2 && !empty( $param2 ) ) $request[] = $param2;
-		if( FALSE !== $param3 && !empty( $param3 ) ) $request[] = $param3;
-		if( FALSE !== $param4 && !empty( $param4 ) ) $request[] = $param4;
-		if( FALSE !== $param5 && !empty( $param5 ) ) $request[] = $param5;
-		if( FALSE !== $param6 && !empty( $param6 ) ) $request[] = $param6;
-		if( FALSE !== $param7 && !empty( $param7 ) ) $request[] = $param7;
+		for( $i = 0; $i < $max_params; $i++ ) {
+			$param_field = "param".($i + 1);
+			$param = $this->input->post( $param_field );
 
+			if( FALSE !== $param && !empty( $param ) ) {
+				$request[] = $param;
+			}
+		}
+		
 		$this->xmlrpc->request($request);
 		$this->xmlrpc->send_request();
 
-		$data['result'] = '';
-		$data['result']  = "Status: ".$this->xmlrpc->display_error()."\n";
+		$data['result'] = "";
+		$data['result'] .= "Status: ".$this->xmlrpc->display_error()."\n";
 		$data['result'] .= "Response:\n".var_export($this->xmlrpc->display_response(), TRUE)."\n";		
 		$this->load->view('admin/xmlrpc_client_view', $data);
 	}

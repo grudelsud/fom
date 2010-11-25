@@ -29,6 +29,7 @@ class Post_model extends CI_Model
 			'src_id' => $tw_statusid
 		);
 		$this->db->insert('post', $data);
+		return $this->db->insert_id();
 	}
 
 	function read( $lat = '', $lon = '', $geo_granularity = '', $t_start = '', $t_end = '', $t_granularity = '' )
@@ -44,6 +45,7 @@ class Post_model extends CI_Model
 	{
 		$this->db->where('id_post', $id);
 		$this->db->delete('post');
+		return 'OK';
 	}
 }
 

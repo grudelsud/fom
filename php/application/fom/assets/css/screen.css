@@ -9,33 +9,50 @@ h1 { font-size: 1.2em; }
 h2 { font-size: 1.1em; }
 p { padding-bottom: 5px; }
 input, select, textarea, button { border: 1px solid #DDD; padding: 5px; }
+img { border: 0; }
 textarea { font-size: 0.9em; }
+table { width: 100%; }
+th { background: #DDD; text-align: left; font-weight: normal; color: #FFF; }
+td, th { border: 1px solid #DDD; border-width: 0 1px 1px 0; padding: 3px; }
 
 /**
  * structure IDs
  * - wrapper
  * -- header
+ * -- navigation
  * -- content
  * -- footer
  */
 
 #wrapper { width: 1100px; padding: 5px; position: relative; }
 
-#header { border-bottom: 1px solid #DDD; padding: 15px 0; }
-#content { padding: 15px 0; }
+#header { position: absolute; padding: 0 0 5px 0; }
+#navigation { position: absolute; top: 120px;}
+#content { width: 985px; float: right; }
 #footer {}
 
 /**
  * ID presentation
  */
 #header img { border: 0; }
+#navigation ul { list-style-type: none; }
+#navigation li a { display: block; width: 110px; text-align: center; background: #333; color: #FFF; margin: 0 0 5px 0; padding: 3px 0; }
+#navigation li a:hover { text-decoration: none; background: #30a8c0; }
+
+#content h1 { background: #ddeeff; padding: 2px 4px; margin: 0 0 5px 0;}
+
+#query { float: left; width: 49%;}
+#cluster { float: right; width: 49%;}
+#cluster h2 { clear: both; font-size: 1em; background: #DDD; margin: 0 0 3px 0; padding: 1px; }
+#cluster ul { list-style-type: none; }
+#cluster li { float: left; background: #ddeeff; margin: 0 3px 3px 0;}
 
 #form_query {}
 #form_xmlrpctester label, #form_query label { position: absolute; width: 100px; text-align: right; padding: 5px; }
 #form_query input, #form_query select { margin: 0 10px 10px 120px; }
 #form_xmlrpctester input, #form_xmlrpctester select { width: 300px; margin: 0 10px 10px 120px; }
 #form_xmlrpctester #result { float: right; }
-#form_xmlrpctester #result textarea { width: 600px; height: 350px; }
+#form_xmlrpctester #result textarea { width: 500px; height: 350px; }
 
 #trends { position: absolute; top: 80px; right: 5px; width: 300px; }
 #trends h1 { background: #30a8c0; color: #FFF; padding: 1px 5px; }

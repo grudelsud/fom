@@ -4,22 +4,24 @@
 $attributes = array( 'id' => 'form_xmlrpctester' );
 
 $form_field['function'] = array(
+	'cluster' => array('cluster_store'=>'store'),
+	'query' => array('query_store'=>'store', 'query_exec'=>'exec'),
 	'post' => array('post_create'=>'create','post_read'=>'read','post_delete'=>'delete'), 
-	'query' => array('query'=>'query'),
 	'log' => array('log'=>'log')
 );
 $form_field['server'] = array('name' => 'server', 'id' => 'server', 'value' => site_url('xmlrpc'));
 
-$form_field['param1'] = array('name' => 'param1', 'id' => 'param1');
-$form_field['param2'] = array('name' => 'param2', 'id' => 'param2');
-$form_field['param3'] = array('name' => 'param3', 'id' => 'param3');
-$form_field['param4'] = array('name' => 'param4', 'id' => 'param4');
-$form_field['param5'] = array('name' => 'param5', 'id' => 'param5');
-$form_field['param6'] = array('name' => 'param6', 'id' => 'param6');
-$form_field['param7'] = array('name' => 'param7', 'id' => 'param7');
-$form_field['param8'] = array('name' => 'param8', 'id' => 'param8');
+if( !isset( $max_params ) || !is_numeric( $max_params ) ) {
+	$max_params = 12;
+}
 
-echo form_open('xmlrpc_client/post_params', $attributes);
+for( $i = 1; $i < $max_params + 1; $i++ ) {
+	$form_field['param'.$i] = array('name' => 'param'.$i, 'id' => 'param'.$i);
+}
+
+$hidden = array('max_params' => $max_params);
+
+echo form_open('xmlrpc_client/post_params', $attributes, $hidden);
 
 ?><div id="result"><p>Result</p>
 <?php
@@ -35,37 +37,11 @@ echo form_label('Server', 'server');
 echo form_input( $form_field['server'] );
 echo "<br />";
 
-echo form_label('Param 1', 'param1');
-echo form_input( $form_field['param1'] );
-echo "<br />";
-
-echo form_label('Param 2', 'param2');
-echo form_input( $form_field['param2'] );
-echo "<br />";
-
-echo form_label('Param 3', 'param3');
-echo form_input( $form_field['param3'] );
-echo "<br />";
-
-echo form_label('Param 4', 'param4');
-echo form_input( $form_field['param4'] );
-echo "<br />";
-
-echo form_label('Param 5', 'param5');
-echo form_input( $form_field['param5'] );
-echo "<br />";
-
-echo form_label('Param 6', 'param6');
-echo form_input( $form_field['param6'] );
-echo "<br />";
-
-echo form_label('Param 7', 'param7');
-echo form_input( $form_field['param7'] );
-echo "<br />";
-
-echo form_label('Param 8', 'param8');
-echo form_input( $form_field['param8'] );
-echo "<br />";
+for( $i = 1; $i < $max_params + 1; $i++ ) {
+	echo form_label('Param '.$i, 'param'.$i);
+	echo form_input( $form_field['param'.$i] );
+	echo "<br />";
+}
 
 echo form_submit('submit', 'Call function!');
 

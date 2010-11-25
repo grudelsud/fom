@@ -4,7 +4,7 @@
 * Class Main: main entry point
 * 
 * @author TMA
-* @version 1.0
+* @version 1.0 2010-11-18
 */
 class Main extends CI_Controller
 {
@@ -12,12 +12,15 @@ class Main extends CI_Controller
 	function __construct()
 	{
 		parent::__construct();
-		log_message('error', '[main.__construct] is loading');
 		// $this->output->enable_profiler(TRUE);
 	}
 	
 	function index()
 	{
-		$this->load->view('main_view');
+		$this->load->model('query_model');
+		$data['queries'] = $this->query_model->read();
+		$this->load->view('main_view', $data);
 	}
 }
+
+/* end of file main.php */

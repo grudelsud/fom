@@ -29,6 +29,22 @@ class Query_model extends CI_Model
 			'timezone' => (empty($timezone) ? 0 : $timezone)
 		);
 		$this->db->insert('query', $data);
+		return $this->db->insert_id();
+	}
+	
+	function read()
+	{
+		$query = $this->db->get('query');
+		return $query->result();
+	}
+	
+	function delete( $id_query )
+	{
+		$this->db->where('id_query', $id_query );
+		$this->db->delete('cluster');
+
+		$this->db->where('id_query', $id_query );
+		$this->db->delete('query');
 	}
 }
 

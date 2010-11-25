@@ -4,7 +4,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>Flux of MEME</title>
 <link href="css/screen.css" rel="stylesheet" type="text/css" media="screen" />
-<link type="text/css" href="<?php echo assets_url('assets/css') ?>/screen.css" rel="stylesheet" media="screen" />  
+<link type="text/css" href="<?php echo assets_url('assets/css') ?>/screen.css" rel="stylesheet" media="screen" />
+<script type="text/javascript" src="<?php echo assets_url('assets/lib') ?>/jquery-1.4.4.min.js"></script>
 </head>
 
 <body>
@@ -13,5 +14,10 @@
 <div id="header">
 	<a href="<?php echo base_url(); ?>"><img src="<?php echo assets_url('assets/img') ?>/logo.png" alt="Flux of MEME"/></a>
 </div><!-- end of #header -->
-
+<div id="navigation">
+	<ul>
+		<li><a href="<?php echo site_url('main') ?>" title="home">home</a></li>
+		<li><a href="<?php echo site_url('xmlrpc_client') ?>" title="xmlrpc client">xmlrpc client</a></li>
+	</ul>
+</div>
 <div id="content">

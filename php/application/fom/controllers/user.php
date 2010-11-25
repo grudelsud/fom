@@ -4,6 +4,7 @@
 * Class User: handles 
 * 
 * @author TMA
+* @version 1.0 2010-11-18
 */
 class User extends CI_Controller
 {
