@@ -2,11 +2,16 @@ package fom.clustering.algorithms.kmedoids.metrics;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
 
 public class TagVectorCosineSimilarity extends AbstractSimilarity< ArrayList<String> > {
+
+	public TagVectorCosineSimilarity(List<ArrayList<String>> objects) {
+		super(objects);
+	}
 
 	/**
 	 * 
@@ -15,16 +20,16 @@ public class TagVectorCosineSimilarity extends AbstractSimilarity< ArrayList<Str
 	double[] similarities;
 	
 	@Override
-	public double getMeasure(int firstObjectIndex, int secondObjectIndex, ArrayList<String>[] objects) {
+	public double getMeasure(int firstObjectIndex, int secondObjectIndex) {
 		if(firstObjectIndex>secondObjectIndex){
 			int swapIndex = firstObjectIndex;
 			firstObjectIndex = secondObjectIndex;
 			secondObjectIndex = swapIndex;
 		}
-		double similarity = similarities[(firstObjectIndex+1)*(2*objects.length-firstObjectIndex)/2-objects.length+secondObjectIndex];
+		double similarity = similarities[(firstObjectIndex+1)*(2*objects.size()-firstObjectIndex)/2-objects.size()+secondObjectIndex];
 		if(similarity==-1){
-			final ArrayList<String> str1Tokens = objects[firstObjectIndex];
-			final ArrayList<String> str2Tokens = objects[secondObjectIndex];
+			final ArrayList<String> str1Tokens = objects.get(firstObjectIndex);
+			final ArrayList<String> str2Tokens = objects.get(secondObjectIndex);
 
 	        final Set<String> allTokens = new HashSet<String>();
 	        allTokens.addAll(str1Tokens);
@@ -40,14 +45,14 @@ public class TagVectorCosineSimilarity extends AbstractSimilarity< ArrayList<Str
 	        //compute CosineSimilarity
 	        similarity = (float) (commonTerms) / (float) (Math.pow((float) termsInString1, 0.5f) * Math.pow((float) termsInString2, 0.5f));
 
-			similarities[(firstObjectIndex+1)*(2*objects.length-firstObjectIndex)/2-objects.length+secondObjectIndex] = similarity;
+			similarities[(firstObjectIndex+1)*(2*objects.size()-firstObjectIndex)/2-objects.size()+secondObjectIndex] = similarity;
 		}
 		return similarity;    
 	}
 
 	@Override
-	public void initialize(ArrayList<String>[] objects) {
-		int arrayDimension = objects.length*(objects.length+1)/2;
+	public void initialize() {
+		int arrayDimension = objects.size()*(objects.size()+1)/2;
 		similarities = new double[arrayDimension];
 		for(int i=0; i<arrayDimension; i++){
 			similarities[i]=-1;

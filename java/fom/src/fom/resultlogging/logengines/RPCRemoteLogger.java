@@ -49,7 +49,7 @@ public class RPCRemoteLogger implements LogEngine{
 		queryString = queryString.substring(0, queryString.length()-2);
 		String startTime = query.getStartTime().toString("yyyy-MM-dd HH:mm:ss");
 		String endTime = query.getEndTime().toString("yyyy-MM-dd HH:mm:ss");
-		String where = "";
+		String where = new String("(" + query.getLat() + ", " + query.getLon() + ")");
 		String granularity = query.getTimeGranularity();
 		String source = "twitter";
 		

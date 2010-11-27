@@ -9,21 +9,25 @@ public class Main {
 
 	public static void main(String[] args) {
 				
-		String queryString = "shepherds bush empire";
-		
+		long userId = 1;
+		String queryString = "music";		
 		String expEngineName = "wikiminer";
+		
+		double nearLat = 40.751939;
+		double nearLon = -73.981934;
+		int radius = 10;
 
-		String timeGranularity = "day";
+		String timeGranularity = "hour";
+		String geoGranularity = "neighborhood";
 		
 		List<String> sourceNames = new ArrayList<String>();
 		sourceNames.add("twitter");
 
-		DateTime startTime = new DateTime().minusDays(8);
+		DateTime startTime = new DateTime().minusDays(0);
 		DateTime endTime = new DateTime().minusDays(0);
 		
-		long userId = 1;
 		
-		QueryHandler qHandler = new QueryHandler(userId, queryString, expEngineName, sourceNames, startTime, endTime, timeGranularity);
+		QueryHandler qHandler = new QueryHandler(userId, queryString, expEngineName, sourceNames, startTime, endTime, timeGranularity, geoGranularity, nearLat, nearLon, radius);
 		
 		qHandler.executeQuery();
 	}

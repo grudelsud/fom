@@ -19,6 +19,7 @@ import fom.model.dao.interfaces.DAOFactory;
 import fom.queryexpansion.QueryExpander;
 import fom.resultlogging.ResultLogger;
 import fom.resultlogging.logengines.CSVLogger;
+import fom.resultlogging.logengines.ConsoleLogger;
 import fom.resultlogging.logengines.RPCRemoteLogger;
 import fom.search.Searcher;
 
@@ -27,60 +28,60 @@ public class QueryHandler {
 	private Query query;
 	private String expEngineName;
 	private List<String> sourceNames;
-	private String timeGranularity;
+	private int radius;
 	
 
-	public QueryHandler(long userId, String queryString, String expEngineName, List<String> sourceNames, DateTime startTime, DateTime endTime, String timeGranularity){
+	public QueryHandler(long userId, String queryString, String expEngineName, List<String> sourceNames, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity, double nearLat, double nearLon, int radius){
 		this.expEngineName = expEngineName;
 		this.sourceNames = sourceNames;
-		this.timeGranularity = timeGranularity;
-		query = new Query(userId, queryString, startTime, endTime, timeGranularity, 0, 0, "geo_gran", new DateTime(), new DateTime().getZone().getOffset(new DateTime().getMillis())/(1000*60*60));
+		this.radius = radius;
+		query = new Query(userId, queryString, startTime, endTime, timeGranularity, nearLat, nearLon, geoGranularity, new DateTime(), new DateTime().getZone().getOffset(new DateTime().getMillis())/(1000*60*60));
 	}
 	
 	
 	public void executeQuery(){
-		System.out.println(query.toString());
-		
-		System.out.println("Expanding query...");
 		List<String> expandedQuery = new QueryExpander(expEngineName).expandQuery(query.getQuery());
 		for(String expQueryTerm : expandedQuery){
 			query.addTerm(new Term(expQueryTerm, "", null, null, new Vocabulary("MainVoc", "")));
 		}
-		
-		List<Post> posts = searchPosts(expandedQuery);
-		
+
 		ResultLogger logger = new ResultLogger();
 		logger.addLogEngine(new CSVLogger());
 		logger.addLogEngine(new RPCRemoteLogger());
-		
+		logger.addLogEngine(new ConsoleLogger());
 		logger.startLogging(query);
 		
-		System.out.println("Clustering...");
+
+		List<Post> posts = searchPosts(expandedQuery);
+
+		if(posts.size()==0) return;
+		
 		List<TimeCluster> timeClusters = new ArrayList<TimeCluster>();
 		List<GeoCluster> geoClusters = new ArrayList<GeoCluster>();
 		List<SemanticCluster> semanticClusters = new ArrayList<SemanticCluster>();
 		
-		timeClusters = new TimeClustering(query, posts, timeGranularity).performClustering();
+		timeClusters = new TimeClustering(query, posts, query.getTimeGranularity()).performClustering();
 		for(TimeCluster timeCluster : timeClusters){
-			
 			logger.addTimeCluster(timeCluster);
-
 			query.addCluster(timeCluster);
-			
-			List<GeoCluster> currentGeoClusters = new GeoClustering(query, timeCluster.getPosts()).performClustering();
+
+			List<GeoCluster> currentGeoClusters = new GeoClustering(query, timeCluster.getPosts(), query.getGeoGranularity()).performClustering();
 			geoClusters.addAll(currentGeoClusters);
 			for(GeoCluster geoCluster : currentGeoClusters){
 				logger.addGeoCluster(geoCluster);
-				
 				query.addCluster(geoCluster);
+
+				/* TOPIC EXTRACTION ???
+				
+				TopicExtractor.extractTopics(geoCluster.getPosts());
+				
+				*/
 				
 				List<SemanticCluster> currentSemanticClusters = new SemanticClustering(query, geoCluster.getPosts()).performClustering();
 				semanticClusters.addAll(currentSemanticClusters);
 				for(SemanticCluster semCluster : currentSemanticClusters){					
 					logger.addSemCluster(semCluster);
-					
 					query.addCluster(semCluster);
-					System.out.print(".");
 				}
 			}
 		}
@@ -95,6 +96,6 @@ public class QueryHandler {
 		for(String sourceName : sourceNames){
 			searcher.addSource(sourceName);
 		}
-		return searcher.search(expandedQuery, query.getStartTime(), query.getEndTime());
+		return searcher.search(expandedQuery, query.getStartTime(), query.getEndTime(), query.getLat(), query.getLon(), radius);
 	}
 }

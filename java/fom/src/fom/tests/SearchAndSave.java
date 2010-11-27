@@ -22,7 +22,7 @@ public class SearchAndSave {
 		DateTime startTime = new DateTime().minusDays(0);
 		DateTime endTime = new DateTime();
 		
-		for(Post post : searcher.search(terms, startTime, endTime)){
+		for(Post post : searcher.search(terms, startTime, endTime, 0, 0, 0)){
 			DAOFactory.getFactory().getPostDAO().create(post);
 			System.out.println("***SAVED POST***");
 			System.out.println("Id: " + post.getId());

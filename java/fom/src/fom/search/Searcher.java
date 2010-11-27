@@ -25,12 +25,12 @@ public class Searcher {
 		sources.add(SourceFactory.getSource(sourceName));
 	}
 	
-	public List<Post> search(List<String> terms, DateTime startTime, DateTime endTime){
-		System.out.println("Searching for posts matching the query " + terms + "...");
+	public List<Post> search(List<String> terms, DateTime startTime, DateTime endTime, double lat, double lon, int radius){
+		System.out.println("Searching for posts matching the query " + terms + " within a " + radius + "km radius from (" + lat + "," + lon + ")");
 		for(Source source : sources){
-				posts.addAll(source.searchPosts(terms, startTime, endTime));
+				posts.addAll(source.searchPosts(terms, startTime, endTime, lat, lon, radius));
 		}
-		System.out.println("...found " + posts.size() + " posts");
+		System.out.println("Found " + posts.size() + " posts");
 		return posts;
 	}
 	

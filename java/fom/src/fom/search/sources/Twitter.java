@@ -29,9 +29,9 @@ public class Twitter implements Source {
 	}
 
 	@Override
-	public List<Post> searchPosts(List<String> terms, DateTime startTime, DateTime endTime) {
+	public List<Post> searchPosts(List<String> terms, DateTime startTime, DateTime endTime, double lat, double lon, int radius) {
 		try{
-			search(terms, startTime, endTime, null);
+			search(terms, startTime, endTime, null, lat, lon, radius);
 		}
 		catch(InterruptedException e){
 			e.printStackTrace();
@@ -45,13 +45,14 @@ public class Twitter implements Source {
 	}
 
 	
-	private void search(List<String> terms, DateTime since, DateTime until, Long maxId) throws InterruptedException{
+	private void search(List<String> terms, DateTime since, DateTime until, Long maxId, double lat, double lon, int radius) throws InterruptedException{
 		System.setProperty("twitter4j.loggerFactory", "twitter4j.internal.logging.NullLoggerFactory");
 		Query query = new Query();
 		query.setRpp(100);
 		query.setQuery(StringOperations.concatStrings(terms));
 		query.setSince(new SimpleDateFormat("yyyy-MM-dd").format(since.toDate().getTime()));
 		query.setUntil(new SimpleDateFormat("yyyy-MM-dd").format(until.toDate().getTime()));
+		if(lat!=0 || lon!=0) query.setGeoCode(new GeoLocation(lat, lon), radius, "km");
 		if(maxId!=null) query.setMaxId(maxId);
 		QueryResult result;
 		for(int i=1; i<16; i++){
@@ -67,7 +68,7 @@ public class Twitter implements Source {
 					break;
 				}
 				if(i==15 && result.getTweets().size()==100){
-					search(terms, since, until, result.getTweets().get(result.getTweets().size()-1).getId());
+					search(terms, since, until, result.getTweets().get(result.getTweets().size()-1).getId(), lat, lon, radius);
 				}
 			}catch(TwitterException exc){
 				if(exc.getStatusCode()==420){

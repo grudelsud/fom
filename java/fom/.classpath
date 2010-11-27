@@ -17,5 +17,11 @@
 	<classpathentry kind="lib" path="lib/xmlrpc-server-3.1.3.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/twitter4j-core-2.1.7.jar"/>
+	<classpathentry kind="lib" path="lib/mallet-deps.jar"/>
+	<classpathentry kind="lib" path="lib/mallet.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/fom/lib/javadoc/mallet-jdoc.jar!/lib/javadoc/malletjdoc"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

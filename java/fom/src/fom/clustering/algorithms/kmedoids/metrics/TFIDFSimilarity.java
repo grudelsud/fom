@@ -8,7 +8,13 @@ import com.wcohen.ss.TFIDF;
 import com.wcohen.ss.api.StringWrapper;
 import com.wcohen.ss.tokens.SimpleTokenizer;
 
-public class TFIDFSimilarity extends AbstractSimilarity<String> {
+import fom.model.Post;
+
+public class TFIDFSimilarity extends AbstractSimilarity<Post> {
+
+	public TFIDFSimilarity(List<Post> objects) {
+		super(objects);
+	}
 
 	/**
 	 * 
@@ -18,31 +24,31 @@ public class TFIDFSimilarity extends AbstractSimilarity<String> {
 	private double[] similarities;
 	
 	@Override
-	public double getMeasure(int firstObjectIndex, int secondObjectIndex, String[] objects) {
+	public double getMeasure(int firstObjectIndex, int secondObjectIndex) {
 		if(firstObjectIndex>secondObjectIndex){
 			int swapIndex = firstObjectIndex;
 			firstObjectIndex = secondObjectIndex;
 			secondObjectIndex = swapIndex;
 		}
-		double similarity = similarities[(firstObjectIndex+1)*(2*objects.length-firstObjectIndex)/2-objects.length+secondObjectIndex];
+		double similarity = similarities[(firstObjectIndex+1)*(2*objects.size()-firstObjectIndex)/2-objects.size()+secondObjectIndex];
 		if(similarity==-1){
-	        similarity = tfidf.score(tfidf.prepare(objects[firstObjectIndex]), tfidf.prepare(objects[secondObjectIndex]));
-			similarities[(firstObjectIndex+1)*(2*objects.length-firstObjectIndex)/2-objects.length+secondObjectIndex] = similarity;
+	        similarity = tfidf.score(tfidf.prepare(objects.get(firstObjectIndex).getContent()), tfidf.prepare(objects.get(secondObjectIndex).getContent()));
+			similarities[(firstObjectIndex+1)*(2*objects.size()-firstObjectIndex)/2-objects.size()+secondObjectIndex] = similarity;
 		}
 		return similarity;    
 	}
 
 	@Override
-	public void initialize(String[] objects) {
-		int arrayDimension = objects.length*(objects.length+1)/2;
+	public void initialize() {
+		int arrayDimension = objects.size()*(objects.size()+1)/2;
 		similarities = new double[arrayDimension];
 		for(int i=0; i<arrayDimension; i++){
 			similarities[i]=-1;
 		}
 		List<StringWrapper> documents = new ArrayList<StringWrapper>();
 		tfidf = new TFIDF(new SimpleTokenizer(true, true));
-		for(String document : objects){
-			documents.add(tfidf.prepare(document));
+		for(Post post : objects){
+			documents.add(tfidf.prepare(post.getContent()));
 		}
 		tfidf.train(new BasicStringWrapperIterator(documents.iterator()));
 	}

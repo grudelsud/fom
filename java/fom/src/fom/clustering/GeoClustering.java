@@ -5,8 +5,8 @@ import java.util.List;
 
 import fom.clustering.algorithms.Clusterer;
 import fom.clustering.algorithms.ClustererFactory;
-import fom.clustering.algorithms.kmedoids.metrics.AbstractMetric;
-import fom.clustering.algorithms.kmedoids.metrics.PostGeoDistance;
+import fom.clustering.algorithms.hierarchical.metrics.ClusterDistanceMeasure;
+import fom.clustering.algorithms.hierarchical.metrics.PostClusterGeoDistance;
 import fom.model.GeoCluster;
 import fom.model.Post;
 import fom.model.Query;
@@ -15,12 +15,13 @@ public class GeoClustering {
 	private Clusterer<Post> clusterer;
 	private List<Post> posts;
 	private List<GeoCluster> clusters;
+	private String granularity;
 	private Query originatingQuery;
 	
-	public GeoClustering(Query originatingQuery, List<Post> posts){
+	public GeoClustering(Query originatingQuery, List<Post> posts, String granularity){
 		this.posts = new ArrayList<Post>();
 		clusters = new ArrayList<GeoCluster>();
-		
+		this.granularity = granularity;
 		this.originatingQuery = originatingQuery;
 		this.posts = posts;
 	}	
@@ -38,22 +39,23 @@ public class GeoClustering {
 			}
 		}
 		
-//		System.out.println("Not geotagged: " + notGeoTagged.getPosts().size());
-//		System.out.println("Geotagged: " + toBeClustered.size());
-		
 		if(toBeClustered.size()>0){
-			Post[] toBeClusteredArray = toBeClustered.toArray(new Post[0]);
-			int k = (int)Math.ceil((double)toBeClustered.size()/(double)100);
-			AbstractMetric<Post> metric = new PostGeoDistance();
-			
-			clusterer = ClustererFactory.getKMedoidsClusterer(toBeClusteredArray, k, metric, 1000);
-			clusterer.performClustering();
-			for(int clusterIndex=0; clusterIndex<k; clusterIndex++){
+			double distLimit = 15;
+			if(granularity.equalsIgnoreCase("POI")){
+				distLimit = 1;
+			} else if(granularity.equalsIgnoreCase("neighborhood")){
+				distLimit = 3;
+			} else if(granularity.equalsIgnoreCase("city")){
+				distLimit = 15;
+			}
+			ClusterDistanceMeasure<Post> distMeasure = new PostClusterGeoDistance();
+			clusterer = ClustererFactory.getHAClusterer(distMeasure, distLimit);
+
+			List<List<Post>> clusteringResult = clusterer.performClustering(toBeClustered);
+			for(List<Post> cluster : clusteringResult){
 				GeoCluster currentCluster = new GeoCluster(originatingQuery);
-				for(int postIndex=0; postIndex<toBeClustered.size(); postIndex++){
-					if(clusterer.getClusterIndexes()[postIndex]==clusterIndex){
-						currentCluster.addPost(toBeClusteredArray[postIndex]);
-					}
+				for(Post post : cluster){
+					currentCluster.addPost(post);					
 				}
 				clusters.add(currentCluster);
 			}			
