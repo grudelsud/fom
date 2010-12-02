@@ -1,9 +1,6 @@
 package fom.topicextraction;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -15,16 +12,16 @@ import cc.mallet.pipe.TokenSequence2FeatureSequence;
 import cc.mallet.pipe.TokenSequenceLowercase;
 import cc.mallet.pipe.TokenSequenceRemoveStopwords;
 import cc.mallet.topics.ParallelTopicModel;
-import cc.mallet.topics.TopicAssignment;
 import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
 import cc.mallet.util.MalletLogger;
 
 import fom.model.Post;
+import fom.utils.StringOperations;
 
 public class TopicExtractor {
 	
-	public static void extractTopics(List<Post> posts){
+	public static List<List<String>> extractTopics(List<Post> posts){
 		ArrayList<Pipe> pipelist = new ArrayList<Pipe>();
 		pipelist.add(new CharSequence2TokenSequence());
 		pipelist.add(new TokenSequenceLowercase());
@@ -36,7 +33,10 @@ public class TopicExtractor {
 		List<Instance> tmpInstanceList = new ArrayList<Instance>();
 		
 		for(Post post : posts){
-			Instance inst = new Instance(post.getContent(), null, post, post.getContent());
+			String sanitizedPost = post.getContent();
+			sanitizedPost = StringOperations.removeURLfromString(sanitizedPost);
+			sanitizedPost = StringOperations.removeStopwords(sanitizedPost);
+			Instance inst = new Instance(sanitizedPost, null, post, post.getContent());
 			tmpInstanceList.add(inst);
 		}
 		
@@ -44,20 +44,31 @@ public class TopicExtractor {
 		
 		MalletLogger.getLogger(ParallelTopicModel.class.getName()).setLevel(Level.OFF);
 		
-		ParallelTopicModel lda = new ParallelTopicModel(5);
+		int numberOfTopics = 3;
+		ParallelTopicModel lda = new ParallelTopicModel(numberOfTopics);
+		
 		lda.addInstances(instances);
 		try {
-			lda.estimate();
-			lda.printDocumentTopics(new PrintWriter( new FileWriter( new File("out.txt"))));
+			if(posts.size()>2){
+				lda.estimate();				
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		for(TopicAssignment topicAssign : lda.getData()){
-			System.out.println(topicAssign.instance.getName());
-			System.out.println(topicAssign.instance.getLabeling());
+
+		List<List<String>> topics = new ArrayList<List<String>>();
+ 
+		Object[][] topWords = lda.getTopWords(6);
+		int limit = posts.size()<numberOfTopics?posts.size():numberOfTopics;
+		for(int topicCount=0; topicCount<limit && topicCount<topWords.length; topicCount++){
+			List<String> topic = new ArrayList<String>();
+			for(Object word : topWords[topicCount]){
+				topic.add(word.toString());
+			}
+			topics.add(topic);
 		}
-		//	lda.displayTopWords(5, true);
-	//	lda.printDocumentTopics(new PrintWriter(System.out));
+		
+		return topics;
 	}
 }

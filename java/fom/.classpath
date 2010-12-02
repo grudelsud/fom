@@ -23,5 +23,7 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/fom/lib/javadoc/mallet-jdoc.jar!/lib/javadoc/malletjdoc"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/wikipediaminer.jar"/>
+	<classpathentry kind="lib" path="lib/trove-2.1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

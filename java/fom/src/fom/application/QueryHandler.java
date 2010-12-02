@@ -20,6 +20,7 @@ import fom.queryexpansion.QueryExpander;
 import fom.resultlogging.ResultLogger;
 import fom.resultlogging.logengines.CSVLogger;
 import fom.resultlogging.logengines.ConsoleLogger;
+import fom.resultlogging.logengines.FolderLogger;
 import fom.resultlogging.logengines.RPCRemoteLogger;
 import fom.search.Searcher;
 
@@ -47,12 +48,12 @@ public class QueryHandler {
 
 		ResultLogger logger = new ResultLogger();
 		logger.addLogEngine(new CSVLogger());
-		logger.addLogEngine(new RPCRemoteLogger());
+	//	logger.addLogEngine(new RPCRemoteLogger());
 		logger.addLogEngine(new ConsoleLogger());
+		logger.addLogEngine(new FolderLogger());
 		logger.startLogging(query);
 		
-
-		List<Post> posts = searchPosts(expandedQuery);
+		List<Post> posts = searchPosts(expandedQuery.subList(0, 20));
 
 		if(posts.size()==0) return;
 		
@@ -70,12 +71,6 @@ public class QueryHandler {
 			for(GeoCluster geoCluster : currentGeoClusters){
 				logger.addGeoCluster(geoCluster);
 				query.addCluster(geoCluster);
-
-				/* TOPIC EXTRACTION ???
-				
-				TopicExtractor.extractTopics(geoCluster.getPosts());
-				
-				*/
 				
 				List<SemanticCluster> currentSemanticClusters = new SemanticClustering(query, geoCluster.getPosts()).performClustering();
 				semanticClusters.addAll(currentSemanticClusters);

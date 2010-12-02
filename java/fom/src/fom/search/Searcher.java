@@ -33,11 +33,4 @@ public class Searcher {
 		System.out.println("Found " + posts.size() + " posts");
 		return posts;
 	}
-	
-	public List<Post> geoSearch(double lat, double lon, int radius, DateTime startTime, DateTime endTime){
-		for(Source source : sources){
-			posts.addAll(source.geoSearchPosts(lat, lon, radius, startTime, endTime));
-		}
-		return posts;
-	}
 }

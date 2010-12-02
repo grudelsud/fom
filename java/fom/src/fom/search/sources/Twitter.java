@@ -39,17 +39,13 @@ public class Twitter implements Source {
 		return results;
 	}
 
-	@Override
-	public List<Post> geoSearchPosts(double lat, double lon, int radius, DateTime startTime, DateTime endTime) {
-		return new ArrayList<Post>();
-	}
-
 	
 	private void search(List<String> terms, DateTime since, DateTime until, Long maxId, double lat, double lon, int radius) throws InterruptedException{
 		System.setProperty("twitter4j.loggerFactory", "twitter4j.internal.logging.NullLoggerFactory");
 		Query query = new Query();
 		query.setRpp(100);
-		query.setQuery(StringOperations.concatStrings(terms));
+		String queryString = StringOperations.logicOrConcatStrings(terms);
+		if(!queryString.equalsIgnoreCase("")) query.setQuery(queryString);
 		query.setSince(new SimpleDateFormat("yyyy-MM-dd").format(since.toDate().getTime()));
 		query.setUntil(new SimpleDateFormat("yyyy-MM-dd").format(until.toDate().getTime()));
 		if(lat!=0 || lon!=0) query.setGeoCode(new GeoLocation(lat, lon), radius, "km");
@@ -75,6 +71,8 @@ public class Twitter implements Source {
 					System.out.println("Thread put to sleep for " + exc.getRetryAfter() + "seconds");
 					Thread.sleep(exc.getRetryAfter()*1000L);
 					i--;
+				} else {
+					exc.printStackTrace();			
 				}
 			}
 		}

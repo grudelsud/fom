@@ -34,7 +34,6 @@ public class RPCRemoteLogger implements LogEngine{
 			xmlRpcClient = new XmlRpcClient();
 			xmlRpcClient.setConfig(config);
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

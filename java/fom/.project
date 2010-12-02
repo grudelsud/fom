@@ -3,6 +3,7 @@
 	<name>fom</name>
 	<comment>@key 32303037303533312D3130303020666F6D2F4665646558 </comment>
 	<projects>
+		<project>JGibbLDA-v.1.0</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

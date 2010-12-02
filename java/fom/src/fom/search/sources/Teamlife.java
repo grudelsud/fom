@@ -15,9 +15,4 @@ public class Teamlife implements Source {
 		return new ArrayList<Post>();
 	}
 
-	@Override
-	public List<Post> geoSearchPosts(double lat, double lon, int radius, DateTime startTime, DateTime endTime) {
-		return new ArrayList<Post>();
-	}
-
 }

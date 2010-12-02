@@ -5,15 +5,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * @author    Federico Frappi
- */
 public class StringOperations {
 
-	/**
-	 * @uml.property  name="stopwords"
-	 * @uml.associationEnd  
-	 */
 	private static StopwordChecker stopwords = new StopwordChecker();
 
 	public static String hashtagify(String input){
@@ -91,7 +84,7 @@ public class StringOperations {
 		return urls;
 	}
 
-	public static String makeSqlList(List<?> objects) {
+	public static String makeSqlList(List<? extends Object> objects) {
 		String result = "(";
 		for(int i=0; i<objects.size()-1;i++){
 			result=result.concat("'" + objects.get(i).toString() +"'" + ", ");
@@ -119,5 +112,18 @@ public class StringOperations {
 		return result.trim();
 	}
 	
+	public static String logicOrConcatStrings(List<String> strings){
+		String result = "";
+		for(String token : strings){
+			result += "\"";
+			result += token;
+			result += "\"";
+			result += " OR ";
+		}
+		if(result.length()>0){
+			result = result.substring(0, result.length() - 4);
+		}
+		return result;
+	}
 	
 }
