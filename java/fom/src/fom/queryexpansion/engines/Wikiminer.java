@@ -11,19 +11,33 @@ import org.wikipedia.miner.model.Wikipedia;
 import org.wikipedia.miner.model.Article.AnchorText;
 import org.wikipedia.miner.util.SortedVector;
 
+import fom.properties.PropertyHandler;
+
 public class Wikiminer implements ExpansionEngine {
 
 	@Override
 	public List<String> expandQuery(String query) {
 		List<String> expandedQuery = new ArrayList<String>();
-		try {			
-			Wikipedia wiki = new Wikipedia("localhost", "WIKIMINER", "root", "");
+		if(query.trim().equalsIgnoreCase("")){
+			return expandedQuery;
+		}
+		try {
+			String dbServer = PropertyHandler.getInstance().getProperties().getProperty("WikiminerDBServer");
+			String dbName = PropertyHandler.getInstance().getProperties().getProperty("WikiminerDBName");
+			String dbUser = PropertyHandler.getInstance().getProperties().getProperty("WikiminerDBUser"); 
+			String dbPass = PropertyHandler.getInstance().getProperties().getProperty("WikiminerDBPass");
+			Wikipedia wiki = new Wikipedia(dbServer, dbName, dbUser, dbPass);
 			Article article = wiki.getMostLikelyArticle(query, null);
+			if(article==null){
+				expandedQuery.add(query);
+				return expandedQuery;
+			}
 			
 			Set<String> relatedWords = new HashSet<String>();
 			relatedWords.add(query);
 			
-	//		System.out.println("Getting redirects");
+	//		
+			System.out.println("Getting redirects");
 			SortedVector<Redirect> redirects = article.getRedirects();
 			for(int i=0; i<redirects.size(); i++){
 				relatedWords.add(redirects.elementAt(i).getTarget().getTitleWithoutScope());

@@ -18,42 +18,34 @@ import fom.model.Vocabulary;
 import fom.model.dao.interfaces.DAOFactory;
 import fom.queryexpansion.QueryExpander;
 import fom.resultlogging.ResultLogger;
-import fom.resultlogging.logengines.CSVLogger;
-import fom.resultlogging.logengines.ConsoleLogger;
-import fom.resultlogging.logengines.FolderLogger;
-import fom.resultlogging.logengines.RPCRemoteLogger;
 import fom.search.Searcher;
 
 public class QueryHandler {
 	
-	private Query query;
-	private String expEngineName;
-	private List<String> sourceNames;
-	private int radius;
+	private QueryExpander queryExpander;
+	private Searcher searcher;
+	private ResultLogger logger;
 	
-
-	public QueryHandler(long userId, String queryString, String expEngineName, List<String> sourceNames, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity, double nearLat, double nearLon, int radius){
-		this.expEngineName = expEngineName;
-		this.sourceNames = sourceNames;
-		this.radius = radius;
-		query = new Query(userId, queryString, startTime, endTime, timeGranularity, nearLat, nearLon, geoGranularity, new DateTime(), new DateTime().getZone().getOffset(new DateTime().getMillis())/(1000*60*60));
+	public QueryHandler(String expEngineName, List<String> sourceNames, ResultLogger logger){
+		this.queryExpander = new QueryExpander(expEngineName);
+		this.searcher = new Searcher();
+		for(String source : sourceNames){
+			searcher.addSource(source);
+		}
+		this.logger = logger;
 	}
 	
 	
-	public void executeQuery(){
-		List<String> expandedQuery = new QueryExpander(expEngineName).expandQuery(query.getQuery());
+	public void executeQuery(long userId, String queryString, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity, double nearLat, double nearLon, int radius){
+		Query query = new Query(userId, queryString, startTime, endTime, timeGranularity, nearLat, nearLon, geoGranularity, new DateTime(), new DateTime().getZone().getOffset(new DateTime().getMillis())/(1000*60*60));
+		List<String> expandedQuery = queryExpander.expandQuery(query.getQuery());
 		for(String expQueryTerm : expandedQuery){
 			query.addTerm(new Term(expQueryTerm, "", null, null, new Vocabulary("MainVoc", "")));
 		}
-
-		ResultLogger logger = new ResultLogger();
-		logger.addLogEngine(new CSVLogger());
-	//	logger.addLogEngine(new RPCRemoteLogger());
-		logger.addLogEngine(new ConsoleLogger());
-		logger.addLogEngine(new FolderLogger());
+		
 		logger.startLogging(query);
 		
-		List<Post> posts = searchPosts(expandedQuery.subList(0, 20));
+		List<Post> posts = searcher.search(expandedQuery.subList(0, expandedQuery.size()>20?20:expandedQuery.size()), query.getStartTime(), query.getEndTime(), query.getLat(), query.getLon(), radius);
 
 		if(posts.size()==0) return;
 		
@@ -83,14 +75,5 @@ public class QueryHandler {
 		logger.endLog();
 		System.out.println("Logs:\n" + logger.getLogs());
 		DAOFactory.getFactory().getQueryDAO().create(query);
-	}
-	
-
-	private List<Post> searchPosts(List<String> expandedQuery){
-		Searcher searcher = new Searcher();
-		for(String sourceName : sourceNames){
-			searcher.addSource(sourceName);
-		}
-		return searcher.search(expandedQuery, query.getStartTime(), query.getEndTime(), query.getLat(), query.getLon(), radius);
 	}
 }

@@ -13,7 +13,7 @@ public class PropertyHandler {
 	private PropertyHandler(){
 		FileInputStream fos = null;
 		try {
-			fos = new FileInputStream("src/fom/properties/properties.properties");
+			fos = new FileInputStream("data/properties.properties");
 			properties = new Properties();
 			properties.load(fos);
 		} catch (FileNotFoundException e) {

@@ -60,8 +60,8 @@ public class Query {
 		return new String("Query Details:\n\t" +
 							"userId: " + userId + "\n\t" +
 							"query: " + query + "\n\t" +
-							"startTime: " + startTime + "\n\t" +
-							"endTime: " + endTime + "\n\t" +
+							"startTime: " + startTime.toString("yyyy-MM-dd") + "\n\t" +
+							"endTime: " + endTime.toString("yyyy-MM-dd") + "\n\t" +
 							"timeGranularity: " + timeGranularity + "\n\t" +
 							"lat: " + lat + "\n\t" +
 							"lon: " + lon + "\n\t" +

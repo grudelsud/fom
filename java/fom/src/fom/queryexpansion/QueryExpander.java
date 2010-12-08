@@ -15,8 +15,4 @@ public class QueryExpander {
 	public List<String> expandQuery(String query){
 		return expEngine.expandQuery(query);
 	}
-	
-	public void setExpansionEngine(String expEngineName){
-		this.expEngine = ExpansionEngineFactory.getExpansionEngine(expEngineName);
-	}
 }

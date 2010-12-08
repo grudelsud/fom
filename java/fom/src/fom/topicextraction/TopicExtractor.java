@@ -36,8 +36,10 @@ public class TopicExtractor {
 			String sanitizedPost = post.getContent();
 			sanitizedPost = StringOperations.removeURLfromString(sanitizedPost);
 			sanitizedPost = StringOperations.removeStopwords(sanitizedPost);
-			Instance inst = new Instance(sanitizedPost, null, post, post.getContent());
-			tmpInstanceList.add(inst);
+			if(!sanitizedPost.trim().equalsIgnoreCase("")){
+				Instance inst = new Instance(sanitizedPost, null, post, post.getContent());
+				tmpInstanceList.add(inst);				
+			}
 		}
 		
 		instances.addThruPipe(tmpInstanceList.iterator());
