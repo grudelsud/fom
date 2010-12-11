@@ -35,15 +35,12 @@ public class Wikiminer implements ExpansionEngine {
 			
 			Set<String> relatedWords = new HashSet<String>();
 			relatedWords.add(query);
-			
-	//		
-			System.out.println("Getting redirects");
+		
 			SortedVector<Redirect> redirects = article.getRedirects();
 			for(int i=0; i<redirects.size(); i++){
 				relatedWords.add(redirects.elementAt(i).getTarget().getTitleWithoutScope());
 			}
 			
-	//		System.out.println("Getting anchors");
 			SortedVector<AnchorText> anchorTexts = article.getAnchorTexts();
 			for(int i=0; i<anchorTexts.size(); i++){
 				relatedWords.add(anchorTexts.elementAt(i).getText());

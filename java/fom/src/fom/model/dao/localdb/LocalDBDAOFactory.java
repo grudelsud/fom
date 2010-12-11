@@ -41,7 +41,7 @@ public class LocalDBDAOFactory extends DAOFactory {
 		try {
 			String connURL = prop.getProperty("LocalDBConnectionURL");
 			String username = prop.getProperty("LocalDBUser");
-			String pass = prop.getProperty("localDBPass");
+			String pass = prop.getProperty("LocalDBPass");
 			return DriverManager.getConnection(connURL, username, pass);
 		} catch (SQLException e) {
 			e.printStackTrace();

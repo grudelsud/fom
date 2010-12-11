@@ -24,7 +24,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/wikipediaminer.jar"/>
-	<classpathentry kind="lib" path="lib/trove-2.1.0.jar"/>
 	<classpathentry kind="lib" path="lib/jargs.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

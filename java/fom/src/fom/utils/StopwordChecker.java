@@ -34,7 +34,11 @@ public class StopwordChecker {
 	}
 	
 	public boolean isStopword(String word){
-		return stopwords.contains(word);
+		for(String stopword : stopwords){
+			if(word.equalsIgnoreCase(stopword))
+				return true;
+		}
+		return false;
 	}
 	
 }

@@ -17,16 +17,15 @@ public class PropertyHandler {
 			properties = new Properties();
 			properties.load(fos);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+			System.err.println("There was a problem loading the properties file, make sure it is in data/properties.properties");
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			System.err.println("There was a problem loading the properties file, make sure it is in data/properties.properties");
 			e.printStackTrace();
 		} finally {
 			try {
 				fos.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

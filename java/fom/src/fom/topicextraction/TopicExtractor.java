@@ -51,8 +51,8 @@ public class TopicExtractor {
 		
 		lda.addInstances(instances);
 		try {
-			if(posts.size()>2){
-				lda.estimate();				
+			if(posts.size()>3){
+				lda.estimate();	
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
