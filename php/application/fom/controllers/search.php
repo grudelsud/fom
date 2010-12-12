@@ -33,7 +33,7 @@ class Search extends CI_Controller
 
 		$this->load->library('fom_search');
 		$data['results'] = $this->fom_search->query( $terms, $since, $until, $where, $granularity, $source );
-		$this->load->view('search_result', $data );
+		$this->load->view('search_view', $data );
 	}
 }
 

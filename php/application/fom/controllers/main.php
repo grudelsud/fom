@@ -1,7 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
-* Class Main: main entry point
+* Class Main: main entry point, used to redirect where necessary
 * 
 * @author TMA
 * @version 1.0 2010-11-18
@@ -17,9 +17,7 @@ class Main extends CI_Controller
 	
 	function index()
 	{
-		$this->load->model('query_model');
-		$data['queries'] = $this->query_model->read();
-		$this->load->view('main_view', $data);
+		redirect('/result');
 	}
 }
 
