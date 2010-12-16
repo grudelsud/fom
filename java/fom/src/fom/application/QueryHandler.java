@@ -19,25 +19,44 @@ import fom.model.dao.interfaces.DAOFactory;
 import fom.queryexpansion.QueryExpander;
 import fom.resultlogging.ResultLogger;
 import fom.search.Searcher;
+import fom.search.sources.SourceFactory.SourceType;
 
-public class QueryHandler {
+public class QueryHandler implements Runnable{
 	
 	private QueryExpander queryExpander;
 	private Searcher searcher;
 	private ResultLogger logger;
+	long userId;
+	String queryString;
+	DateTime startTime;
+	DateTime endTime;
+	String timeGranularity;
+	String geoGranularity;
+	double nearLat;
+	double nearLon;
+	int radius;
 	
-	public QueryHandler(String expEngineName, List<String> sourceNames, ResultLogger logger){
+	public QueryHandler(String expEngineName, List<SourceType> sources, ResultLogger logger, long userId, String queryString, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity, double nearLat, double nearLon, int radius){
 		this.queryExpander = new QueryExpander(expEngineName);
 		this.searcher = new Searcher();
-		for(String source : sourceNames){
+		for(SourceType source : sources){
 			searcher.addSource(source);
 		}
 		this.logger = logger;
+		this.userId = userId;
+		this.queryString = queryString;
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.timeGranularity = timeGranularity;
+		this.geoGranularity = geoGranularity;
+		this.nearLat = nearLat;
+		this.nearLon = nearLon;
+		this.radius = radius;
 	}
 	
 	
-	public void executeQuery(long userId, String queryString, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity, double nearLat, double nearLon, int radius){
-		Query query = new Query(userId, queryString, startTime, endTime, timeGranularity, nearLat, nearLon, geoGranularity, new DateTime(), new DateTime().getZone().getOffset(new DateTime().getMillis())/(1000*60*60));
+	private void executeQuery(long userId, String queryString, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity, double nearLat, double nearLon, int radius){
+		Query query = new Query(userId, queryString, startTime, endTime, timeGranularity, nearLat, nearLon, radius, geoGranularity, new DateTime(), new DateTime().getZone().getOffset(new DateTime().getMillis())/(1000*60*60));
 		List<String> expandedQuery = queryExpander.expandQuery(query.getQuery());
 		for(String expQueryTerm : expandedQuery){
 			query.addTerm(new Term(expQueryTerm, "", null, null, new Vocabulary("MainVoc", "")));
@@ -45,7 +64,7 @@ public class QueryHandler {
 		
 		logger.startLogging(query);
 		
-		List<Post> posts = searcher.search(expandedQuery.subList(0, expandedQuery.size()>20?20:expandedQuery.size()), query.getStartTime(), query.getEndTime(), query.getLat(), query.getLon(), radius);
+		List<Post> posts = searcher.search(expandedQuery, query.getStartTime(), query.getEndTime(), query.getLat(), query.getLon(), radius);
 
 		if(posts.size()==0) return;
 		
@@ -75,5 +94,11 @@ public class QueryHandler {
 		logger.endLog();
 		System.out.println("Logs:\n" + logger.getLogs());
 		DAOFactory.getFactory().getQueryDAO().create(query);
+	}
+
+
+	@Override
+	public void run() {
+		this.executeQuery(userId, queryString, startTime, endTime, timeGranularity, geoGranularity, nearLat, nearLon, radius);
 	}
 }

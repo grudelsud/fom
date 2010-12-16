@@ -14,6 +14,7 @@ public class Query {
 	private String timeGranularity;
 	private double lat;
 	private double lon;
+	private int radius;
 	private String geoGranularity;
 	private DateTime created;
 	private int timezone;
@@ -22,7 +23,7 @@ public class Query {
 	
 	
 	
-	public Query(long userId, String query, DateTime startTime, DateTime endTime, String timeGranularity, double lat, double lon, String geoGranularity, DateTime created, int timezone) {
+	public Query(long userId, String query, DateTime startTime, DateTime endTime, String timeGranularity, double lat, double lon, int radius, String geoGranularity, DateTime created, int timezone) {
 		super();
 		this.userId = userId;
 		this.query = query;
@@ -31,6 +32,7 @@ public class Query {
 		this.timeGranularity = timeGranularity;
 		this.lat = lat;
 		this.lon = lon;
+		this.radius = radius;
 		this.geoGranularity = geoGranularity;
 		this.created = created;
 		this.timezone = timezone;
@@ -131,5 +133,9 @@ public class Query {
 	
 	public void addTerm(Term theTerm) {
 		this.terms.add(theTerm);
+	}
+
+	public int getRadius() {
+		return radius;
 	}
 }

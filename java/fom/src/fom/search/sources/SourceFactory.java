@@ -2,14 +2,21 @@ package fom.search.sources;
 
 public class SourceFactory {
 	
-	public static Source getSource(String sourceName){
-		if(sourceName.equalsIgnoreCase("twitter")){
+	public static enum SourceType{
+		TWITTER, TEAMLIFE, LOCALDB
+	}
+	
+	public static Source getSource(SourceType sourceType){
+		switch (sourceType) {
+		case TWITTER:
 			return new Twitter();
-		}
-		else if(sourceName.equalsIgnoreCase("teamlife")){
+		case TEAMLIFE:
 			return new Teamlife();
+		case LOCALDB:
+			return new LocalDBSource();
+		default:
+			return null;
 		}
-		return null; //TODO aggiungere eccezione?
 	}
 	
 }

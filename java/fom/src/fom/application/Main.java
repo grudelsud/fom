@@ -17,25 +17,41 @@ import fom.resultlogging.logengines.CSVLogger;
 import fom.resultlogging.logengines.ConsoleLogger;
 import fom.resultlogging.logengines.FolderLogger;
 import fom.resultlogging.logengines.RPCRemoteLogger;
+import fom.search.sources.SourceFactory;
+import fom.search.sources.SourceFactory.SourceType;
 
 public class Main {
 	
     private static void printUsage() {
-        System.err.println("Usage:\n" +
-        					"fom [--expEng {wikiminer,...}] [--twitter] [--teamlife]\n" +
+        System.err.println("Usage:" +
+        					"\n" +
+        					"\n" +
+        					"QUERY:" +
+        					"\n" +
+        					"fom [--expEng {wikiminer}] [--twitter] [--teamlife] [--localDB]\n" +
         					"[--query queryString] [--since YYYY-MM-DD] [--until YYYY-MM-DD]\n" +
         					"[--nearLat latitude] [--nearLon longitude] [--radius radius]\n" +
         					"[--timeGran {hour, day, week}] [--geoGran {poi, neighborhood, city}]\n" +
-        					"[--consoleLog] [--csvLog] [--folderLog] [--rpcLog]");
+        					"[--consoleLog] [--csvLog] [--folderLog] [--rpcLog]" +
+        					"\n" +
+        					"\n" +
+        					"STREAM CAPTURING:" +
+        					"\n" +
+        					"fom --captureStream");
     }
 
 	public static void main(String[] args){
 		//Define command line options:
 		
 		CmdLineParser parser = new CmdLineParser();
+		
+		Option captureStreamOpt = parser.addBooleanOption("captureStream");
+		
 		Option expEngineNameOpt = parser.addStringOption("expEng");
+		
 		Option twitterSrcOpt = parser.addBooleanOption("twitter");
 		Option teamlifeSrcOpt = parser.addBooleanOption("teamlife");
+		Option localDBSrcOpt = parser.addBooleanOption("localDB");
 		
 		Option queryStringOpt = parser.addStringOption("query");
 		Option startTimeOpt = parser.addStringOption("since");
@@ -63,6 +79,12 @@ public class Main {
 		
 		//Parse options:
 		
+		//CaptureStream
+		if(parser.getOptionValue(captureStreamOpt)!=null){
+			new Thread(new StreamCapturer()).start();
+			return;
+		}
+		
 		//Expansion Engine
 		String expEngineName = (String)parser.getOptionValue(expEngineNameOpt, "wikiminer");
 		if(!expEngineName.equalsIgnoreCase("wikiminer")){
@@ -71,12 +93,15 @@ public class Main {
 		}
 		
 		//Sources
-		List<String> sourceNames = new ArrayList<String>();
+		List<SourceType> sources = new ArrayList<SourceType>();
 		if(parser.getOptionValue(twitterSrcOpt)!=null){
-			sourceNames.add("twitter");
+			sources.add(SourceFactory.SourceType.TWITTER);
 		}
 		if(parser.getOptionValue(teamlifeSrcOpt)!=null){
-			sourceNames.add("teamlife");
+			sources.add(SourceFactory.SourceType.TEAMLIFE);
+		}
+		if(parser.getOptionValue(localDBSrcOpt)!=null){
+			sources.add(SourceFactory.SourceType.LOCALDB);
 		}
 		
 		//Loggers
@@ -132,7 +157,7 @@ public class Main {
 			System.exit(-1);
 		}
 		
-		QueryHandler qHandler = new QueryHandler(expEngineName, sourceNames, logger);
-		qHandler.executeQuery(userId, queryString, startTime, endTime, timeGranularity, geoGranularity, nearLat, nearLon, radius);
+		QueryHandler qHandler = new QueryHandler(expEngineName, sources, logger, userId, queryString, startTime, endTime, timeGranularity, geoGranularity, nearLat, nearLon, radius);
+		new Thread(qHandler).start();
 	}
 }

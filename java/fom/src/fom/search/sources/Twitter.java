@@ -31,7 +31,11 @@ public class Twitter implements Source {
 	@Override
 	public List<Post> searchPosts(List<String> terms, DateTime startTime, DateTime endTime, double lat, double lon, int radius) {
 		try{
-			search(terms, startTime, endTime, null, lat, lon, radius);
+			int numberOfTermsPerSearch = 10;
+			int numberOfChunks = (int) Math.ceil(((double)terms.size())/((double)numberOfTermsPerSearch));
+			for(int i=0; i<numberOfChunks; i++){
+				search(terms.subList(i*numberOfChunks, (i+1)*numberOfChunks<=terms.size()?(i+1)*numberOfChunks:terms.size()), startTime, endTime, null, lat, lon, radius);				
+			}
 		}
 		catch(InterruptedException e){
 			e.printStackTrace();

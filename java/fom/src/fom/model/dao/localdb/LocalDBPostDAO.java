@@ -8,6 +8,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.JsonGenerationException;
@@ -25,6 +27,7 @@ import fom.model.Term;
 import fom.model.TwitterPost;
 import fom.model.dao.interfaces.DAOFactory;
 import fom.model.dao.interfaces.PostDAO;
+import fom.utils.StringOperations;
 
 public class LocalDBPostDAO implements PostDAO {
 
@@ -36,6 +39,7 @@ public class LocalDBPostDAO implements PostDAO {
 	private PreparedStatement getMediaStm;
 	private PreparedStatement getTermsStm;
 	private ObjectMapper objMapper;
+	private Connection conn;
 
 	
 	public LocalDBPostDAO(Connection conn) {
@@ -47,6 +51,7 @@ public class LocalDBPostDAO implements PostDAO {
 			savePostStm  = conn.prepareStatement("SELECT * FROM fom_post WHERE fom_post.id_post=?");
 			getMediaStm = conn.prepareStatement("SELECT id_media FROM fom_postmedia WHERE id_post=?");
 			getTermsStm = conn.prepareStatement("SELECT id_term FROM fom_posttag WHERE id_post=?");
+			this.conn = conn;
 			objMapper = new ObjectMapper();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -171,4 +176,91 @@ public class LocalDBPostDAO implements PostDAO {
 		}
 		return post;
 	}
+	
+	public List<Post> retrieve(List<String> terms, DateTime fromDate, DateTime toDate, double lat, double lon, int radius){
+		List<Post> results = new ArrayList<Post>();
+		
+		String query = new String("SELECT DISTINCT id_post " +
+									"FROM fom_post " +
+									"WHERE ");
+		for(int termCount=0; termCount<terms.size(); termCount++){
+			if(termCount==0){
+				query = query.concat("(");			
+			}
+			query = query.concat("content LIKE CONCAT('% ',?,' %') " +
+								"OR content LIKE CONCAT(?,' %') " +
+								"OR content LIKE CONCAT('% ',?) " +
+								"OR content LIKE CONCAT('% ',?,' %') " +
+								"OR content LIKE CONCAT(?,' %') " +
+								"OR content LIKE CONCAT('% ',?)");
+			if(termCount+1!=terms.size()){
+				query = query.concat(" OR ");
+			} else {
+				query = query.concat(") ");
+			}
+		}
+		if(fromDate!=null){
+			if(terms.size()!=0){
+				query = query.concat("AND ");
+			}
+			query = query.concat("created >= ? ");
+		}
+		if(toDate!=null){
+			if(terms.size()!=0 || fromDate!=null){
+				query = query.concat("AND ");
+			}
+			query = query.concat("created <= ? ");
+		}
+		if(radius!=0){
+			if(terms.size()!=0 || fromDate!=null || toDate!=null){
+				query = query.concat("AND ");
+			}
+			query = query.concat("(lat > ? AND lat < ? AND lon > ? AND lon < ?)");
+		}
+		
+		try {
+			PreparedStatement stm = conn.prepareStatement(query);
+			for(int termCount=0; termCount<terms.size(); termCount++){
+				stm.setString(termCount*6 + 1, terms.get(termCount));		
+				stm.setString(termCount*6 + 2, terms.get(termCount));			
+				stm.setString(termCount*6 + 3, terms.get(termCount));		
+				stm.setString(termCount*6 + 4, StringOperations.hashtagify(terms.get(termCount)));			
+				stm.setString(termCount*6 + 5, StringOperations.hashtagify(terms.get(termCount)));			
+				stm.setString(termCount*6 + 6, StringOperations.hashtagify(terms.get(termCount)));			
+			}
+			if(fromDate!=null){
+				stm.setTimestamp(terms.size()*6 + 1, new Timestamp(fromDate.toDate().getTime()));
+			}
+			if(toDate!=null){
+				int numberOfPreviousParams = 0;
+				if(fromDate!=null){
+					numberOfPreviousParams++;
+				}
+				stm.setTimestamp(terms.size()*6 + numberOfPreviousParams + 1, new Timestamp(toDate.toDate().getTime()));
+			}
+			if(radius!=0){
+				int numberOfPreviousParams = 0;
+				if(fromDate!=null){
+					numberOfPreviousParams++;
+				}
+				if(toDate!=null){
+					numberOfPreviousParams++;
+				}
+				stm.setDouble(terms.size()*6 + 1 + numberOfPreviousParams, lat - 10);
+				stm.setDouble(terms.size()*6 + 2 + numberOfPreviousParams, lat + 10);
+				stm.setDouble(terms.size()*6 + 3 + numberOfPreviousParams, lon - 10);
+				stm.setDouble(terms.size()*6 + 4 + numberOfPreviousParams, lon + 10);
+			}
+			ResultSet res = stm.executeQuery();
+			while(res.next()){
+				results.add(this.retrieve(res.getLong("id_post")));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return results;
+		
+	}
+	
 }

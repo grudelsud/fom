@@ -40,13 +40,13 @@ public class GeoClustering {
 		}
 		
 		if(toBeClustered.size()>0){
-			double distLimit = 15;
+			double distLimit = 10;
 			if(granularity.equalsIgnoreCase("POI")){
 				distLimit = 1;
 			} else if(granularity.equalsIgnoreCase("neighborhood")){
 				distLimit = 3;
 			} else if(granularity.equalsIgnoreCase("city")){
-				distLimit = 15;
+				distLimit = 10;
 			}
 			ClusterDistanceMeasure<Post> distMeasure = new PostClusterGeoDistance();
 			clusterer = ClustererFactory.getHAClusterer(distMeasure, distLimit);

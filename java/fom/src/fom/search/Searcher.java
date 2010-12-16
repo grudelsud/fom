@@ -10,6 +10,7 @@ import org.joda.time.DateTime;
 import fom.model.Post;
 import fom.search.sources.Source;
 import fom.search.sources.SourceFactory;
+import fom.search.sources.SourceFactory.SourceType;
 
 public class Searcher {
 	
@@ -21,8 +22,8 @@ public class Searcher {
 		this.posts = new ArrayList<Post>();
 	}
 
-	public void addSource(String sourceName){
-		sources.add(SourceFactory.getSource(sourceName));
+	public void addSource(SourceType sourceType){
+		sources.add(SourceFactory.getSource(sourceType));
 	}
 	
 	public List<Post> search(List<String> terms, DateTime startTime, DateTime endTime, double lat, double lon, int radius){
