@@ -16,7 +16,8 @@
 </div><!-- end of #header -->
 <div id="navigation">
 	<ul>
-		<li><a href="<?php echo site_url('main') ?>" title="home">home</a></li>
+		<li><a href="<?php echo site_url('search') ?>" title="search">search</a></li>
+		<li><a href="<?php echo site_url('result') ?>" title="result">results</a></li>
 		<li><a href="<?php echo site_url('xmlrpc_client') ?>" title="xmlrpc client">xmlrpc client</a></li>
 	</ul>
 </div>

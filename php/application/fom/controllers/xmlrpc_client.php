@@ -28,7 +28,7 @@ class Xmlrpc_client extends CI_Controller
 
 	function post_params()
 	{
-		// $this->xmlrpc->set_debug(TRUE);
+//		$this->xmlrpc->set_debug(TRUE);
 		$function = $this->input->post('function');
 		$server = $this->input->post('server');
 		$max_params = $this->input->post('max_params');

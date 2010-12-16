@@ -17,22 +17,12 @@ class Fom_search
 	
 	function query( $terms, $since = "", $until = "", $where = "", $granularity = "", $source = "" )
 	{
-		$term_array = explode( ' ', $terms );
-		$term_array = array_filter( $term_array, 'urlencode' );
-		$terms = implode( '+', $term_array );
+		$cmd = 'java -jar ../java/fom/fom.jar '.
+			'--twitter --query "'.$terms.'" ' .
+			'--since '.$since.' --until '.$until.' --nearLat 51.535 --nearLon -0.104 ' .
+			'--radius 10 --geoGran neighborhood --rpcLog';
 
-		$query['q'] = $terms;
-		
-		$query['since'] = $since;
-		$query['until'] = $until;
-
-		// TODO: based on where and granularity, search coords on google and add a query param as below
-		// $query['geocode'] = "37.781157,-122.398720,10mi";
-
-		$twitter = new Twitter();
-		$results = $twitter->search('search', $query);
-
-		return $results;
+		return exec( $cmd );
 	}
 }
 

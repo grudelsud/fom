@@ -21,10 +21,5 @@ WikiminerDBPass = root
 
 RPCEndPointServer = http://localhost/fom/index.php/xmlrpc
 
-TwitterOAuthConsumerKey = 8i9JNwWXIjAtPzg96kZPXw
-TwitterOAuthConsumerSecret = K3tUlQQIpylVgRvQSym2GAlWSCR04acw307FGZG47s
-TwitterOAuthAccessToken = 17028268-DMDTAQvjfUhWHXEzDq8WThQAGyXxYUIyGhhRxzNYs
-TwitterOAuthAccessTokenSecret = HzK3GgOHto0Lx1cE7weSM5UzcDTc52ub6Udj7FKm5A
-
 
 

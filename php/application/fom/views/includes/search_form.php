@@ -14,19 +14,19 @@ echo form_label('Terms', 'terms');
 echo form_input( $form_field['terms'] );
 echo "<br />";
 
-echo form_label('Since', 'since');
+echo form_label('Since (yyyy-mm-dd)', 'since');
 echo form_input( $form_field['since'] );
 echo "<br />";
 
 
-echo form_label('Until', 'until');
+echo form_label('Until (yyyy-mm-dd)', 'until');
 echo form_input( $form_field['until'] );
 echo "<br />";
 
 echo form_label('Where', 'where');
 echo form_input( $form_field['where'] );
-$js_findplace = 'onClick="find_place()"';
-echo form_button('find', 'Find place', $js_findplace);
+//$js_findplace = 'onClick="find_place()"';
+//echo form_button('find', 'Find place', $js_findplace);
 echo "<br />";
 
 echo form_label('Granularity', 'granularity');
