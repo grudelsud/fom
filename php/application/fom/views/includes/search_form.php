@@ -1,3 +1,15 @@
+<style type="text/css"> @import "<?php echo assets_url('assets/lib') ?>/jquery.datepick/redmond.datepick.css"; </style>
+<script type="text/javascript">
+$(function() {
+	$('#since').datepick({dateFormat: 'yyyy-mm-dd'});
+	$('#until').datepick({dateFormat: 'yyyy-mm-dd'});
+});
+
+function showDate(date) {
+	alert('The date chosen is ' + date);
+}
+</script>
+
 <?php
 $attributes = array( 'id' => 'form_query' );
 

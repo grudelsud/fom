@@ -1,11 +1,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Flux of MEME</title>
-<link href="css/screen.css" rel="stylesheet" type="text/css" media="screen" />
-<link type="text/css" href="<?php echo assets_url('assets/css') ?>/screen.css" rel="stylesheet" media="screen" />
-<script type="text/javascript" src="<?php echo assets_url('assets/lib') ?>/jquery-1.4.4.min.js"></script>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Flux of MEME</title>
+  
+	<link type="text/css" href="<?php echo assets_url('assets/css') ?>/style.css" rel="stylesheet" media="screen" />
+	<script type="text/javascript" src="<?php echo assets_url('assets/lib') ?>/jquery-1.4.4.min.js"></script>
+	<script type="text/javascript" src="<?php echo assets_url('assets/lib') ?>/jquery.datepick/jquery.datepick.js"></script>
 </head>
 
 <body>
@@ -21,4 +23,5 @@
 		<li><a href="<?php echo site_url('xmlrpc_client') ?>" title="xmlrpc client">xmlrpc client</a></li>
 	</ul>
 </div>
+
 <div id="content">

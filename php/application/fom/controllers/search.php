@@ -21,7 +21,6 @@ class Search extends CI_Controller
 		$this->load->view('search_view', $data);
 	}
 
-	// TODO: fix results
 	function query_post()
 	{
 		$terms = $this->input->post('terms');
@@ -33,7 +32,8 @@ class Search extends CI_Controller
 
 		$this->load->library('fom_search');
 		$data['results'] = $this->fom_search->query( $terms, $since, $until, $where, $granularity, $source );
-		$this->load->view('search_view', $data );
+//		$this->load->view('search_view', $data );
+		redirect('/result');
 	}
 }
 
