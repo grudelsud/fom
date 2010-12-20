@@ -35,7 +35,7 @@ public class Wikiminer implements ExpansionEngine {
 			
 			Set<String> relatedWords = new HashSet<String>();
 			relatedWords.add(query);
-		
+			
 			SortedVector<Redirect> redirects = article.getRedirects();
 			for(int i=0; i<redirects.size(); i++){
 				relatedWords.add(redirects.elementAt(i).getTarget().getTitleWithoutScope());
@@ -46,19 +46,21 @@ public class Wikiminer implements ExpansionEngine {
 				relatedWords.add(anchorTexts.elementAt(i).getText());
 			}
 			
-			/*
-			System.out.println("Getting linksIn");
+		//	System.out.println("Getting linksIn");
 			SortedVector<Article> linksIn = article.getLinksIn();
 			for(int i=0; i<linksIn.size(); i++){
 				relatedWords.add(linksIn.elementAt(i).getTitleWithoutScope());
+		//		System.out.println(linksIn.elementAt(i).getTitleWithoutScope());
+		//		System.out.println(linksIn.elementAt(i).getGenerality());
 			}
 			
-			System.out.println("Getting linksOut");
+		//	System.out.println("Getting linksOut");
 			SortedVector<Article> linksOut = article.getLinksOut();
 			for(int i=0; i<linksOut.size(); i++){
 				relatedWords.add(linksOut.elementAt(i).getTitleWithoutScope());
+		//		System.out.println(linksOut.elementAt(i).getTitleWithoutScope());
+		//		System.out.println(linksOut.elementAt(i).getGenerality());
 			}
-			*/
 			
 			expandedQuery.addAll(relatedWords);
 		} catch (Exception e) {
