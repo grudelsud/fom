@@ -34,6 +34,7 @@ class Query_model extends CI_Model
 	
 	function read()
 	{
+		$this->db->order_by('created', 'desc');
 		$query = $this->db->get('query');
 		return $query->result();
 	}
