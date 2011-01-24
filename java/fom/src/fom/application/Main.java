@@ -37,7 +37,7 @@ public class Main {
         					"\n" +
         					"STREAM CAPTURING:" +
         					"\n" +
-        					"fom --captureStream");
+        					"fom --captureStream [--filterGeoTagged]");
     }
 
 	public static void main(String[] args){
@@ -46,6 +46,7 @@ public class Main {
 		CmdLineParser parser = new CmdLineParser();
 		
 		Option captureStreamOpt = parser.addBooleanOption("captureStream");
+		Option filterGeoTaggedOpt = parser.addBooleanOption("filterGeoTagged");
 		
 		Option expEngineNameOpt = parser.addStringOption("expEng");
 		
@@ -81,7 +82,11 @@ public class Main {
 		
 		//CaptureStream
 		if(parser.getOptionValue(captureStreamOpt)!=null){
-			new Thread(new StreamCapturer()).start();
+			if(parser.getOptionValue(filterGeoTaggedOpt)!=null){
+				new Thread(new StreamCapturer(true)).start();				
+			}else{
+				new Thread(new StreamCapturer(false)).start();				
+			}
 			return;
 		}
 		

@@ -18,6 +18,7 @@ public abstract class Post {
 	private Place place;
 	private List<Media> media;
 	private List<Term> terms;
+	private List<Link> links;
 	
 	public abstract Map<String, String> getMeta();
 	public abstract String getSourceName();
@@ -34,6 +35,7 @@ public abstract class Post {
 		this.place = place;
 		media = new ArrayList<Media>();
 		terms = new ArrayList<Term>();
+		links = new ArrayList<Link>();
 	}
 	
 	public long getId() {
@@ -71,6 +73,13 @@ public abstract class Post {
 		return place;
 	}
 	
+	public List<Link> getLinks(){
+		return links;
+	}
+	
+	public void addLink(Link theLink){
+		this.links.add(theLink);
+	}
 	
 	public List<Media> getMedia(){
 		return media;

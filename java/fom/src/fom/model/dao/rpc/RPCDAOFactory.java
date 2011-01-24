@@ -2,6 +2,7 @@ package fom.model.dao.rpc;
 
 import fom.model.dao.interfaces.ClusterDAO;
 import fom.model.dao.interfaces.DAOFactory;
+import fom.model.dao.interfaces.LinkDAO;
 import fom.model.dao.interfaces.MediaDAO;
 import fom.model.dao.interfaces.PlaceDAO;
 import fom.model.dao.interfaces.PostDAO;
@@ -45,5 +46,12 @@ public class RPCDAOFactory extends DAOFactory {
 	public VocabularyDAO getVocabularyDAO() {
 		return new RPCVocabularyDAO();
 	}
+
+	@Override
+	public LinkDAO getLinkDAO() {
+		return new RPCLinkDAO();
+	}
+	
+	
 
 }

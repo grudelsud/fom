@@ -31,14 +31,22 @@ public class PropertyHandler {
 		}
 	}
 	
-	public static PropertyHandler getInstance(){
+	private static PropertyHandler getInstance(){
 		if(instance == null){
 			instance = new PropertyHandler();
 		}
 		return instance;
 	}
 	
-	public Properties getProperties(){
+	private Properties getProperties(){
 		return properties;
+	}
+	
+	public static String getStringProperty(String propertyName){
+		return PropertyHandler.getInstance().getProperties().getProperty(propertyName);
+	}
+	
+	public static int getIntProperty(String propertyName){
+		return Integer.parseInt(PropertyHandler.getInstance().getProperties().getProperty(propertyName));
 	}
 }

@@ -71,15 +71,13 @@ public class StringOperations {
 		Matcher m = p.matcher(originalText);
 		while(m.find()) {
 			String url = m.group();
-			if(url.contains("twitpic") || url.contains("tweetphoto")){
-				if (url.startsWith("(") ){
-					url = url.substring(1, url.length());
-				}
-				if (url.endsWith(")")){
-					url = url.substring(0, url.length()-1);
-				}
-				urls.add(url);
+			if (url.startsWith("(") ){
+				url = url.substring(1, url.length());
 			}
+			if (url.endsWith(")")){
+				url = url.substring(0, url.length()-1);
+			}
+			urls.add(url);
 		}
 		return urls;
 	}

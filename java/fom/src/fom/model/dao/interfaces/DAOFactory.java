@@ -10,7 +10,7 @@ public abstract class DAOFactory {
 	
 	public static DAOFactory getFactory(){
 		if(factoryInstance==null){
-			String dataSourceProp = PropertyHandler.getInstance().getProperties().getProperty("DataSource");
+			String dataSourceProp = PropertyHandler.getStringProperty("DataSource");
 			if(dataSourceProp.equalsIgnoreCase("local")){					
 		//		System.out.println("Created Local DAO");
 				factoryInstance = new LocalDBDAOFactory();
@@ -34,5 +34,6 @@ public abstract class DAOFactory {
 	public abstract QueryDAO getQueryDAO();
 	public abstract TermDAO getTermDAO();
 	public abstract VocabularyDAO getVocabularyDAO();
+	public abstract LinkDAO getLinkDAO();
 	
 }

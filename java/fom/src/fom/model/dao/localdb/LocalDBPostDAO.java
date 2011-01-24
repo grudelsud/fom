@@ -19,6 +19,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.joda.time.DateTime;
 
+import fom.indexing.IndexingQueue;
+import fom.model.Link;
 import fom.model.Media;
 import fom.model.Place;
 import fom.model.Post;
@@ -35,9 +37,11 @@ public class LocalDBPostDAO implements PostDAO {
 	private PreparedStatement stm;
 	private PreparedStatement saveMediaStm;
 	private	PreparedStatement saveTermStm;
-	private PreparedStatement savePostStm;
+	private PreparedStatement saveLinkStm;
+	private PreparedStatement getPostStm;
 	private PreparedStatement getMediaStm;
 	private PreparedStatement getTermsStm;
+	private PreparedStatement getLinksStm;
 	private ObjectMapper objMapper;
 	private Connection conn;
 
@@ -48,9 +52,11 @@ public class LocalDBPostDAO implements PostDAO {
 			stm = conn.prepareStatement("INSERT INTO fom_post(lat,lon,content,created,modified,timezone,meta,src,id_place,src_id) VALUES(?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 			saveMediaStm = conn.prepareStatement("INSERT INTO fom_postmedia(id_media,id_post) VALUES (?,?)");
 			saveTermStm = conn.prepareStatement("INSERT INTO fom_posttag(id_term,id_post) VALUES(?,?)");
-			savePostStm  = conn.prepareStatement("SELECT * FROM fom_post WHERE fom_post.id_post=?");
+			saveLinkStm = conn.prepareStatement("INSERT INTO fom_postlink(id_post, id_link) VALUES(?,?)");
+			getPostStm  = conn.prepareStatement("SELECT * FROM fom_post WHERE fom_post.id_post=?");
 			getMediaStm = conn.prepareStatement("SELECT id_media FROM fom_postmedia WHERE id_post=?");
 			getTermsStm = conn.prepareStatement("SELECT id_term FROM fom_posttag WHERE id_post=?");
+			getLinksStm = conn.prepareStatement("SELECT id_link FROM fom_postlink WHERE id_post=?");
 			this.conn = conn;
 			objMapper = new ObjectMapper();
 		} catch (SQLException e) {
@@ -113,6 +119,12 @@ public class LocalDBPostDAO implements PostDAO {
 					saveTermStm.setLong(2, post.getId());
 					saveTermStm.execute();
 				}
+				for(Link link : post.getLinks()){
+					saveLinkStm.setLong(1, post.getId());
+					saveLinkStm.setLong(2, DAOFactory.getFactory().getLinkDAO().create(link));
+					saveLinkStm.execute();
+				}
+				IndexingQueue.getInstance().addToQueue(post);
 			} else {
 				System.err.println("Error creating post");
 			}
@@ -135,8 +147,8 @@ public class LocalDBPostDAO implements PostDAO {
 	public Post retrieve(long postId) {
 		Post post = null;
 		try {
-			savePostStm.setLong(1, postId);
-			ResultSet res = savePostStm.executeQuery();
+			getPostStm.setLong(1, postId);
+			ResultSet res = getPostStm.executeQuery();
 			if(res.next()){
 				Place place = DAOFactory.getFactory().getPlaceDAO().retrieve(res.getLong("id_place"));
 				double lat = res.getFloat("lat");
@@ -163,6 +175,12 @@ public class LocalDBPostDAO implements PostDAO {
 				ResultSet termsResSet = getTermsStm.executeQuery();
 				while(termsResSet.next()){
 					post.addTerm(DAOFactory.getFactory().getTermDAO().retrieve(termsResSet.getLong("id_term")));
+				}
+				
+				getLinksStm.setLong(1, post.getId());
+				ResultSet linksResSet = getLinksStm.executeQuery();
+				while(linksResSet.next()){
+					post.addLink(DAOFactory.getFactory().getLinkDAO().retrieve(linksResSet.getLong("id_link")));
 				}
 			}
 		} catch (SQLException e) {

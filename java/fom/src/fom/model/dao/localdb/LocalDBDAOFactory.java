@@ -3,10 +3,10 @@ package fom.model.dao.localdb;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
 
 import fom.model.dao.interfaces.ClusterDAO;
 import fom.model.dao.interfaces.DAOFactory;
+import fom.model.dao.interfaces.LinkDAO;
 import fom.model.dao.interfaces.MediaDAO;
 import fom.model.dao.interfaces.PlaceDAO;
 import fom.model.dao.interfaces.PostDAO;
@@ -17,13 +17,14 @@ import fom.properties.PropertyHandler;
 
 public class LocalDBDAOFactory extends DAOFactory {
 
-	LocalDBClusterDAO clusterDAO;
-	LocalDBMediaDAO mediaDAO;
-	LocalDBPlaceDAO placeDAO;
-	LocalDBPostDAO postDAO;
-	LocalDBQueryDAO queryDAO;
-	LocalDBTermDAO termDAO;
-	LocalDBVocabularyDAO vocabularyDAO;
+	private LocalDBClusterDAO clusterDAO;
+	private LocalDBMediaDAO mediaDAO;
+	private LocalDBPlaceDAO placeDAO;
+	private LocalDBPostDAO postDAO;
+	private LocalDBQueryDAO queryDAO;
+	private LocalDBTermDAO termDAO;
+	private LocalDBVocabularyDAO vocabularyDAO;
+	private LinkDAO linkDAO;
 	
 	public LocalDBDAOFactory(){
 		Connection conn = getConnection();
@@ -34,14 +35,14 @@ public class LocalDBDAOFactory extends DAOFactory {
 		queryDAO = new LocalDBQueryDAO(conn);
 		termDAO = new LocalDBTermDAO(conn);
 		vocabularyDAO = new LocalDBVocabularyDAO(conn);
+		linkDAO = new LocalDBLinkDAO(conn);
 	}
 	
 	private Connection getConnection() {
-		Properties prop = PropertyHandler.getInstance().getProperties();
 		try {
-			String connURL = prop.getProperty("LocalDBConnectionURL");
-			String username = prop.getProperty("LocalDBUser");
-			String pass = prop.getProperty("LocalDBPass");
+			String connURL = PropertyHandler.getStringProperty("LocalDBConnectionURL");
+			String username = PropertyHandler.getStringProperty("LocalDBUser");
+			String pass = PropertyHandler.getStringProperty("LocalDBPass");
 			return DriverManager.getConnection(connURL, username, pass);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -82,6 +83,11 @@ public class LocalDBDAOFactory extends DAOFactory {
 	@Override
 	public VocabularyDAO getVocabularyDAO() {
 		return vocabularyDAO;
+	}
+
+	@Override
+	public LinkDAO getLinkDAO() {
+		return linkDAO;
 	}
 
 }

@@ -29,7 +29,7 @@ public class RPCRemoteLogger implements LogEngine{
 	public RPCRemoteLogger(){
 		try {
 			XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-			config.setServerURL(new URL(PropertyHandler.getInstance().getProperties().getProperty("RPCEndPointServer")));
+			config.setServerURL(new URL(PropertyHandler.getStringProperty("RPCEndPointServer")));
 			config.setEnabledForExtensions(true);
 			xmlRpcClient = new XmlRpcClient();
 			xmlRpcClient.setConfig(config);
