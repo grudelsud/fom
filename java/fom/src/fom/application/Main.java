@@ -28,7 +28,7 @@ public class Main {
         					"\n" +
         					"QUERY:" +
         					"\n" +
-        					"fom [--expEng {wikiminer}] [--twitter] [--teamlife] [--localDB]\n" +
+        					"fom [--expEng {wikiminer}] [--twitter] [--teamlife] [--localDB] [--wholeDB]\n" +
         					"[--query queryString] [--since YYYY-MM-DD] [--until YYYY-MM-DD]\n" +
         					"[--nearLat latitude] [--nearLon longitude] [--radius radius]\n" +
         					"[--timeGran {hour, day, week}] [--geoGran {poi, neighborhood, city}]\n" +
@@ -37,13 +37,19 @@ public class Main {
         					"\n" +
         					"STREAM CAPTURING:" +
         					"\n" +
-        					"fom --captureStream [--filterGeoTagged]");
+        					"fom --captureStream [--filterGeoTagged]" +
+        					"\n" +
+        					"\n" +
+        					"FIRST RUN:" +
+        					"fom --firstRun");
     }
 
 	public static void main(String[] args){
 		//Define command line options:
 		
 		CmdLineParser parser = new CmdLineParser();
+		
+		Option firstRunOpt = parser.addBooleanOption("firstRun");
 		
 		Option captureStreamOpt = parser.addBooleanOption("captureStream");
 		Option filterGeoTaggedOpt = parser.addBooleanOption("filterGeoTagged");
@@ -53,6 +59,7 @@ public class Main {
 		Option twitterSrcOpt = parser.addBooleanOption("twitter");
 		Option teamlifeSrcOpt = parser.addBooleanOption("teamlife");
 		Option localDBSrcOpt = parser.addBooleanOption("localDB");
+		Option wholeDBSrcOpt = parser.addBooleanOption("wholeDB");
 		
 		Option queryStringOpt = parser.addStringOption("query");
 		Option startTimeOpt = parser.addStringOption("since");
@@ -79,6 +86,12 @@ public class Main {
 		}
 		
 		//Parse options:
+		
+		//First Run
+		if(parser.getOptionValue(firstRunOpt)!=null){
+			FirstRun.main(new String[0]);
+			return;
+		}
 		
 		//CaptureStream
 		if(parser.getOptionValue(captureStreamOpt)!=null){
@@ -107,6 +120,9 @@ public class Main {
 		}
 		if(parser.getOptionValue(localDBSrcOpt)!=null){
 			sources.add(SourceFactory.SourceType.LOCALDB);
+		}
+		if(parser.getOptionValue(wholeDBSrcOpt)!=null){
+			sources.add(SourceFactory.SourceType.WHOLEDB);
 		}
 		
 		//Loggers
@@ -157,11 +173,12 @@ public class Main {
 			System.exit(-1);
 		}
 		String geoGranularity = (String)parser.getOptionValue(geoGranOpt, "city");
+		/*
 		if(!(geoGranularity.equalsIgnoreCase("poi") || geoGranularity.equalsIgnoreCase("neighborhood") || geoGranularity.equalsIgnoreCase("city"))){
 			printUsage();
 			System.exit(-1);
 		}
-		
+		*/
 		QueryHandler qHandler = new QueryHandler(expEngineName, sources, logger, userId, queryString, startTime, endTime, timeGranularity, geoGranularity, nearLat, nearLon, radius);
 		new Thread(qHandler).start();
 	}

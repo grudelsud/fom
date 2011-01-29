@@ -45,5 +45,9 @@ public class Term {
 	public void setId(long termId) {
 		this.id = termId;		
 	}
-
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 }

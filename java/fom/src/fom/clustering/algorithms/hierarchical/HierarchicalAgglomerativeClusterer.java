@@ -48,6 +48,7 @@ public class HierarchicalAgglomerativeClusterer<ObjectType> implements Clusterer
 			} else {
 				change=false;
 			}
+			System.out.println("Completed iteration, " + clusters.size() + " clusters");
 		}
 		for(HierarchicalCluster<ObjectType> cluster : clusters){
 			results.add(cluster.getObjects());

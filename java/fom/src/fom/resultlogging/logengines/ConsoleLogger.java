@@ -14,17 +14,17 @@ public class ConsoleLogger implements LogEngine {
 
 	@Override
 	public void addTimeCluster(TimeCluster timeCluster) {
-		System.out.println("+) Found TimeCluster");
+		System.out.println("+) Found TimeCluster containing " + timeCluster.getPosts().size() + " posts");
 	}
 
 	@Override
 	public void addGeoCluster(GeoCluster geoCluster) {
-		System.out.println("\t-) Found GeoCluster");
+		System.out.println("\t-) Found GeoCluster containing " + geoCluster.getPosts().size() + " posts");
 	}
 
 	@Override
 	public void addSemCluster(SemanticCluster semCluster) {
-		System.out.println("\t\t-) Found SemCluster");
+		System.out.println("\t\t-) " + semCluster.getTerms().toString());
 	}
 
 	@Override

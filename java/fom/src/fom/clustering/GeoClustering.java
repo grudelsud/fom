@@ -7,6 +7,7 @@ import fom.clustering.algorithms.Clusterer;
 import fom.clustering.algorithms.ClustererFactory;
 import fom.clustering.algorithms.hierarchical.metrics.ClusterDistanceMeasure;
 import fom.clustering.algorithms.hierarchical.metrics.PostClusterGeoDistance;
+import fom.clustering.algorithms.hierarchical.metrics.PostClusterGeoDistanceNoCache;
 import fom.model.GeoCluster;
 import fom.model.Post;
 import fom.model.Query;
@@ -40,15 +41,17 @@ public class GeoClustering {
 		}
 		
 		if(toBeClustered.size()>0){
-			double distLimit = 10;
-			if(granularity.equalsIgnoreCase("POI")){
+			double distLimit = 0;
+			if(granularity.equalsIgnoreCase("poi")){
 				distLimit = 1;
 			} else if(granularity.equalsIgnoreCase("neighborhood")){
 				distLimit = 3;
 			} else if(granularity.equalsIgnoreCase("city")){
 				distLimit = 10;
+			} else {
+				distLimit = Integer.parseInt(granularity);
 			}
-			ClusterDistanceMeasure<Post> distMeasure = new PostClusterGeoDistance();
+			ClusterDistanceMeasure<Post> distMeasure = new PostClusterGeoDistanceNoCache();
 			clusterer = ClustererFactory.getHAClusterer(distMeasure, distLimit);
 
 			List<List<Post>> clusteringResult = clusterer.performClustering(toBeClustered);

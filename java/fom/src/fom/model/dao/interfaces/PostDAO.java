@@ -11,5 +11,5 @@ public interface PostDAO {
 	public long create(Post post);
 	public Post retrieve(long postId);
 	public List<Post> retrieve(List<String> terms, DateTime fromDate, DateTime toDate, double lat, double lon, int radius);
-
+	public List<Post> getAllPosts();
 }

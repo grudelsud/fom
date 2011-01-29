@@ -22,6 +22,7 @@ import fom.utils.StringOperations;
 public class TopicExtractor {
 	
 	public static List<List<String>> extractTopics(List<Post> posts){
+		
 		ArrayList<Pipe> pipelist = new ArrayList<Pipe>();
 		pipelist.add(new CharSequence2TokenSequence());
 		pipelist.add(new TokenSequenceLowercase());
@@ -38,29 +39,27 @@ public class TopicExtractor {
 			sanitizedPost = StringOperations.removeStopwords(sanitizedPost);
 			if(!sanitizedPost.trim().equalsIgnoreCase("")){
 				Instance inst = new Instance(sanitizedPost, null, post, post.getContent());
-				tmpInstanceList.add(inst);				
+				tmpInstanceList.add(inst);
 			}
 		}
 		
-		instances.addThruPipe(tmpInstanceList.iterator());
+		instances.addThruPipe(tmpInstanceList.iterator());		
 		
 		MalletLogger.getLogger(ParallelTopicModel.class.getName()).setLevel(Level.OFF);
 		
 		int numberOfTopics = 3;
 		ParallelTopicModel lda = new ParallelTopicModel(numberOfTopics);
 		
+		List<List<String>> topics = new ArrayList<List<String>>();
+
 		lda.addInstances(instances);
 		try {
-			if(posts.size()>3){
-				lda.estimate();	
-			}
+			lda.estimate();	
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} catch (IllegalStateException e){
+		}		
 
-		List<List<String>> topics = new ArrayList<List<String>>();
- 
 		Object[][] topWords = lda.getTopWords(6);
 		int limit = posts.size()<numberOfTopics?posts.size():numberOfTopics;
 		for(int topicCount=0; topicCount<limit && topicCount<topWords.length; topicCount++){

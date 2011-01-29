@@ -28,5 +28,11 @@ public class RPCPostDAO implements PostDAO {
 		return null;
 	}
 
+	@Override
+	public List<Post> getAllPosts() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 }

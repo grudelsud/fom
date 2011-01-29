@@ -264,6 +264,7 @@ public class LocalDBPostDAO implements PostDAO {
 				if(toDate!=null){
 					numberOfPreviousParams++;
 				}
+				//TODO: FIX THE FUCKING BUG RIGHT HERE!!!!!
 				stm.setDouble(terms.size()*6 + 1 + numberOfPreviousParams, lat - 10);
 				stm.setDouble(terms.size()*6 + 2 + numberOfPreviousParams, lat + 10);
 				stm.setDouble(terms.size()*6 + 3 + numberOfPreviousParams, lon - 10);
@@ -278,7 +279,21 @@ public class LocalDBPostDAO implements PostDAO {
 			e.printStackTrace();
 		}
 		return results;
-		
+	}
+	
+	public List<Post> getAllPosts(){
+		List<Post> posts = new ArrayList<Post>();
+		try {
+			PreparedStatement stm = conn.prepareStatement("SELECT id_post FROM fom_post");
+			ResultSet res = stm.executeQuery();
+			while(res.next()){
+				posts.add(DAOFactory.getFactory().getPostDAO().retrieve(res.getLong("id_post")));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return posts;
 	}
 	
 }
