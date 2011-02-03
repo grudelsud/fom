@@ -3,11 +3,13 @@ package fom.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import fom.model.dao.interfaces.DAOFactory;
+
 public class GeoCluster extends Cluster {
 	Query originatingQuery;
 
-	public GeoCluster(Query originatingQuery) {
-		super(originatingQuery);
+	public GeoCluster(Query originatingQuery, Cluster parent) {
+		super(originatingQuery, parent);
 		this.originatingQuery = originatingQuery;
 	}
 	
@@ -111,10 +113,15 @@ public class GeoCluster extends Cluster {
 	public Map<String, String> getMeta() {
 		Map<String, String> meta = new HashMap<String, String>();
 		meta.put("type", "geo");
-		meta.put("meanLat", new Double(getMeanLat()).toString());
-		meta.put("meanLon", new Double(getMeanLon()).toString());
-		meta.put("stdDevLat", new Double(getStdDevLat()).toString());
-		meta.put("stdDevLon", new Double(getStdDevLon()).toString());
+		meta.put("meanLat", Double.toString(getMeanLat()));
+		meta.put("meanLon", Double.toString(getMeanLon()));
+		meta.put("stdDevLat", Double.toString(getStdDevLat()));
+		meta.put("stdDevLon", Double.toString(getStdDevLon()));
+		long parentClusterID = this.getParentCluster().getId();
+		if(parentClusterID==0){
+			parentClusterID = DAOFactory.getFactory().getClusterDAO().create(getParentCluster());
+		}
+		meta.put("parent", Long.toString(parentClusterID));
 		return meta;
 	}
 }

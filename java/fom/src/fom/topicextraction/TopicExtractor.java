@@ -60,7 +60,7 @@ public class TopicExtractor {
 		} catch (IllegalStateException e){
 		}		
 
-		Object[][] topWords = lda.getTopWords(6);
+		Object[][] topWords = lda.getTopWords(5);
 		int limit = posts.size()<numberOfTopics?posts.size():numberOfTopics;
 		for(int topicCount=0; topicCount<limit && topicCount<topWords.length; topicCount++){
 			List<String> topic = new ArrayList<String>();

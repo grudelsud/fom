@@ -80,6 +80,7 @@ public class LocalDBClusterDAO implements ClusterDAO {
 					saveClusterPost.setLong(2, postId);
 					saveClusterPost.execute();
 				}
+				cluster.setId(clusterId);
 			} else {
 				System.err.println("Error creating cluster");
 			}
@@ -112,9 +113,12 @@ public class LocalDBClusterDAO implements ClusterDAO {
 		//		Map<String, String> posts_meta = new ObjectMapper().readValue(res.getString("posts_meta"), new TypeReference<Map<String,String>>() { });
 				Query originatingQuery = DAOFactory.getFactory().getQueryDAO().retrieve(res.getLong("id_query"));
 				if(meta.get("type").equalsIgnoreCase("geo")){
-					cluster = new GeoCluster(originatingQuery);
+					cluster = new GeoCluster(originatingQuery, null);
+					//TODO: set the proper parent!
+					System.err.println("!!! FIX THE BUG IN LocalDBClusterDAO.retrieve() !!!");
 				} else if(meta.get("type").equalsIgnoreCase("semantic")){
-					cluster = new SemanticCluster(originatingQuery);
+					cluster = new SemanticCluster(originatingQuery, null);
+					System.err.println("!!! FIX THE BUG IN LocalDBClusterDAO.retrieve() !!!");
 				} else if(meta.get("type").equalsIgnoreCase("time")){
 					cluster = new TimeCluster(originatingQuery);
 				}

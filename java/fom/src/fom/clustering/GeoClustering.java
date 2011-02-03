@@ -6,30 +6,32 @@ import java.util.List;
 import fom.clustering.algorithms.Clusterer;
 import fom.clustering.algorithms.ClustererFactory;
 import fom.clustering.algorithms.hierarchical.metrics.ClusterDistanceMeasure;
-import fom.clustering.algorithms.hierarchical.metrics.PostClusterGeoDistance;
 import fom.clustering.algorithms.hierarchical.metrics.PostClusterGeoDistanceNoCache;
+import fom.model.Cluster;
 import fom.model.GeoCluster;
 import fom.model.Post;
 import fom.model.Query;
 
 public class GeoClustering {	
+	private Cluster parentCluster;
 	private Clusterer<Post> clusterer;
 	private List<Post> posts;
 	private List<GeoCluster> clusters;
 	private String granularity;
 	private Query originatingQuery;
 	
-	public GeoClustering(Query originatingQuery, List<Post> posts, String granularity){
+	public GeoClustering(Query originatingQuery, List<Post> posts, String granularity, Cluster parentCluster){
 		this.posts = new ArrayList<Post>();
 		clusters = new ArrayList<GeoCluster>();
 		this.granularity = granularity;
 		this.originatingQuery = originatingQuery;
 		this.posts = posts;
+		this.parentCluster = parentCluster;
 	}	
 	
 	public List<GeoCluster> performClustering(){
 		
-		GeoCluster notGeoTagged = new GeoCluster(originatingQuery);
+		GeoCluster notGeoTagged = new GeoCluster(originatingQuery, parentCluster);
 		List<Post> toBeClustered = new ArrayList<Post>();
 		
 		for(Post post:posts){
@@ -56,7 +58,7 @@ public class GeoClustering {
 
 			List<List<Post>> clusteringResult = clusterer.performClustering(toBeClustered);
 			for(List<Post> cluster : clusteringResult){
-				GeoCluster currentCluster = new GeoCluster(originatingQuery);
+				GeoCluster currentCluster = new GeoCluster(originatingQuery, parentCluster);
 				for(Post post : cluster){
 					currentCluster.addPost(post);					
 				}

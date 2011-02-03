@@ -26,12 +26,20 @@ public class Main {
         System.err.println("Usage:" +
         					"\n" +
         					"\n" +
+        					"CLUSTER ANALYSIS:" +
+        					"\n" +
+        					"fom --clusterAnalysis\n" +
+        					"{--rangeStartDay YYYY-MM-DD --rangeEndDay YYYY-MM-DD, --day YYYY-MM-DD, --hour YYYY-MM-DD-HH}\n" +
+        					"{--geoGran {poi, neighborhood, city, <custom km radius>}}\n" +
+        					"[--consoleLog] [--csvLog] [--folderLog] [--rpcLog]" +
+        					"\n" +
+        					"\n" +
         					"QUERY:" +
         					"\n" +
-        					"fom [--expEng {wikiminer}] [--twitter] [--teamlife] [--localDB] [--wholeDB]\n" +
+        					"fom [--expEng {wikiminer}] [--twitter] [--teamlife] [--localDB]\n" +
         					"[--query queryString] [--since YYYY-MM-DD] [--until YYYY-MM-DD]\n" +
         					"[--nearLat latitude] [--nearLon longitude] [--radius radius]\n" +
-        					"[--timeGran {hour, day, week}] [--geoGran {poi, neighborhood, city}]\n" +
+        					"[--timeGran {hour, day, week}] [--geoGran {poi, neighborhood, city, <custom value>}]\n" +
         					"[--consoleLog] [--csvLog] [--folderLog] [--rpcLog]" +
         					"\n" +
         					"\n" +
@@ -49,6 +57,12 @@ public class Main {
 		
 		CmdLineParser parser = new CmdLineParser();
 		
+		Option clusterAnalysisOpt = parser.addBooleanOption("clusterAnalysis");
+		Option rangeStartDayAnalysisOpt = parser.addStringOption("rangeStartDay");
+		Option rangeEndDayAnalysisOpt = parser.addStringOption("rangeEndDay");
+		Option dayAnalysisOpt = parser.addStringOption("day");
+		Option hourAnalysisOpt = parser.addStringOption("hour");
+		
 		Option firstRunOpt = parser.addBooleanOption("firstRun");
 		
 		Option captureStreamOpt = parser.addBooleanOption("captureStream");
@@ -59,7 +73,6 @@ public class Main {
 		Option twitterSrcOpt = parser.addBooleanOption("twitter");
 		Option teamlifeSrcOpt = parser.addBooleanOption("teamlife");
 		Option localDBSrcOpt = parser.addBooleanOption("localDB");
-		Option wholeDBSrcOpt = parser.addBooleanOption("wholeDB");
 		
 		Option queryStringOpt = parser.addStringOption("query");
 		Option startTimeOpt = parser.addStringOption("since");
@@ -121,9 +134,6 @@ public class Main {
 		if(parser.getOptionValue(localDBSrcOpt)!=null){
 			sources.add(SourceFactory.SourceType.LOCALDB);
 		}
-		if(parser.getOptionValue(wholeDBSrcOpt)!=null){
-			sources.add(SourceFactory.SourceType.WHOLEDB);
-		}
 		
 		//Loggers
 		ResultLogger logger = new ResultLogger();
@@ -173,12 +183,48 @@ public class Main {
 			System.exit(-1);
 		}
 		String geoGranularity = (String)parser.getOptionValue(geoGranOpt, "city");
-		/*
-		if(!(geoGranularity.equalsIgnoreCase("poi") || geoGranularity.equalsIgnoreCase("neighborhood") || geoGranularity.equalsIgnoreCase("city"))){
+		if(geoGranularity==null){
 			printUsage();
 			System.exit(-1);
 		}
-		*/
+		
+		if(parser.getOptionValue(clusterAnalysisOpt)!=null){
+			String dayAnalysis = (String)parser.getOptionValue(dayAnalysisOpt);
+			String hourAnalysis = (String)parser.getOptionValue(hourAnalysisOpt);
+			String rangeAnalysisStartDay = (String)parser.getOptionValue(rangeStartDayAnalysisOpt);
+			String rangeAnalysisEndDay = (String)parser.getOptionValue(rangeEndDayAnalysisOpt);
+			
+			if(dayAnalysis!= null){
+				dateParser = DateTimeFormat.forPattern("yyyy-MM-dd");
+				startTime = dateParser.parseDateTime(dayAnalysis);
+				endTime = startTime.plusDays(1);
+				new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "day", geoGranularity)).start();
+				return;
+			} else if(hourAnalysis!=null){
+				dateParser = DateTimeFormat.forPattern("yyyy-MM-dd-kk");
+				startTime = dateParser.parseDateTime(hourAnalysis);
+				endTime = startTime.plusHours(1);
+				new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "hour", geoGranularity)).start();				
+				return;
+			} else if(rangeAnalysisStartDay!=null){
+				System.out.println(rangeAnalysisStartDay);
+				if(rangeAnalysisEndDay!=null){
+					dateParser = DateTimeFormat.forPattern("yyyy-MM-dd");
+					startTime = dateParser.parseDateTime(rangeAnalysisStartDay);
+					endTime = dateParser.parseDateTime(rangeAnalysisEndDay).plusDays(1);
+					new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "range", geoGranularity)).start();
+					return;
+				} else {
+					printUsage();
+					System.exit(-1);
+				}
+			} else {
+				printUsage();
+				System.exit(-1);
+			}
+			return;
+		}
+		
 		QueryHandler qHandler = new QueryHandler(expEngineName, sources, logger, userId, queryString, startTime, endTime, timeGranularity, geoGranularity, nearLat, nearLon, radius);
 		new Thread(qHandler).start();
 	}

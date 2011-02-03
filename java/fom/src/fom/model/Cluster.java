@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class Cluster {
+	private Cluster parentCluster;
 	private long id;
 	private Query originatingQuery;
 	private List<Post> posts;
@@ -12,10 +13,11 @@ public abstract class Cluster {
 
 	public abstract Map<String, String> getMeta();
 	
-	public Cluster(Query originatingQuery){
+	public Cluster(Query originatingQuery, Cluster parent){
 		this.posts = new ArrayList<Post>();
 		this.terms = new ArrayList<Term>();
 		this.originatingQuery = originatingQuery;
+		this.setParentCluster(parent);
 	}
 	
 	public List<Post> getPosts(){
@@ -44,6 +46,14 @@ public abstract class Cluster {
 
 	public long getId() {
 		return id;
+	}
+
+	public void setParentCluster(Cluster parentCluster) {
+		this.parentCluster = parentCluster;
+	}
+
+	public Cluster getParentCluster() {
+		return parentCluster;
 	}
 	
 }

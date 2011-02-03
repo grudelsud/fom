@@ -77,13 +77,13 @@ public class QueryHandler implements Runnable{
 			logger.addTimeCluster(timeCluster);
 			query.addCluster(timeCluster);
 
-			List<GeoCluster> currentGeoClusters = new GeoClustering(query, timeCluster.getPosts(), query.getGeoGranularity()).performClustering();
+			List<GeoCluster> currentGeoClusters = new GeoClustering(query, timeCluster.getPosts(), query.getGeoGranularity(), timeCluster).performClustering();
 			geoClusters.addAll(currentGeoClusters);
 			for(GeoCluster geoCluster : currentGeoClusters){
 				logger.addGeoCluster(geoCluster);
 				query.addCluster(geoCluster);
 				
-				List<SemanticCluster> currentSemanticClusters = new SemanticClustering(query, geoCluster.getPosts()).performClustering();
+				List<SemanticCluster> currentSemanticClusters = new SemanticClustering(query, geoCluster.getPosts(), geoCluster).performClustering();
 				semanticClusters.addAll(currentSemanticClusters);
 				for(SemanticCluster semCluster : currentSemanticClusters){					
 					logger.addSemCluster(semCluster);

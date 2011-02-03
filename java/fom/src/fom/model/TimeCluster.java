@@ -11,7 +11,7 @@ public class TimeCluster extends Cluster {
 
 	
 	public TimeCluster(Query originatingQuery) {
-		super(originatingQuery);
+		super(originatingQuery, null);
 	}
 
 	@Override
