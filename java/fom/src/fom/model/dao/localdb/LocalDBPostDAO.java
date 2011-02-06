@@ -34,7 +34,7 @@ import fom.utils.StringOperations;
 public class LocalDBPostDAO implements PostDAO {
 
 	private PreparedStatement checkAlreadySavedStm;
-	private PreparedStatement stm;
+	private PreparedStatement savePostStm;
 	private PreparedStatement saveMediaStm;
 	private	PreparedStatement saveTermStm;
 	private PreparedStatement saveLinkStm;
@@ -49,7 +49,7 @@ public class LocalDBPostDAO implements PostDAO {
 	public LocalDBPostDAO(Connection conn) {
 		try {
 			checkAlreadySavedStm = conn.prepareStatement("SELECT id_post FROM fom_post WHERE src = ? AND src_id = ?");
-			stm = conn.prepareStatement("INSERT INTO fom_post(lat,lon,content,created,modified,timezone,meta,src,id_place,src_id) VALUES(?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+			savePostStm = conn.prepareStatement("INSERT INTO fom_post(lat,lon,content,created,modified,timezone,meta,src,id_place,src_id) VALUES(?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 			saveMediaStm = conn.prepareStatement("INSERT INTO fom_postmedia(id_media,id_post) VALUES (?,?)");
 			saveTermStm = conn.prepareStatement("INSERT INTO fom_posttag(id_term,id_post) VALUES(?,?)");
 			saveLinkStm = conn.prepareStatement("INSERT INTO fom_postlink(id_post, id_link) VALUES(?,?)");
@@ -81,32 +81,32 @@ public class LocalDBPostDAO implements PostDAO {
 			}
 			
 			if(post.getLat()!=0 || post.getLon()!=0){
-				stm.setDouble(1, post.getLat());
-				stm.setDouble(2, post.getLon());				
+				savePostStm.setDouble(1, post.getLat());
+				savePostStm.setDouble(2, post.getLon());				
 			} else {
-				stm.setNull(1, java.sql.Types.FLOAT);
-				stm.setNull(2, java.sql.Types.FLOAT);
+				savePostStm.setNull(1, java.sql.Types.FLOAT);
+				savePostStm.setNull(2, java.sql.Types.FLOAT);
 			}
-			stm.setString(3, post.getContent());
-			stm.setTimestamp(4, new Timestamp(post.getCreated().toDate().getTime()));
-			stm.setTimestamp(5, new Timestamp(post.getModified().toDate().getTime()));
-			stm.setInt(6, post.getTimezone());
+			savePostStm.setString(3, post.getContent());
+			savePostStm.setTimestamp(4, new Timestamp(post.getCreated().toDate().getTime()));
+			savePostStm.setTimestamp(5, new Timestamp(post.getModified().toDate().getTime()));
+			savePostStm.setInt(6, post.getTimezone());
 			
 			StringWriter strWriter = new StringWriter();
 			objMapper.writeValue(strWriter, post.getMeta());
-			stm.setString(7, strWriter.toString());
+			savePostStm.setString(7, strWriter.toString());
 			
-			stm.setString(8, post.getSourceName());
+			savePostStm.setString(8, post.getSourceName());
 			if(post.getPlace()!=null){
-				stm.setLong(9, DAOFactory.getFactory().getPlaceDAO().create(post.getPlace()));
+				savePostStm.setLong(9, DAOFactory.getFactory().getPlaceDAO().create(post.getPlace()));
 			} else {
-				stm.setNull(9, java.sql.Types.BIGINT);
+				savePostStm.setNull(9, java.sql.Types.BIGINT);
 			}
 			
-			stm.setLong(10, post.getSourceId());
+			savePostStm.setLong(10, post.getSourceId());
 			
-			stm.executeUpdate();
-			ResultSet generatedKeys = stm.getGeneratedKeys();
+			savePostStm.executeUpdate();
+			ResultSet generatedKeys = savePostStm.getGeneratedKeys();
 			if(generatedKeys.next()){
 				post.setId(generatedKeys.getLong(1));			
 				for(Media media : post.getMedia()){

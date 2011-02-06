@@ -59,12 +59,13 @@ public class ClusterAnalysis implements Runnable{
 		List<SemanticCluster> semanticClusters = new ArrayList<SemanticCluster>();
 		
 		TimeCluster timeCluster = new TimeCluster(query);
-		timeCluster.getPosts().addAll(posts);
+	//	timeCluster.getPosts().addAll(posts);
+		timeCluster.setStartTime(startTime);
+		timeCluster.setEndTime(endTime);
 		logger.addTimeCluster(timeCluster);
 		query.addCluster(timeCluster);
-		List<GeoCluster> currentGeoClusters = new GeoClustering(query, timeCluster.getPosts(), query.getGeoGranularity(), timeCluster).performClustering();
-		geoClusters.addAll(currentGeoClusters);
-		for(GeoCluster geoCluster : currentGeoClusters){
+		geoClusters = new GeoClustering(query, posts, query.getGeoGranularity(), timeCluster).performClustering();
+		for(GeoCluster geoCluster : geoClusters){
 			logger.addGeoCluster(geoCluster);
 			query.addCluster(geoCluster);
 			
@@ -77,6 +78,9 @@ public class ClusterAnalysis implements Runnable{
 		}
 		logger.endLog();
 		System.out.println("Logs:\n" + logger.getLogs());
+		System.out.println("Saving results on the DB...");
+		long startTime = System.currentTimeMillis();
 		DAOFactory.getFactory().getQueryDAO().create(query);
+		System.out.println("done in " + (System.currentTimeMillis()-startTime)/1000 + "s");
 	}
 }

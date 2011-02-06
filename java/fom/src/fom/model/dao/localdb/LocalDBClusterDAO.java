@@ -27,16 +27,18 @@ import fom.model.dao.interfaces.DAOFactory;
 
 public class LocalDBClusterDAO implements ClusterDAO {
 	
+	private Connection conn;
 	private PreparedStatement stm;
 	private PreparedStatement saveTermStm;
 	private PreparedStatement saveClusterPost;
 	private PreparedStatement saveClusterStm;
 	private PreparedStatement statementPosts;
 	private PreparedStatement statementTerms;
-	ObjectMapper objMapper;
+	private ObjectMapper objMapper;
 	
 	public LocalDBClusterDAO(Connection conn) {
 		try {
+			this.conn = conn;
 			stm = conn.prepareStatement("INSERT INTO fom_cluster(meta,terms_meta,posts_meta,id_query) VALUES(?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 			saveTermStm = conn.prepareStatement("INSERT INTO fom_clusterterm(id_term,id_cluster) VALUES(?,?)");
 			saveClusterPost = conn.prepareStatement("INSERT INTO fom_clusterpost(id_cluster,id_post) VALUES(?,?)");
@@ -69,18 +71,9 @@ public class LocalDBClusterDAO implements ClusterDAO {
 			ResultSet generatedKeys = stm.getGeneratedKeys();
 			if(generatedKeys.next()){
 				clusterId = generatedKeys.getLong(1);
-				for(Term term : cluster.getTerms()){
-					saveTermStm.setLong(1, DAOFactory.getFactory().getTermDAO().create(term));
-					saveTermStm.setLong(2, clusterId);
-					saveTermStm.execute();
-				}
-				for(Post post : cluster.getPosts()){
-					long postId = DAOFactory.getFactory().getPostDAO().create(post);
-					saveClusterPost.setLong(1, clusterId);
-					saveClusterPost.setLong(2, postId);
-					saveClusterPost.execute();
-				}
 				cluster.setId(clusterId);
+				saveTerms(cluster);
+				savePosts(cluster);
 			} else {
 				System.err.println("Error creating cluster");
 			}
@@ -99,6 +92,36 @@ public class LocalDBClusterDAO implements ClusterDAO {
 			e.printStackTrace();
 		}
 		return clusterId;
+	}
+
+	private void savePosts(Cluster cluster) {
+		try {
+			saveClusterPost.clearBatch();
+			for(Post post : cluster.getPosts()){
+				saveClusterPost.setLong(1, cluster.getId());
+				saveClusterPost.setLong(2, DAOFactory.getFactory().getPostDAO().create(post));
+				saveClusterPost.addBatch();
+			}
+			saveClusterPost.executeBatch();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void saveTerms(Cluster cluster) {
+		try {
+			saveTermStm.clearBatch();
+			for(Term term : cluster.getTerms()){
+				saveTermStm.setLong(2, cluster.getId());
+				saveTermStm.setLong(1, DAOFactory.getFactory().getTermDAO().create(term));
+				saveTermStm.addBatch();
+			}
+			saveTermStm.executeBatch();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override

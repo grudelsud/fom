@@ -9,9 +9,13 @@ import org.joda.time.DateTime;
 
 public class TimeCluster extends Cluster {
 
+	private DateTime startTime;
+	private DateTime endTime;
 	
 	public TimeCluster(Query originatingQuery) {
 		super(originatingQuery, null);
+		startTime = null;
+		endTime = null;
 	}
 
 	@Override
@@ -24,27 +28,41 @@ public class TimeCluster extends Cluster {
 	}
 
 	public DateTime getStartTime() {
-		Collections.sort(this.getPosts(), new Comparator<Post>() {
-
-			@Override
-			public int compare(Post o1, Post o2) {
-				return o1.getCreated().compareTo(o2.getCreated());
-			}
-		});
-		//TODO: throw exception if cluster is empty
-		return this.getPosts().get(0).getCreated();
+		if(startTime==null){
+			Collections.sort(this.getPosts(), new Comparator<Post>() {
+				
+				@Override
+				public int compare(Post o1, Post o2) {
+					return o1.getCreated().compareTo(o2.getCreated());
+				}
+			});
+			//TODO: throw exception if cluster is empty
+			this.startTime = this.getPosts().get(0).getCreated();
+		}
+		return startTime;
 	}
 
 	public DateTime getEndTime() {
-		Collections.sort(this.getPosts(), new Comparator<Post>() {
-
-			@Override
-			public int compare(Post o1, Post o2) {
-				return o1.getCreated().compareTo(o2.getCreated());
-			}
-		});
-		//TODO: throw exception if cluster is empty
-		return this.getPosts().get(this.getPosts().size()-1).getCreated();
+		if(endTime==null){
+			Collections.sort(this.getPosts(), new Comparator<Post>() {
+				
+				@Override
+				public int compare(Post o1, Post o2) {
+					return o1.getCreated().compareTo(o2.getCreated());
+				}
+			});
+			//TODO: throw exception if cluster is empty
+			this.endTime = this.getPosts().get(this.getPosts().size()-1).getCreated();			
+		}
+		return endTime;
+	}
+	
+	public void setStartTime(DateTime startTime){
+		this.startTime = startTime;
+	}
+	
+	public void setEndTime(DateTime endTime){
+		this.endTime = endTime;
 	}
 
 }
