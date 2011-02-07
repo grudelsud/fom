@@ -27,7 +27,6 @@ import fom.model.dao.interfaces.DAOFactory;
 
 public class LocalDBClusterDAO implements ClusterDAO {
 	
-	private Connection conn;
 	private PreparedStatement stm;
 	private PreparedStatement saveTermStm;
 	private PreparedStatement saveClusterPost;
@@ -38,7 +37,6 @@ public class LocalDBClusterDAO implements ClusterDAO {
 	
 	public LocalDBClusterDAO(Connection conn) {
 		try {
-			this.conn = conn;
 			stm = conn.prepareStatement("INSERT INTO fom_cluster(meta,terms_meta,posts_meta,id_query) VALUES(?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 			saveTermStm = conn.prepareStatement("INSERT INTO fom_clusterterm(id_term,id_cluster) VALUES(?,?)");
 			saveClusterPost = conn.prepareStatement("INSERT INTO fom_clusterpost(id_cluster,id_post) VALUES(?,?)");

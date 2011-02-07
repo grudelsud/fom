@@ -9,6 +9,7 @@ import fom.model.Link;
 import fom.model.Post;
 import fom.model.dao.interfaces.PostDAO;
 import fom.model.dao.localdb.LocalDBDAOFactory;
+import fom.utils.BlacklistChecker;
 import fom.utils.StringOperations;
 
 public class PostQueueProcessor implements Runnable {
@@ -29,7 +30,9 @@ public class PostQueueProcessor implements Runnable {
 				for(String link : StringOperations.extractURLs(currentPost.getContent())){
 					try {
 						Document doc = Jsoup.connect(link).get();
-						currentPost.addLink(new Link(doc.baseUri(), doc.body().text()));
+						if(!BlacklistChecker.isBlacklisted(doc.baseUri())){
+							currentPost.addLink(new Link(doc.baseUri(), doc.body().text()));							
+						}
 					} catch (Exception e) {
 						System.err.println("Invalid link found");
 					}

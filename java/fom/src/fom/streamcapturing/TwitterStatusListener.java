@@ -60,7 +60,6 @@ public class TwitterStatusListener implements StatusListener {
 		try {
 			postQueue.put(post);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     }

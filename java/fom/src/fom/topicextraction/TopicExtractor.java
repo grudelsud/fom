@@ -16,6 +16,7 @@ import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
 import cc.mallet.util.MalletLogger;
 
+import fom.model.Link;
 import fom.model.Post;
 import fom.utils.StringOperations;
 
@@ -40,6 +41,16 @@ public class TopicExtractor {
 			if(!sanitizedPost.trim().equalsIgnoreCase("")){
 				Instance inst = new Instance(sanitizedPost, null, post, post.getContent());
 				tmpInstanceList.add(inst);
+			}
+			
+			for(Link link : post.getLinks()){
+				String sanitizedLink = link.getContent();
+				sanitizedLink = StringOperations.removeURLfromString(sanitizedLink);
+				sanitizedLink = StringOperations.removeStopwords(sanitizedLink);
+				if(!sanitizedLink.trim().equalsIgnoreCase("")){
+					Instance linkInst = new Instance(sanitizedLink, null, link, link.getContent());
+					tmpInstanceList.add(linkInst);
+				}
 			}
 		}
 		

@@ -8,20 +8,20 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-public class StopwordChecker {
+public class BlacklistChecker {
 
-	private static Set<String> stopwords;
+	private static Set<String> blacklist;
 	
-	public static boolean isStopword(String word){
-		if(stopwords == null){
+	public static boolean isBlacklisted(String uri){
+		if(blacklist == null){
 			try {
-				stopwords = new HashSet<String>();
-				File stopwordFile = new File("data/stopwords/stopwords_en.txt");
-				BufferedReader bufRead = new BufferedReader(new FileReader(stopwordFile));
-				String stopword = null;
+				blacklist = new HashSet<String>();
+				File blacklistFile = new File("data/blacklist.txt");
+				BufferedReader bufRead = new BufferedReader(new FileReader(blacklistFile));
+				String blacklistedUri = null;
 				if(bufRead.ready()){
-					while((stopword=bufRead.readLine())!=null){
-						stopwords.add(stopword);
+					while((blacklistedUri=bufRead.readLine())!=null){
+						blacklist.add(blacklistedUri);
 					}
 					bufRead.close();
 				}
@@ -33,9 +33,10 @@ public class StopwordChecker {
 				e.printStackTrace();
 			}
 		}
-		for(String stopword : stopwords){
-			if(word.equalsIgnoreCase(stopword))
+		for(String blacklistedUri : blacklist){
+			if(uri.contains(blacklistedUri)){
 				return true;
+			}
 		}
 		return false;
 	}

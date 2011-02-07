@@ -7,8 +7,6 @@ import java.util.regex.Pattern;
 
 public class StringOperations {
 
-	private static StopwordChecker stopwords = new StopwordChecker();
-
 	public static String hashtagify(String input){
 		String result = new String("#");
 		String[] tokens = input.split("\\s");
@@ -35,7 +33,7 @@ public class StringOperations {
 		String result = new String("");
 		String[] tokens = input.split("\\s");
 		for(int i=0; i<tokens.length; i++){
-			if(!stopwords.isStopword(tokens[i])){
+			if(!StopwordChecker.isStopword(tokens[i])){
 				result = result.concat(tokens[i]);
 				result = result.concat(" ");
 			}
