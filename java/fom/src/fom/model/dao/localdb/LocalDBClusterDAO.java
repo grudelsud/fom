@@ -27,9 +27,10 @@ import fom.model.dao.interfaces.DAOFactory;
 
 public class LocalDBClusterDAO implements ClusterDAO {
 	
+//	private Connection conn;
 	private PreparedStatement stm;
-	private PreparedStatement saveTermStm;
-	private PreparedStatement saveClusterPost;
+//	private PreparedStatement saveTermStm;
+//	private PreparedStatement saveClusterPost;
 	private PreparedStatement saveClusterStm;
 	private PreparedStatement statementPosts;
 	private PreparedStatement statementTerms;
@@ -37,9 +38,10 @@ public class LocalDBClusterDAO implements ClusterDAO {
 	
 	public LocalDBClusterDAO(Connection conn) {
 		try {
-			stm = conn.prepareStatement("INSERT INTO fom_cluster(meta,terms_meta,posts_meta,id_query) VALUES(?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-			saveTermStm = conn.prepareStatement("INSERT INTO fom_clusterterm(id_term,id_cluster) VALUES(?,?)");
-			saveClusterPost = conn.prepareStatement("INSERT INTO fom_clusterpost(id_cluster,id_post) VALUES(?,?)");
+//			this.conn = conn;
+			stm = conn.prepareStatement("INSERT INTO fom_cluster(meta,terms_meta,posts_meta,id_query,id_parent,type) VALUES(?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+//			saveTermStm = conn.prepareStatement("INSERT INTO fom_clusterterm(id_term,id_cluster) VALUES(?,?)");
+//			saveClusterPost = conn.prepareStatement("INSERT INTO fom_clusterpost(id_cluster,id_post) VALUES(?,?)");
 			saveClusterStm = conn.prepareStatement("SELECT meta,id_query FROM fom_cluster WHERE id_cluster=?");
 			statementPosts = conn.prepareStatement("SELECT id_post FROM fom_clusterpost WHERE id_cluster=?");
 			statementTerms = conn.prepareStatement("SELECT id_post FROM fom_clusterterm WHERE id_cluster=?");
@@ -54,28 +56,50 @@ public class LocalDBClusterDAO implements ClusterDAO {
 
 	@Override
 	public long create(Cluster cluster) {
+		if(cluster.getId()!=0){
+			return cluster.getId();
+		}
 		long clusterId = 0;
 		try {
+//			stm = conn.prepareStatement("INSERT INTO fom_cluster(meta,terms_meta,posts_meta,id_query,id_parent,type) VALUES(?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 			
 			StringWriter strWriter = new StringWriter();
 			objMapper.writeValue(strWriter, cluster.getMeta());
 			stm.setString(1, strWriter.toString());
 			
-			stm.setString(2, "");
-			stm.setString(3, "");
-			stm.setLong(4, cluster.getOriginatingQuery().getId());
+			String terms_meta = new String("");
+			for(int i=0; i<cluster.getTerms().size(); i++){
+				terms_meta = terms_meta.concat("\"" + cluster.getTerms().get(i).getName() + "\"");
+				if(i!=cluster.getTerms().size()-1){
+					terms_meta = terms_meta.concat(";");
+				}
+			}
+			stm.setString(2, terms_meta);
 			
+			String posts_meta = new String("");
+			for(int i=0; i<cluster.getPosts().size(); i++){
+				posts_meta = posts_meta.concat(Long.toString(DAOFactory.getFactory().getPostDAO().create(cluster.getPosts().get(i))) + " ");
+			}
+			stm.setString(3, posts_meta.trim());
+
+			stm.setLong(4, cluster.getOriginatingQuery().getId());
+			if(cluster.getTypeId()!=1){
+				stm.setLong(5, DAOFactory.getFactory().getClusterDAO().create(cluster.getParentCluster()));
+			} else {
+				stm.setLong(5, 0);
+			}
+			stm.setInt(6, cluster.getTypeId());
 			stm.executeUpdate();
+			
 			ResultSet generatedKeys = stm.getGeneratedKeys();
 			if(generatedKeys.next()){
 				clusterId = generatedKeys.getLong(1);
 				cluster.setId(clusterId);
-				saveTerms(cluster);
-				savePosts(cluster);
+			//	saveTerms(cluster);
+			//	savePosts(cluster);
 			} else {
 				System.err.println("Error creating cluster");
-			}
-			
+			}			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -92,6 +116,7 @@ public class LocalDBClusterDAO implements ClusterDAO {
 		return clusterId;
 	}
 
+	/*
 	private void savePosts(Cluster cluster) {
 		try {
 			saveClusterPost.clearBatch();
@@ -121,9 +146,13 @@ public class LocalDBClusterDAO implements ClusterDAO {
 			e.printStackTrace();
 		}
 	}
-
+	*/
+	
+	//TODO: update retrieval of cluster, the db structure is modified.
+	
 	@Override
 	public Cluster retrieve(long clusterId) {
+		System.err.println("!!! UPDATE ClusterDAO.retrieve() !!!");
 		Cluster cluster = null;
 		try {
 			saveClusterStm.setLong(1, clusterId);

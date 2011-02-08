@@ -12,6 +12,7 @@ public abstract class Cluster {
 	private List<Term> terms;
 
 	public abstract Map<String, String> getMeta();
+	public abstract int getTypeId();
 	
 	public Cluster(Query originatingQuery, Cluster parent){
 		this.posts = new ArrayList<Post>();

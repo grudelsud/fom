@@ -9,9 +9,19 @@ import fom.model.dao.interfaces.DAOFactory;
 
 public class LocalDBSource implements Source {
 
+	private String sourceName;
+	
+	public LocalDBSource(){
+		this.sourceName = "twitter";
+	}
+	
+	public void setSourceName(String sourceName){
+		this.sourceName = sourceName;
+	}
+	
 	@Override
 	public List<Post> searchPosts(List<String> terms, DateTime startTime, DateTime endTime, double lat, double lon, int radius) {
-		return DAOFactory.getFactory().getPostDAO().retrieve(terms, startTime, endTime, lat, lon, radius);
+		return DAOFactory.getFactory().getPostDAO().retrieve(terms, startTime, endTime, lat, lon, radius, sourceName);
 	}
 
 }

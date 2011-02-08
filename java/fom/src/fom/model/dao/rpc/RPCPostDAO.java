@@ -20,19 +20,19 @@ public class RPCPostDAO implements PostDAO {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 	@Override
 	public List<Post> retrieve(List<String> terms, DateTime fromDate,
-			DateTime toDate, double lat, double lon, int radius) {
+			DateTime toDate, double lat, double lon, int radius, String sourceName) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	/*
 	@Override
 	public List<Post> getAllPosts() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	*/
 
 }

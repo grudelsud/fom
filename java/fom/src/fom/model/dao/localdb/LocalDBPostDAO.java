@@ -195,7 +195,7 @@ public class LocalDBPostDAO implements PostDAO {
 		return post;
 	}
 	
-	public List<Post> retrieve(List<String> terms, DateTime fromDate, DateTime toDate, double lat, double lon, int radius){
+	public List<Post> retrieve(List<String> terms, DateTime fromDate, DateTime toDate, double lat, double lon, int radius, String sourceName){
 		List<Post> results = new ArrayList<Post>();
 		
 		String query = new String("SELECT DISTINCT id_post " +
@@ -235,6 +235,10 @@ public class LocalDBPostDAO implements PostDAO {
 			}
 			query = query.concat("(lat > ? AND lat < ? AND lon > ? AND lon < ?)");
 		}
+		if(terms.size()!=0 || fromDate !=null || toDate!=null || radius!=0){
+			query = query.concat("AND ");
+		}
+		query = query.concat("src = ?");
 		
 		try {
 			PreparedStatement stm = conn.prepareStatement(query);
@@ -270,6 +274,18 @@ public class LocalDBPostDAO implements PostDAO {
 				stm.setDouble(terms.size()*6 + 3 + numberOfPreviousParams, lon - 10);
 				stm.setDouble(terms.size()*6 + 4 + numberOfPreviousParams, lon + 10);
 			}
+			int numberOfPreviousParams = 0;
+			if(fromDate!=null){
+				numberOfPreviousParams++;
+			}
+			if(toDate!=null){
+				numberOfPreviousParams++;
+			}
+			if(radius!=0){
+				numberOfPreviousParams+=4;
+			}
+			stm.setString(terms.size()*6 + numberOfPreviousParams + 1, sourceName);
+			
 			ResultSet res = stm.executeQuery();
 			while(res.next()){
 				results.add(this.retrieve(res.getLong("id_post")));
@@ -280,7 +296,8 @@ public class LocalDBPostDAO implements PostDAO {
 		}
 		return results;
 	}
-	
+
+	/*
 	public List<Post> getAllPosts(){
 		List<Post> posts = new ArrayList<Post>();
 		try {
@@ -295,5 +312,5 @@ public class LocalDBPostDAO implements PostDAO {
 		}
 		return posts;
 	}
-	
+	*/
 }

@@ -29,6 +29,7 @@ public class Main {
         					"CLUSTER ANALYSIS:" +
         					"\n" +
         					"fom --clusterAnalysis\n" +
+        					"[--sourceName <source name (defaults on twitter)>]" +
         					"{--rangeStartDay YYYY-MM-DD --rangeEndDay YYYY-MM-DD, --day YYYY-MM-DD, --hour YYYY-MM-DD-HH}\n" +
         					"{--geoGran {poi, neighborhood, city, <custom km radius>}}\n" +
         					"[--consoleLog] [--csvLog] [--folderLog] [--rpcLog]" +
@@ -58,6 +59,7 @@ public class Main {
 		CmdLineParser parser = new CmdLineParser();
 		
 		Option clusterAnalysisOpt = parser.addBooleanOption("clusterAnalysis");
+		Option sourceNameOpt = parser.addStringOption("sourceName");
 		Option rangeStartDayAnalysisOpt = parser.addStringOption("rangeStartDay");
 		Option rangeEndDayAnalysisOpt = parser.addStringOption("rangeEndDay");
 		Option dayAnalysisOpt = parser.addStringOption("day");
@@ -189,6 +191,8 @@ public class Main {
 		}
 		
 		if(parser.getOptionValue(clusterAnalysisOpt)!=null){
+			//CLUSTER ANALYSIS
+			String sourceName = (String)parser.getOptionValue(sourceNameOpt);
 			String dayAnalysis = (String)parser.getOptionValue(dayAnalysisOpt);
 			String hourAnalysis = (String)parser.getOptionValue(hourAnalysisOpt);
 			String rangeAnalysisStartDay = (String)parser.getOptionValue(rangeStartDayAnalysisOpt);
@@ -198,13 +202,13 @@ public class Main {
 				dateParser = DateTimeFormat.forPattern("yyyy-MM-dd");
 				startTime = dateParser.parseDateTime(dayAnalysis);
 				endTime = startTime.plusDays(1);
-				new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "day", geoGranularity)).start();
+				new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "day", geoGranularity, sourceName)).start();
 				return;
 			} else if(hourAnalysis!=null){
 				dateParser = DateTimeFormat.forPattern("yyyy-MM-dd-kk");
 				startTime = dateParser.parseDateTime(hourAnalysis);
 				endTime = startTime.plusHours(1);
-				new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "hour", geoGranularity)).start();				
+				new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "hour", geoGranularity, sourceName)).start();				
 				return;
 			} else if(rangeAnalysisStartDay!=null){
 				System.out.println(rangeAnalysisStartDay);
@@ -212,7 +216,7 @@ public class Main {
 					dateParser = DateTimeFormat.forPattern("yyyy-MM-dd");
 					startTime = dateParser.parseDateTime(rangeAnalysisStartDay);
 					endTime = dateParser.parseDateTime(rangeAnalysisEndDay).plusDays(1);
-					new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "range", geoGranularity)).start();
+					new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "range", geoGranularity, sourceName)).start();
 					return;
 				} else {
 					printUsage();

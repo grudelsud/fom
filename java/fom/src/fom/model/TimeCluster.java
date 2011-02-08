@@ -65,4 +65,9 @@ public class TimeCluster extends Cluster {
 		this.endTime = endTime;
 	}
 
+	@Override
+	public int getTypeId() {
+		return 1;
+	}
+
 }

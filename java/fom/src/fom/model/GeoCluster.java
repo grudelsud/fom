@@ -3,8 +3,6 @@ package fom.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import fom.model.dao.interfaces.DAOFactory;
-
 public class GeoCluster extends Cluster {
 	Query originatingQuery;
 
@@ -112,16 +110,15 @@ public class GeoCluster extends Cluster {
 	@Override
 	public Map<String, String> getMeta() {
 		Map<String, String> meta = new HashMap<String, String>();
-		meta.put("type", "geo");
 		meta.put("meanLat", Double.toString(getMeanLat()));
 		meta.put("meanLon", Double.toString(getMeanLon()));
 		meta.put("stdDevLat", Double.toString(getStdDevLat()));
 		meta.put("stdDevLon", Double.toString(getStdDevLon()));
-		long parentClusterID = this.getParentCluster().getId();
-		if(parentClusterID==0){
-			parentClusterID = DAOFactory.getFactory().getClusterDAO().create(getParentCluster());
-		}
-		meta.put("parent", Long.toString(parentClusterID));
 		return meta;
+	}
+
+	@Override
+	public int getTypeId() {
+		return 2;
 	}
 }

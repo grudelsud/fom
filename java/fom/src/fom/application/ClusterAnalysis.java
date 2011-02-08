@@ -14,25 +14,26 @@ import fom.model.SemanticCluster;
 import fom.model.TimeCluster;
 import fom.model.dao.interfaces.DAOFactory;
 import fom.resultlogging.ResultLogger;
-import fom.search.sources.SourceFactory;
-import fom.search.sources.SourceFactory.SourceType;
+import fom.search.sources.LocalDBSource;
 
 public class ClusterAnalysis implements Runnable{
 	
 	private ResultLogger logger;
-	long userId;
-	DateTime startTime;
-	DateTime endTime;
-	String timeGranularity;
-	String geoGranularity;
+	private long userId;
+	private DateTime startTime;
+	private DateTime endTime;
+	private String timeGranularity;
+	private String geoGranularity;
+	private String sourceName;
 	
-	public ClusterAnalysis(ResultLogger logger, long userId, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity){
+	public ClusterAnalysis(ResultLogger logger, long userId, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity, String sourceName){
 		this.logger = logger;
 		this.userId = userId;
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.timeGranularity = timeGranularity;
 		this.geoGranularity = geoGranularity;
+		this.sourceName = sourceName;
 	}
 
 	@Override
@@ -49,7 +50,11 @@ public class ClusterAnalysis implements Runnable{
 		System.out.println("\tStart time: " + startTime);
 		System.out.println("\tEnd time: " + endTime);
 
-		List<Post> posts = SourceFactory.getSource(SourceType.LOCALDB).searchPosts(terms, query.getStartTime(), query.getEndTime(), query.getLat(), query.getLon(), 0);
+		LocalDBSource source = new LocalDBSource();
+		if(sourceName!=null){
+			source.setSourceName(sourceName);
+		}
+		List<Post> posts = source.searchPosts(terms, query.getStartTime(), query.getEndTime(), query.getLat(), query.getLon(), 0);
 
 		System.out.println("Found " + posts.size() + " posts");
 		if(posts.size()==0) return;
@@ -59,7 +64,6 @@ public class ClusterAnalysis implements Runnable{
 		List<SemanticCluster> semanticClusters = new ArrayList<SemanticCluster>();
 		
 		TimeCluster timeCluster = new TimeCluster(query);
-	//	timeCluster.getPosts().addAll(posts);
 		timeCluster.setStartTime(startTime);
 		timeCluster.setEndTime(endTime);
 		logger.addTimeCluster(timeCluster);
