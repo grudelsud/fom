@@ -30,8 +30,8 @@ class Search extends CI_Controller
 		$granularity = $this->input->post('granularity');
 		$source = $this->input->post('source');
 
-		$this->load->library('fom_search');
-		$data['results'] = $this->fom_search->query( $terms, $since, $until, $where, $granularity, $source );
+//		$this->load->library('fom_search');
+//		$data['results'] = $this->fom_search->query( $terms, $since, $until, $where, $granularity, $source );
 //		$this->load->view('search_view', $data );
 		redirect('/result');
 	}

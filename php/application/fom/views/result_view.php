@@ -6,13 +6,15 @@
 	<tr><th>action</th><th>terms</th><th>date</th></tr>
 <?php
 foreach ($queries as $query) {
-	$query_values = json_decode($query->query);
+	if( isset( $query->query ) ) {
+		$query_values = json_decode($query->query);
+	}
 	echo '<tr id="q'.$query->id_query.'">'.
 		'<td>'.
 		'<a class="view" href="'.site_url('cluster/read/'.$query->id_query.'/json').'"><img src="'.assets_url('assets/img').'/add.png" alt="+" /></a>'.
 		'<a href="'.site_url('query/delete/'.$query->id_query).'"><img src="'.assets_url('assets/img').'/delete.png" alt="-" /></a>'.
 		'</td>'.
-		'<td>'.$query_values->terms.'</td>'.
+		'<td>'.( isset( $query_values) ? $query_values->terms : 'free query').'</td>'.
 		'<td>'.$query->created.'</td>'.
 		'</tr>';
 }
