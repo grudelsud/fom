@@ -21,8 +21,8 @@ class Query extends CI_Controller
 	
 	function delete( $id_query )
 	{
-		$this->load->model('Query_model');
-		$this->Query_model->delete( $id_query );
+//		$this->load->model('Query_model');
+//		$this->Query_model->delete( $id_query );
 		redirect('/main');
 	}
 }
