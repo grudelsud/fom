@@ -42,8 +42,8 @@ $active_group = 'default';
 $active_record = TRUE;
 
 $db['default']['hostname'] = 'localhost';
-$db['default']['username'] = 'root';
-$db['default']['password'] = 'root';
+$db['default']['username'] = 'fom';
+$db['default']['password'] = 'f0m?fom!';
 $db['default']['database'] = 'fom';
 $db['default']['dbdriver'] = 'mysql';
 $db['default']['dbprefix'] = 'fom_';
