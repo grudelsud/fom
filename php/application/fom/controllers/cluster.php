@@ -39,6 +39,12 @@ class Cluster extends CI_Controller
 		}
 	}
 	
+	function read_post( $id_post )
+	{
+		$this->load->model('post_model');
+		echo $this->post_model->read_id( $id_post );
+	}
+	
 	function delete( $id_cluster, $format = 'json' )
 	{
 //		$this->load->model('Cluster_model');

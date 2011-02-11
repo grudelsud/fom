@@ -50,7 +50,8 @@ function loadContent( cluster )
 	content  = '<ul class="cluster_meta"><li>coordinates: ['+cluster.meanLat+', '+cluster.meanLon+']</li>';
 	content += '<li>surface: '+ Math.PI * cluster.stdDevLat * cluster.stdDevLon +'</li></ul>';
 
-	$('#content').empty().append( content );
+	$('#post_content').empty().fadeOut('fast');
+	$('#content').empty().append( content ).fadeIn('fast');
 	$.ajax({
 		url: siteUrl + '/cluster/read_semantic/'+cluster.id_cluster+'/json',
 		dataType: 'json',
@@ -65,12 +66,36 @@ function loadContent( cluster )
 		}
 	});
 
-	var postList = $('<ul class="cluster_posts"></ul>');
+	var postList = '';
 	var postArray = (cluster.posts_meta).split( ' ' );
 	for( i in postArray ) {
-		postList.append('<a href="'+siteUrl+'/cluster/read_post/'+postArray[i]+'">'+i+'</a> ');
+		postList += '<a href="'+siteUrl+'/cluster/read_post/'+postArray[i]+'">'+i+'</a> ';
 	}
-	$('#content').append( postList );
+	$('#content').append('<ul class="cluster_posts"><li>post: '+postList+'</li></ul>');
+}
+
+function loadClusterContent( postUrl )
+{
+	$('#post_content').empty().fadeIn('fast');
+	$.ajax({
+		url: postUrl,
+		dataType: 'json',
+		success: function(data) {
+			var content = $('<ul class="cluster_content"></ul>');
+			content.append('<li>coordinates: ['+data.lat+', '+data.lon+']</li>');
+			content.append('<li>content: '+data.content+'</li>');
+			
+			if( data.links ) {
+				var linkList = '';
+				var linkArray = ($.trim(data.links)).split( ' ' );
+				for( i in linkArray ) {
+					linkList += '<a href="'+siteUrl+'/cluster/read_link/'+linkArray[i]+'">'+i+'</a> ';
+				}
+				content.append('<li>links: '+linkList+'</li>');
+			}
+			$('#post_content').append( content );
+		}
+	});
 }
 
 function setBounds()

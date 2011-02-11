@@ -32,6 +32,41 @@ class Post_model extends CI_Model
 		return $this->db->insert_id();
 	}
 
+	function read_id( $id_post, $format = 'json' )
+	{
+		$this->db->where( 'id_post', $id_post );
+		$query = $this->db->get('post');
+		if( $format == 'json' ) {
+			if( $query->num_rows() > 0 ) {
+				$post = $query->row();
+				
+				// decode metas and unset property from original object
+				$post_meta = json_decode( $post->meta );
+				unset( $post->meta );
+				
+				// fetch related links
+				$this->db->where( 'id_post', $id_post );
+				$query_link = $this->db->get('postlink');
+				
+				if( $query_link->num_rows() > 0 ) {
+					$links = '';
+					foreach( $query_link->result() as $row ) {
+						$links .= $row->id_link .' ';
+					}
+					// export links in a new property as string of concatenated ids
+					$post->links = $links;
+				}
+				
+				// merge objects and encode
+				return json_encode( array_merge((array)$post, (array)$post_meta));
+			} else {
+				return json_encode( array() );
+			}
+		} else {
+			return $query->result();
+		}
+	}
+
 	function read( $lat = '', $lon = '', $geo_granularity = '', $t_start = '', $t_end = '', $t_granularity = '' )
 	{
 		// TODO: implement lat/lon searches
