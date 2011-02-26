@@ -49,7 +49,7 @@ public class LocalDBPostDAO implements PostDAO {
 	public LocalDBPostDAO(Connection conn) {
 		try {
 			checkAlreadySavedStm = conn.prepareStatement("SELECT id_post FROM fom_post WHERE src = ? AND src_id = ?");
-			savePostStm = conn.prepareStatement("INSERT INTO fom_post(lat,lon,content,created,modified,timezone,meta,src,id_place,src_id) VALUES(?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+			savePostStm = conn.prepareStatement("INSERT INTO fom_post(lat,lon,content,created,modified,timezone,meta,src,id_place,src_id,user_location, coordinates_estimated) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 			saveMediaStm = conn.prepareStatement("INSERT INTO fom_postmedia(id_media,id_post) VALUES (?,?)");
 			saveTermStm = conn.prepareStatement("INSERT INTO fom_posttag(id_term,id_post) VALUES(?,?)");
 			saveLinkStm = conn.prepareStatement("INSERT INTO fom_postlink(id_post, id_link) VALUES(?,?)");
@@ -104,6 +104,13 @@ public class LocalDBPostDAO implements PostDAO {
 			}
 			
 			savePostStm.setLong(10, post.getSourceId());
+			if(post.getUserLocation()==null || post.getUserLocation().trim()==""){
+				savePostStm.setNull(11, java.sql.Types.VARCHAR);
+			} else {
+				savePostStm.setString(11, post.getUserLocation());				
+			}
+			
+			savePostStm.setBoolean(12, post.areCoordinatesEstimated());
 			
 			savePostStm.executeUpdate();
 			ResultSet generatedKeys = savePostStm.getGeneratedKeys();
@@ -159,10 +166,12 @@ public class LocalDBPostDAO implements PostDAO {
 				int timezone = res.getInt("timezone");
 				Map<String, String> meta = objMapper.readValue(res.getString("meta"), new TypeReference<Map<String,String>>() { });
 				String source = res.getString("src");
+				String userLocation = res.getString("user_location");
+				boolean coordinatesEstimated = res.getBoolean("coordinates_estimated");
 				if(source.equalsIgnoreCase("twitter")){
-					post = new TwitterPost(postId, lat, lon, content, created, modified, timezone, place, new Long(meta.get("tweetId")), new Integer(meta.get("twitterUserId")));
+					post = new TwitterPost(postId, lat, lon, content, created, modified, timezone, place, new Long(meta.get("tweetId")), new Integer(meta.get("twitterUserId")), userLocation, coordinatesEstimated);
 				} else if(source.equalsIgnoreCase("teamlife")){
-					post = new TeamlifePost(postId, lat, lon, content, created, modified, timezone, place);
+					post = new TeamlifePost(postId, lat, lon, content, created, modified, timezone, place, userLocation, coordinatesEstimated);
 				}
 				
 				getMediaStm.setLong(1, post.getId());

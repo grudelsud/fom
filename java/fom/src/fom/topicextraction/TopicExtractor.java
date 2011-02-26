@@ -38,6 +38,12 @@ public class TopicExtractor {
 			String sanitizedPost = post.getContent();
 			sanitizedPost = StringOperations.removeURLfromString(sanitizedPost);
 			sanitizedPost = StringOperations.removeStopwords(sanitizedPost);
+			sanitizedPost = StringOperations.removeNonLettersFromString(sanitizedPost);
+			
+		//	if(!post.getContent().equalsIgnoreCase(sanitizedPost)){
+		//		System.out.println("Removed stopwords from post:\n\t" + post.getContent() + "\n\t" + sanitizedPost);
+		//	}
+			
 			if(!sanitizedPost.trim().equalsIgnoreCase("")){
 				Instance inst = new Instance(sanitizedPost, null, post, post.getContent());
 				tmpInstanceList.add(inst);
@@ -47,6 +53,7 @@ public class TopicExtractor {
 				String sanitizedLink = link.getContent();
 				sanitizedLink = StringOperations.removeURLfromString(sanitizedLink);
 				sanitizedLink = StringOperations.removeStopwords(sanitizedLink);
+				sanitizedLink = StringOperations.removeNonLettersFromString(sanitizedLink);
 				if(!sanitizedLink.trim().equalsIgnoreCase("")){
 					Instance linkInst = new Instance(sanitizedLink, null, link, link.getContent());
 					tmpInstanceList.add(linkInst);
@@ -69,8 +76,10 @@ public class TopicExtractor {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (IllegalStateException e){
-		}		
-
+		}
+		
+	//	System.out.println(lda.displayTopWords(5, true));
+		
 		Object[][] topWords = lda.getTopWords(5);
 		int limit = posts.size()<numberOfTopics?posts.size():numberOfTopics;
 		for(int topicCount=0; topicCount<limit && topicCount<topWords.length; topicCount++){

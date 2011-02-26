@@ -25,7 +25,7 @@ public class StreamCapturer implements Runnable {
 	private void setupCapturer(){
 		listener = new TwitterStatusListener(this, filterGeoTagged);
 	    ConfigurationBuilder cb = new ConfigurationBuilder();
-	    cb.setDebugEnabled(true)
+	    cb.setDebugEnabled(false)
 	      .setOAuthConsumerKey(PropertyHandler.getStringProperty("TwitterOAuthConsumerKey"))
 	      .setOAuthConsumerSecret(PropertyHandler.getStringProperty("TwitterOAuthConsumerSecret"))
 	      .setOAuthAccessToken(PropertyHandler.getStringProperty("TwitterOAuthAccessToken"))

@@ -13,6 +13,7 @@ import twitter4j.Tweet;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 
+import fom.geocoding.Geocoder;
 import fom.model.Post;
 import fom.model.TwitterPost;
 import fom.utils.StringOperations;
@@ -88,15 +89,31 @@ public class Twitter implements Source {
 		
 	//	System.out.println(status.getPlace());
 		
+		double lat = 0;
+		double lon = 0;
+		boolean coordinatesEstimated = false;
+		
 		GeoLocation geoLoc = tweet.getGeoLocation();
-		double lat = geoLoc!=null?geoLoc.getLatitude():0;
-		double lon = geoLoc!=null?geoLoc.getLongitude():0;
+		if(geoLoc != null){
+			lat = geoLoc.getLatitude();
+			lon = geoLoc.getLongitude();
+		} else {
+			if(tweet.getLocation()!=null){
+				Geocoder geocoder = new LocalGeonamesGeocoder();
+				double[] coords = geocoder.geocode(tweet.getLocation());
+				if(coords[0]!=0 || coords[1]!=0){
+					lat = coords[0];
+					lon = coords[1];
+					coordinatesEstimated = true;
+				}
+			}
+		}
 		
 		String content = tweet.getText();
 		DateTime created = new DateTime(tweet.getCreatedAt());
 		int timezone = created.getZone().getOffset(created.getMillis())/(1000*60*60);
 		
-		results.add(new TwitterPost(0, lat, lon, content, created, created, timezone, null, tweet.getId(), tweet.getFromUserId()));
+		results.add(new TwitterPost(0, lat, lon, content, created, created, timezone, null, tweet.getId(), tweet.getFromUserId(), tweet.getLocation(), coordinatesEstimated));
 	}
 	
 }

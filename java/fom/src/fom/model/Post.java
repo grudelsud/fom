@@ -19,12 +19,14 @@ public abstract class Post {
 	private List<Media> media;
 	private List<Term> terms;
 	private List<Link> links;
+	private String userLocation;
+	private boolean coordinatesEstimated;
 	
 	public abstract Map<String, String> getMeta();
 	public abstract String getSourceName();
 	public abstract long getSourceId();
 
-	public Post(long id, double lat, double lon, String content, DateTime created, DateTime modified, int timezone, Place place){
+	public Post(long id, double lat, double lon, String content, DateTime created, DateTime modified, int timezone, Place place, String userLocation, boolean coordinatesEstimated){
 		this.id = id;
 		this.lat = lat;
 		this.lon = lon;
@@ -33,6 +35,8 @@ public abstract class Post {
 		this.modified = modified;
 		this.timezone = timezone;
 		this.place = place;
+		this.userLocation = userLocation;
+		this.coordinatesEstimated = coordinatesEstimated;
 		media = new ArrayList<Media>();
 		terms = new ArrayList<Term>();
 		links = new ArrayList<Link>();
@@ -71,6 +75,14 @@ public abstract class Post {
 
 	public Place getPlace() {
 		return place;
+	}
+	
+	public String getUserLocation(){
+		return userLocation;
+	}
+	
+	public boolean areCoordinatesEstimated(){
+		return coordinatesEstimated;
 	}
 	
 	public List<Link> getLinks(){

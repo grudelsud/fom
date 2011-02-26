@@ -8,8 +8,8 @@ import org.joda.time.DateTime;
 public class TeamlifePost extends Post {
 
 
-	public TeamlifePost(long id, double lat, double lon, String content, DateTime created, DateTime modified, int timezone, Place location) {
-		super(id, lat, lon, content, created, modified, timezone, location);
+	public TeamlifePost(long id, double lat, double lon, String content, DateTime created, DateTime modified, int timezone, Place location, String userLocation, boolean coordinatesEstimated) {
+		super(id, lat, lon, content, created, modified, timezone, location, userLocation, coordinatesEstimated);
 	}
 
 	@Override

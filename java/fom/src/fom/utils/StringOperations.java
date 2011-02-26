@@ -122,4 +122,16 @@ public class StringOperations {
 		return result;
 	}
 	
+	public static String removeNonLettersFromString(String string){
+		char[] res = new char[string.length()];
+		char[] originalStr = string.toCharArray();
+		int resSize=0;
+		for(int i=0; i<originalStr.length; i++){
+			if(Character.isLetterOrDigit(originalStr[i]) || Character.isWhitespace(originalStr[i])){
+				res[resSize++] = originalStr[i];
+			}
+		}
+		return new String(res);
+	}
+	
 }
