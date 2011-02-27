@@ -8,10 +8,10 @@ import org.joda.time.DateTime;
 
 import fom.application.StreamCapturer;
 import fom.geocoding.Geocoder;
+import fom.geocoding.LocalGeonamesGeocoder;
 import fom.model.Place;
 import fom.model.Post;
 import fom.model.TwitterPost;
-import fom.search.sources.LocalGeonamesGeocoder;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
 import twitter4j.StatusListener;
@@ -32,7 +32,7 @@ public class TwitterStatusListener implements StatusListener {
 	}
 	
     public void onStatus(Status status) {
-    	System.out.println(status.getUser().getLocation());
+    //	System.out.println(status.getUser().getLocation());
     	savePost(status);
     	if(++tweetCount%100==0){
     		System.out.print(".");
@@ -87,11 +87,14 @@ public class TwitterStatusListener implements StatusListener {
     	System.err.println("Track limitation: " + numberOfLimitedStatuses);
     }
     
-    public void onScrubGeo(int arg0, long arg1) {
-    //	System.err.println("Should scrub geo info from posts of " + arg0 + " until postId: " + arg1);
-    }
     
     public void onException(Exception ex){
     	streamCapturer.handleException(ex);
     }
+
+	@Override
+	public void onScrubGeo(long arg0, long arg1) {
+		// TODO Auto-generated method stub
+		
+	}
 }

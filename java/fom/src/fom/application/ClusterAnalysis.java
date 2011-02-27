@@ -25,8 +25,9 @@ public class ClusterAnalysis implements Runnable{
 	private String timeGranularity;
 	private String geoGranularity;
 	private String sourceName;
+	private boolean considerApproxGeolocations;
 	
-	public ClusterAnalysis(ResultLogger logger, long userId, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity, String sourceName){
+	public ClusterAnalysis(ResultLogger logger, long userId, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity, String sourceName, boolean considerApproxGeolocations){
 		this.logger = logger;
 		this.userId = userId;
 		this.startTime = startTime;
@@ -34,6 +35,7 @@ public class ClusterAnalysis implements Runnable{
 		this.timeGranularity = timeGranularity;
 		this.geoGranularity = geoGranularity;
 		this.sourceName = sourceName;
+		this.considerApproxGeolocations = considerApproxGeolocations;
 	}
 
 	@Override
@@ -51,9 +53,12 @@ public class ClusterAnalysis implements Runnable{
 		System.out.println("\tEnd time: " + endTime);
 
 		LocalDBSource source = new LocalDBSource();
-		if(sourceName!=null){
-			source.setSourceName(sourceName);
-		}
+		source.setSourceName(sourceName);
+		query.getMeta().put("sourceName", sourceName);
+		source.setConsiderApproxGeolocations(considerApproxGeolocations);
+		query.getMeta().put("considerApproxGeolocations", Boolean.toString(considerApproxGeolocations));
+		
+		
 		List<Post> posts = source.searchPosts(terms, query.getStartTime(), query.getEndTime(), query.getLat(), query.getLon(), 0);
 
 		System.out.println("Found " + posts.size() + " posts");

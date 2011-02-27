@@ -10,7 +10,7 @@ public class TwitterPost extends Post {
 	private long tweetId;
 	private long twitterUserId;
 
-	public TwitterPost(long id, double lat, double lon, String content, DateTime created, DateTime modified, int timezone, Place location, long tweetId, int twitterUserId, String userLocation, boolean coordinatesEstimated) {
+	public TwitterPost(long id, double lat, double lon, String content, DateTime created, DateTime modified, int timezone, Place location, long tweetId, long twitterUserId, String userLocation, boolean coordinatesEstimated) {
 		super(id, lat, lon, content, created, modified, timezone, location, userLocation, coordinatesEstimated);
 		this.tweetId = tweetId;
 		this.twitterUserId = twitterUserId;

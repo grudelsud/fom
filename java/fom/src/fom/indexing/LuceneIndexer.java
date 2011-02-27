@@ -67,9 +67,9 @@ public class LuceneIndexer implements Runnable {
 			}
 		}
 		try {
-			linkIndexWriter.optimize();
+		//	linkIndexWriter.optimize();
 			linkIndexWriter.close();
-			postIndexWriter.optimize();
+		//	postIndexWriter.optimize();
 			postIndexWriter.close();
 		} catch (CorruptIndexException e) {
 			// TODO Auto-generated catch block

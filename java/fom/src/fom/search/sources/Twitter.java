@@ -14,6 +14,7 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 
 import fom.geocoding.Geocoder;
+import fom.geocoding.LocalGeonamesGeocoder;
 import fom.model.Post;
 import fom.model.TwitterPost;
 import fom.utils.StringOperations;

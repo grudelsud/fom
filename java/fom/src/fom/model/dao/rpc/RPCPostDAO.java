@@ -23,7 +23,7 @@ public class RPCPostDAO implements PostDAO {
 	
 	@Override
 	public List<Post> retrieve(List<String> terms, DateTime fromDate,
-			DateTime toDate, double lat, double lon, int radius, String sourceName) {
+			DateTime toDate, double lat, double lon, int radius, String sourceName, boolean considerApproxGeolocations) {
 		// TODO Auto-generated method stub
 		return null;
 	}

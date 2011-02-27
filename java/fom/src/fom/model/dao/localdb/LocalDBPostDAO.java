@@ -204,7 +204,7 @@ public class LocalDBPostDAO implements PostDAO {
 		return post;
 	}
 	
-	public List<Post> retrieve(List<String> terms, DateTime fromDate, DateTime toDate, double lat, double lon, int radius, String sourceName){
+	public List<Post> retrieve(List<String> terms, DateTime fromDate, DateTime toDate, double lat, double lon, int radius, String sourceName, boolean considerApproxGeolocations){
 		List<Post> results = new ArrayList<Post>();
 		
 		String query = new String("SELECT DISTINCT id_post " +
@@ -247,7 +247,7 @@ public class LocalDBPostDAO implements PostDAO {
 		if(terms.size()!=0 || fromDate !=null || toDate!=null || radius!=0){
 			query = query.concat("AND ");
 		}
-		query = query.concat("src = ?");
+		query = query.concat("src = ? AND coordinates_estimated = ?");
 		
 		try {
 			PreparedStatement stm = conn.prepareStatement(query);
@@ -294,6 +294,7 @@ public class LocalDBPostDAO implements PostDAO {
 				numberOfPreviousParams+=4;
 			}
 			stm.setString(terms.size()*6 + numberOfPreviousParams + 1, sourceName);
+			stm.setBoolean(terms.size()*6 + numberOfPreviousParams + 2, considerApproxGeolocations);
 			
 			ResultSet res = stm.executeQuery();
 			while(res.next()){

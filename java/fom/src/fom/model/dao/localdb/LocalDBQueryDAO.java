@@ -25,7 +25,7 @@ public class LocalDBQueryDAO implements QueryDAO {
 	
 	public LocalDBQueryDAO(Connection conn) {
 		try {
-			stm = conn.prepareStatement("INSERT INTO fom_query(id_user, query, t_start, t_end, t_granularity, lat, lon, geo_granularity, created, timezone) VALUES(?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+			stm = conn.prepareStatement("INSERT INTO fom_query(id_user, query, t_start, t_end, t_granularity, lat, lon, geo_granularity, created, timezone, meta) VALUES(?,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 			saveTermStm = conn.prepareStatement("INSERT INTO fom_querytag(id_term,id_query) VALUES(?,?)");
 			saveQueryStm = conn.prepareStatement("SELECT * FROM fom_query WHERE id_query=?");
 			getClusterStm = conn.prepareStatement("SELECT id_cluster FROM fom_cluster WHERE id_query=?");
@@ -52,6 +52,7 @@ public class LocalDBQueryDAO implements QueryDAO {
 			stm.setString(8, query.getGeoGranularity());
 			stm.setTimestamp(9, new Timestamp(query.getCreated().toDate().getTime()));
 			stm.setInt(10, query.getTimezone());
+			stm.setString(11, query.getMeta().toString());
 			stm.executeUpdate();
 			
 			ResultSet generatedKeys = stm.getGeneratedKeys();

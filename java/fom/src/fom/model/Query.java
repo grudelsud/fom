@@ -1,7 +1,9 @@
 package fom.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.joda.time.DateTime;
 
@@ -20,6 +22,7 @@ public class Query {
 	private int timezone;
 	private List<Cluster> clusters;
 	private List<Term> terms;
+	private Map<String, String> meta;
 	
 	
 	
@@ -38,6 +41,7 @@ public class Query {
 		this.timezone = timezone;
 		this.clusters = new ArrayList<Cluster>();
 		this.terms = new ArrayList<Term>();
+		this.meta = new HashMap<String, String>();
 	}
 
 	public Query(long id, long userId, String query, DateTime startTime, DateTime endTime, String timeGranularity, double lat, double lon, String geoGranularity, DateTime created, int timezone) {
@@ -55,6 +59,7 @@ public class Query {
 		this.timezone = timezone;
 		this.clusters = new ArrayList<Cluster>();
 		this.terms = new ArrayList<Term>();
+		this.meta = new HashMap<String, String>();
 	}
 
 	@Override
@@ -137,5 +142,9 @@ public class Query {
 
 	public int getRadius() {
 		return radius;
+	}
+	
+	public Map<String, String> getMeta(){
+		return meta;
 	}
 }

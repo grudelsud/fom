@@ -24,9 +24,13 @@
 	<classpathentry kind="lib" path="lib/wikipediaminer.jar"/>
 	<classpathentry kind="lib" path="lib/jargs.jar"/>
 	<classpathentry kind="lib" path="lib/jsoup-1.4.1.jar"/>
-	<classpathentry kind="lib" path="lib/twitter4j-core-2.1.12-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-core-3.0.3.jar"/>
 	<classpathentry kind="lib" path="lib/json.jar"/>
 	<classpathentry kind="lib" path="lib/trove-3.0.0rc1.jar"/>
+	<classpathentry kind="lib" path="lib/twitter4j/twitter4j-async-2.2.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/twitter4j/twitter4j-core-2.2.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/twitter4j/twitter4j-examples-2.2.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/twitter4j/twitter4j-media-support-2.2.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/twitter4j/twitter4j-stream-2.2.1-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
