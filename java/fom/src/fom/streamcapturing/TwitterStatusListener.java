@@ -3,6 +3,7 @@ package fom.streamcapturing;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.joda.time.DateTime;
 
@@ -73,7 +74,7 @@ public class TwitterStatusListener implements StatusListener {
         }
 		Post post = new TwitterPost(0, lat, lon, status.getText(), created, created, timezone, place, status.getId(), status.getUser().getId(), status.getUser().getLocation(), coordinatesEstimated);
 		try {
-			postQueue.put(post);
+			postQueue.offer(post, 50, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
