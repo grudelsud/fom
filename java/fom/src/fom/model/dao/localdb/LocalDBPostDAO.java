@@ -20,6 +20,7 @@ import org.codehaus.jackson.type.TypeReference;
 import org.joda.time.DateTime;
 
 import fom.indexing.IndexingQueue;
+import fom.model.GenericPost;
 import fom.model.Link;
 import fom.model.Media;
 import fom.model.Place;
@@ -164,7 +165,17 @@ public class LocalDBPostDAO implements PostDAO {
 				DateTime created = new DateTime(res.getTimestamp("created"));
 				DateTime modified = new DateTime(res.getTimestamp("modified"));
 				int timezone = res.getInt("timezone");
-				Map<String, String> meta = objMapper.readValue(res.getString("meta"), new TypeReference<Map<String,String>>() { });
+				String metaString = res.getString("meta");
+				System.out.println(metaString);
+				Map<String, String> meta = null;
+				
+				if(metaString!="" && metaString!=null){
+					try{
+						meta = objMapper.readValue(res.getString("meta"), new TypeReference<Map<String,String>>() { });											
+					} catch (JsonParseException e) {
+						e.printStackTrace();
+					}
+				}
 				String source = res.getString("src");
 				String userLocation = res.getString("user_location");
 				boolean coordinatesEstimated = res.getBoolean("coordinates_estimated");
@@ -172,6 +183,8 @@ public class LocalDBPostDAO implements PostDAO {
 					post = new TwitterPost(postId, lat, lon, content, created, modified, timezone, place, new Long(meta.get("tweetId")), new Integer(meta.get("twitterUserId")), userLocation, coordinatesEstimated);
 				} else if(source.equalsIgnoreCase("teamlife")){
 					post = new TeamlifePost(postId, lat, lon, content, created, modified, timezone, place, userLocation, coordinatesEstimated);
+				} else {
+					post = new GenericPost(postId, lat, lon, content, created, modified, timezone, place, userLocation, coordinatesEstimated);
 				}
 				
 				getMediaStm.setLong(1, post.getId());
@@ -193,10 +206,6 @@ public class LocalDBPostDAO implements PostDAO {
 				}
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (JsonParseException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
