@@ -113,7 +113,7 @@ function loadContent( cluster )
 	$('#post_content').empty().fadeOut('fast');
 	$('#content').empty().append( content ).fadeIn('fast');
 	$.ajax({
-		url: siteUrl + '/cluster/read_semantic/'+cluster.id_cluster+'/json',
+		url: siteUrl + '/cluster/read_semantic/'+cluster.id_cluster,
 		dataType: 'json',
 		success: function(data) {
 			var semClusterList = $('<ul class="cluster_semantic"></ul>');

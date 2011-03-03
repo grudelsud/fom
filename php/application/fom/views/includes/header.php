@@ -20,7 +20,7 @@
 	<ul>
 		<li><a href="<?php echo site_url('search') ?>" title="search">search</a></li>
 		<li><a href="<?php echo site_url('map') ?>" title="map">map</a></li>
-		<li><a href="<?php echo site_url('result') ?>" title="result">results</a></li>
+		<li><a href="<?php echo site_url('search/result') ?>" title="result">results</a></li>
 		<li><a href="<?php echo site_url('xmlrpc_client') ?>" title="xmlrpc client">xmlrpc client</a></li>
 	</ul>
 </div>

@@ -32,7 +32,7 @@
 | would be loaded.
 */
 
-$route['default_controller'] = "result";
+$route['default_controller'] = "map";
 
 
 /* End of file routes.php */

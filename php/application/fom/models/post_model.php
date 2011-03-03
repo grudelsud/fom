@@ -67,9 +67,10 @@ class Post_model extends CI_Model
 		}
 	}
 
-	function read( $lat = '', $lon = '', $geo_granularity = '', $t_start = '', $t_end = '', $t_granularity = '' )
+	function read( $lat = '', $lon = '', $geo_granularity = '', $t_start = '', $t_end = '', $t_granularity = '', $source = '' )
 	{
 		// TODO: implement lat/lon searches
+		if( !empty($source) ) $this->db->where('src', $source);
 		if( !empty($t_start) ) $this->db->where('created >', $t_start.' GMT');
 		if( !empty($t_end) ) $this->db->where('created <,', $t_end.' GMT');
 		$query = $this->db->get('post');

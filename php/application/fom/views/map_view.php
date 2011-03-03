@@ -25,7 +25,7 @@
 	<script type="text/javascript">
 	var initialLocation = new google.maps.LatLng(45.07339937951305, 7.674121856689453);
 	var siteUrl = '<?php echo site_url(); ?>';
-	var clusterUrl = '<?php echo site_url('cluster/read/'.$query_sel.'/json'); ?>';
+	var clusterUrl = '<?php echo site_url('cluster/read/'.$query_sel); ?>';
 	
 	$(document).ready(function() {
 		initialize( initialLocation );
@@ -48,7 +48,7 @@
 <script type="text/javascript" >
 $(function() {
 	$('#queries').change(function() {
-		var clusterUrl = '<?php echo site_url('cluster/read'); ?>/' + $(this).val() + '/json';
+		var clusterUrl = '<?php echo site_url('cluster/read'); ?>/' + $(this).val();
 		$('#content').empty().fadeOut('fast');
 		$('#post_content').empty().fadeOut('fast');
 		deleteOverlays();

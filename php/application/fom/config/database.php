@@ -57,22 +57,5 @@ $db['default']['swap_pre'] = '';
 $db['default']['autoinit'] = TRUE;
 $db['default']['stricton'] = FALSE;
 
-$db['test']['hostname'] = 'devdroidfom.db.6122217.hostedresource.com';
-$db['test']['username'] = 'devdroidfom';
-$db['test']['password'] = 'd3vDr01dF0M';
-$db['test']['database'] = 'devdroidfom';
-$db['test']['dbdriver'] = 'mysql';
-$db['test']['dbprefix'] = 'fom_';
-$db['test']['pconnect'] = TRUE;
-$db['test']['db_debug'] = TRUE;
-$db['test']['cache_on'] = FALSE;
-$db['test']['cachedir'] = '';
-$db['test']['char_set'] = 'utf8';
-$db['test']['dbcollat'] = 'utf8_general_ci';
-$db['test']['swap_pre'] = '';
-$db['test']['autoinit'] = TRUE;
-$db['test']['stricton'] = FALSE;
-
-
 /* End of file database.php */
 /* Location: ./application/config/database.php */

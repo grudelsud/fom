@@ -14,29 +14,16 @@ class Cluster extends CI_Controller
 		parent::__construct();
 	}
 	
-	function index()
-	{
-		redirect('/main');
-	}
-	
-	function read( $id_query, $format = 'json' )
+	function read( $id_query )
 	{
 		$this->load->model('Cluster_model');
-		if( $format == 'json' ) {
-			echo $this->Cluster_model->read( $id_query, $format );
-		} else {
-			redirect('/main');
-		}
+		echo $this->Cluster_model->read( $id_query, 'json' );
 	}
 
-	function read_semantic( $id_parent, $format = 'json' )
+	function read_semantic( $id_parent )
 	{
 		$this->load->model('Cluster_model');
-		if( $format == 'json' ) {
-			echo $this->Cluster_model->read_semantic( $id_parent, $format );
-		} else {
-			redirect('/main');
-		}
+		echo $this->Cluster_model->read_semantic( $id_parent, 'json' );
 	}
 	
 	function read_post( $id_post )
@@ -44,17 +31,19 @@ class Cluster extends CI_Controller
 		$this->load->model('post_model');
 		echo $this->post_model->read_id( $id_post );
 	}
+
+	function read_link( $id_link )
+	{
+		// TODO: implement
+		echo json_encode(array());
+	}
 	
-	function delete( $id_cluster, $format = 'json' )
+	function delete( $id_cluster )
 	{
 //		$this->load->model('Cluster_model');
 //		$this->Cluster_model->delete( $id_cluster );
-		if( $format == 'json' ) {
-			echo json_encode( array('delete' => $id_cluster ) );
-		} else {
-			redirect('/main');
-		}
+		echo json_encode( array('delete' => $id_cluster ) );
 	}
 }
 
-/* end of file main.php */
+/* end of file cluster.php */
