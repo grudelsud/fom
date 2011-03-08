@@ -1,5 +1,3 @@
-<?php $this->load->view('includes/header'); ?>
-
 <div id="query">
 <h1>Queries</h1>
 <table>
@@ -11,8 +9,8 @@ foreach ($queries as $query) {
 	}
 	echo '<tr id="q'.$query->id_query.'">'.
 		'<td>'.
-		'<a class="view" href="'.site_url('cluster/read/'.$query->id_query.'/json').'"><img src="'.assets_url('assets/img').'/add.png" alt="+" /></a>'.
-		'<a href="'.site_url('query/delete/'.$query->id_query).'"><img src="'.assets_url('assets/img').'/delete.png" alt="-" /></a>'.
+		'<a class="view" href="'.site_url('cluster/read/'.$query->id_query).'"><img src="'.assets_url('assets/img').'/add.png" alt="+" /></a>'.
+//		'<a href="'.site_url('query/delete/'.$query->id_query).'"><img src="'.assets_url('assets/img').'/delete.png" alt="-" /></a>'.
 		'</td>'.
 		'<td>'.( isset( $query_values) ? $query_values->terms : 'free query').'</td>'.
 		'<td>'.$query->created.'</td>'.
@@ -67,5 +65,3 @@ foreach ($queries as $query) {
 		});
 	});
 </script>
-
-<?php $this->load->view('includes/footer'); ?>

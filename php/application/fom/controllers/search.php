@@ -16,12 +16,21 @@ class Search extends CI_Controller
 
 	function index()
 	{
-		$this->load->library('twitter');
-		$data = $this->twitter->search('trends');
-		$this->load->view('search_view', $data);
+//		$this->load->library('twitter');
+//		$data['trends'] = $this->twitter->search('trends');
+		$data['view'] = 'search';
+		$this->load->view('template_view', $data);
 	}
 
-	function query_post()
+	function result()
+	{
+		$this->load->model('query_model');
+		$data['queries'] = $this->query_model->read();
+		$data['view'] = 'result';
+		$this->load->view('template_view', $data);
+	}
+	
+	function query()
 	{
 		$terms = $this->input->post('terms');
 		$since = $this->input->post('since');
@@ -32,8 +41,7 @@ class Search extends CI_Controller
 
 //		$this->load->library('fom_search');
 //		$data['results'] = $this->fom_search->query( $terms, $since, $until, $where, $granularity, $source );
-//		$this->load->view('search_view', $data );
-		redirect('/result');
+		$this->result();
 	}
 }
 
