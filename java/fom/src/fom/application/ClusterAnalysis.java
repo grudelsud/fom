@@ -74,6 +74,9 @@ public class ClusterAnalysis implements Runnable{
 		logger.addTimeCluster(timeCluster);
 		query.addCluster(timeCluster);
 		geoClusters = new GeoClustering(query, posts, query.getGeoGranularity(), timeCluster).performClustering();
+		
+		long ldaStartTime = System.currentTimeMillis();
+		System.out.println("Extracting topics...");
 		for(GeoCluster geoCluster : geoClusters){
 			logger.addGeoCluster(geoCluster);
 			query.addCluster(geoCluster);
@@ -85,6 +88,7 @@ public class ClusterAnalysis implements Runnable{
 				query.addCluster(semCluster);
 			}
 		}
+		System.out.println("Topic extracted in " + (System.currentTimeMillis()-ldaStartTime)/1000 + " ms");
 		logger.endLog();
 		System.out.println("Logs:\n" + logger.getLogs());
 		System.out.println("Saving results on the DB...");

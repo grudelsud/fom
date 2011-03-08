@@ -2,8 +2,10 @@ package fom.clustering.algorithms;
 
 import java.util.List;
 
-public interface Clusterer<ObjectType> {
+import fom.model.Post;
+
+public interface Clusterer {
 	
-	public List<List<ObjectType>> performClustering(List<ObjectType> data);
+	public List<List<Post>> performClustering(List<Post> data);
 	
 }

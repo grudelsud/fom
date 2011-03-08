@@ -166,7 +166,7 @@ public class LocalDBPostDAO implements PostDAO {
 				DateTime modified = new DateTime(res.getTimestamp("modified"));
 				int timezone = res.getInt("timezone");
 				String metaString = res.getString("meta");
-				System.out.println(metaString);
+		//		System.out.println(metaString);
 				Map<String, String> meta = null;
 				
 				if(metaString!="" && metaString!=null){
@@ -256,7 +256,11 @@ public class LocalDBPostDAO implements PostDAO {
 		if(terms.size()!=0 || fromDate !=null || toDate!=null || radius!=0){
 			query = query.concat("AND ");
 		}
-		query = query.concat("src = ? AND coordinates_estimated = ?");
+		query = query.concat("src = ?");
+		if(!considerApproxGeolocations){
+			query = query.concat(" AND coordinates_estimated = 0");
+		}
+		
 		
 		try {
 			PreparedStatement stm = conn.prepareStatement(query);
@@ -303,7 +307,6 @@ public class LocalDBPostDAO implements PostDAO {
 				numberOfPreviousParams+=4;
 			}
 			stm.setString(terms.size()*6 + numberOfPreviousParams + 1, sourceName);
-			stm.setBoolean(terms.size()*6 + numberOfPreviousParams + 2, considerApproxGeolocations);
 			
 			ResultSet res = stm.executeQuery();
 			while(res.next()){

@@ -7,6 +7,7 @@ import fom.clustering.algorithms.kmedoids.jmlcore.DefaultDataset;
 import fom.clustering.algorithms.kmedoids.jmlcore.DenseInstance;
 import fom.clustering.algorithms.kmedoids.jmlcore.Instance;
 import fom.clustering.algorithms.kmedoids.metrics.AbstractMetric;
+import fom.model.Post;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,16 +19,16 @@ import java.util.List;
  * @author    Federico Frappi
  * @param  < ObjectType  >  The type of the objects to be clustered.
  */
-public class KMedoidsClusterer<ObjectType> implements Clusterer<ObjectType> {
+public class KMedoidsClusterer implements Clusterer {
 	private Dataset dataset;
 	private Dataset[] clusters = null;
 	
 	KMedoidsAlgorithm algorithm;
-	private AbstractMetric<ObjectType> distanceMeasure;
+	private AbstractMetric<Post> distanceMeasure;
 	private int k;
 	private int maxIterations;
 	
-	public KMedoidsClusterer(AbstractMetric<ObjectType> distanceMeasure, int k, int maxIterations){
+	public KMedoidsClusterer(AbstractMetric<Post> distanceMeasure, int k, int maxIterations){
 		this.distanceMeasure = distanceMeasure;
 		this.k = k;
 		this.maxIterations = maxIterations;
@@ -39,8 +40,8 @@ public class KMedoidsClusterer<ObjectType> implements Clusterer<ObjectType> {
 	 * Performs the clustering.
 	 * 
 	 */
-	public List<List<ObjectType>> performClustering(List<ObjectType> data){
-		List<List<ObjectType>> results = new ArrayList<List<ObjectType>>();
+	public List<List<Post>> performClustering(List<Post> data){
+		List<List<Post>> results = new ArrayList<List<Post>>();
 		dataset = new DefaultDataset();
 		for(int i=0; i<data.size(); i++){
 			double[] attr = {i};
@@ -51,7 +52,7 @@ public class KMedoidsClusterer<ObjectType> implements Clusterer<ObjectType> {
 		clusters = algorithm.cluster(dataset);
 		
 		for(int clusterIndex=0; clusterIndex<clusters.length; clusterIndex++){
-			List<ObjectType> resultCurrentCluster = new ArrayList<ObjectType>();
+			List<Post> resultCurrentCluster = new ArrayList<Post>();
 			Dataset currentCluster = clusters[clusterIndex];
 			for(int currentIndexInCluster=0; currentIndexInCluster<currentCluster.size(); currentIndexInCluster++){
 				int objectIndex = (int)currentCluster.instance(currentIndexInCluster).value(0);

@@ -6,7 +6,7 @@ import java.util.List;
 import fom.clustering.algorithms.Clusterer;
 import fom.clustering.algorithms.ClustererFactory;
 import fom.clustering.algorithms.hierarchical.metrics.ClusterDistanceMeasure;
-import fom.clustering.algorithms.hierarchical.metrics.PostClusterGeoDistanceNoCache;
+import fom.clustering.algorithms.hierarchical.metrics.GeoClusterApproxCompleteLinkage;
 import fom.model.Cluster;
 import fom.model.GeoCluster;
 import fom.model.Post;
@@ -14,7 +14,7 @@ import fom.model.Query;
 
 public class GeoClustering {	
 	private Cluster parentCluster;
-	private Clusterer<Post> clusterer;
+	private Clusterer clusterer;
 	private List<Post> posts;
 	private List<GeoCluster> clusters;
 	private String granularity;
@@ -22,7 +22,7 @@ public class GeoClustering {
 	
 	public GeoClustering(Query originatingQuery, List<Post> posts, String granularity, Cluster parentCluster){
 		this.posts = new ArrayList<Post>();
-		clusters = new ArrayList<GeoCluster>();
+		this.clusters = new ArrayList<GeoCluster>();
 		this.granularity = granularity;
 		this.originatingQuery = originatingQuery;
 		this.posts = posts;
@@ -31,6 +31,7 @@ public class GeoClustering {
 	
 	public List<GeoCluster> performClustering(){
 		
+		System.out.println("Geoclustering...");
 		GeoCluster notGeoTagged = new GeoCluster(originatingQuery, parentCluster);
 		List<Post> toBeClustered = new ArrayList<Post>();
 		
@@ -53,8 +54,8 @@ public class GeoClustering {
 			} else {
 				distLimit = Integer.parseInt(granularity);
 			}
-			ClusterDistanceMeasure<Post> distMeasure = new PostClusterGeoDistanceNoCache();
-			clusterer = ClustererFactory.getHAClusterer(distMeasure, distLimit);
+			ClusterDistanceMeasure distMeasure = new GeoClusterApproxCompleteLinkage();
+			clusterer = ClustererFactory.getGreedyHAC(distMeasure, distLimit);
 
 			List<List<Post>> clusteringResult = clusterer.performClustering(toBeClustered);
 			for(List<Post> cluster : clusteringResult){

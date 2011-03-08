@@ -1,15 +1,14 @@
 package fom.clustering.algorithms.hierarchical.metrics;
 
 
-import fom.clustering.algorithms.hierarchical.HierarchicalCluster;
+import fom.clustering.algorithms.hierarchical.HierarchicalPostCluster;
 import fom.model.Post;
 
-public class PostClusterGeoDistanceNoCache implements ClusterDistanceMeasure<Post> {
+public class GeoClusterCompleteLinkage implements ClusterDistanceMeasure {
 	
 	@Override
-	public double getDistance(HierarchicalCluster<Post> cluster1, HierarchicalCluster<Post> cluster2) {
+	public double getDistance(HierarchicalPostCluster cluster1, HierarchicalPostCluster cluster2) {
 		double maxDistance = 0;
-		
 		for(Post cluster1Post : cluster1.getObjects()){
 			for(Post cluster2Post : cluster2.getObjects()){
 				double lat1 = Math.toRadians(cluster1Post.getLat());

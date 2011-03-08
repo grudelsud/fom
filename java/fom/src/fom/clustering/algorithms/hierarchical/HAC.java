@@ -5,24 +5,25 @@ import java.util.List;
 
 import fom.clustering.algorithms.Clusterer;
 import fom.clustering.algorithms.DistanceMeasure;
+import fom.model.Post;
 
-public class HierarchicalAgglomerativeClusterer<ObjectType> implements Clusterer<ObjectType> {
+public class HAC implements Clusterer {
 
 	double limit;
-	DistanceMeasure<HierarchicalCluster<ObjectType>> distMeasure;
+	DistanceMeasure<HierarchicalPostCluster> distMeasure;
 	
-	public HierarchicalAgglomerativeClusterer(DistanceMeasure<HierarchicalCluster<ObjectType>> distMeasure, double limit){
+	public HAC(DistanceMeasure<HierarchicalPostCluster> distMeasure, double limit){
 		this.distMeasure = distMeasure;
 		this.limit = limit;
 	}
 		
 	@Override
-	public List<List<ObjectType>> performClustering(List<ObjectType> data){
-		List<List<ObjectType>> results = new ArrayList<List<ObjectType>>();
+	public List<List<Post>> performClustering(List<Post> data){
+		List<List<Post>> results = new ArrayList<List<Post>>();
 		boolean change = true;
-		List<HierarchicalCluster<ObjectType>> clusters = new ArrayList<HierarchicalCluster<ObjectType>>();
-		for(ObjectType obj : data){
-			clusters.add(new HierarchicalCluster<ObjectType>(obj));
+		List<HierarchicalPostCluster> clusters = new ArrayList<HierarchicalPostCluster>();
+		for(Post obj : data){
+			clusters.add(new HierarchicalPostCluster(obj));
 		}
 		while(change){
 			int minDistI = -1;
@@ -50,7 +51,7 @@ public class HierarchicalAgglomerativeClusterer<ObjectType> implements Clusterer
 			}
 			System.out.println("Completed iteration, " + clusters.size() + " clusters");
 		}
-		for(HierarchicalCluster<ObjectType> cluster : clusters){
+		for(HierarchicalPostCluster cluster : clusters){
 			results.add(cluster.getObjects());
 		}
 		return results;

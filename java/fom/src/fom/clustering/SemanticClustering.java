@@ -25,12 +25,13 @@ public class SemanticClustering {
 	}
 	
 	public List<SemanticCluster> performClustering(){
+		Vocabulary voc = new Vocabulary("MainVoc", "");
 		if(posts.size()>0){
 			List<List<String>> topics = TopicExtractor.extractTopics(posts);
 			for(List<String> topic : topics){
 				SemanticCluster currentCluster = new SemanticCluster(originatingQuery, parentCluster);
 				for(String word : topic){
-					currentCluster.addTerm(new Term(word, "", null, null, new Vocabulary("MainVoc", "")));
+					currentCluster.addTerm(new Term(word, "", null, null, voc));
 				}
 				clusters.add(currentCluster);
 			}
