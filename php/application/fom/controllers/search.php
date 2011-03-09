@@ -18,7 +18,7 @@ class Search extends CI_Controller
 	{
 //		$this->load->library('twitter');
 //		$data['trends'] = $this->twitter->search('trends');
-		$data['view'] = 'search';
+		$data['view'] = 'includes/search';
 		$this->load->view('template_view', $data);
 	}
 
@@ -26,7 +26,7 @@ class Search extends CI_Controller
 	{
 		$this->load->model('query_model');
 		$data['queries'] = $this->query_model->read();
-		$data['view'] = 'result';
+		$data['view'] = 'includes/result';
 		$this->load->view('template_view', $data);
 	}
 	

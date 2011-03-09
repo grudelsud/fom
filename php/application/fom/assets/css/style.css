@@ -15,6 +15,10 @@ table { width: 100%; }
 th { background: #DDD; text-align: left; font-weight: normal; color: #FFF; }
 td, th { border: 1px solid #DDD; border-width: 0 1px 1px 0; padding: 3px; }
 
+#debug_bar { position: absolute; z-index: 1000; top: 0; right: 0; width: 500px; background: #433; color: #FEE; font-size: 0.9em; }
+#debug_bar span { display: block; cursor: pointer; text-align: right; }
+#debug_content {}
+
 /**
  * structure IDs
  * - wrapper

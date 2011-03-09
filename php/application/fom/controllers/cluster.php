@@ -35,7 +35,13 @@ class Cluster extends CI_Controller
 	function read_link( $id_link )
 	{
 		// TODO: implement
-		echo json_encode(array());
+		$this->db->where('id_link', $id_link);
+		$query = $this->db->get('link');
+		if( $query->num_rows() > 0 ) {
+			echo json_encode($query->row());
+		} else {
+			echo json_encode(new stdClass());
+		}
 	}
 	
 	function delete( $id_cluster )
