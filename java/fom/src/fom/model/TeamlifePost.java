@@ -5,11 +5,13 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 
+import fom.langidentification.LanguageIdentifier.Language;
+
 public class TeamlifePost extends Post {
 
 
-	public TeamlifePost(long id, double lat, double lon, String content, DateTime created, DateTime modified, int timezone, Place location, String userLocation, boolean coordinatesEstimated) {
-		super(id, lat, lon, content, created, modified, timezone, location, userLocation, coordinatesEstimated);
+	public TeamlifePost(long id, double lat, double lon, String content, DateTime created, DateTime modified, int timezone, Place location, String userLocation, boolean coordinatesEstimated, Language language) {
+		super(id, lat, lon, content, created, modified, timezone, location, userLocation, coordinatesEstimated, language);
 	}
 
 	@Override

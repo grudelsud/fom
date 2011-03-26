@@ -10,58 +10,11 @@ public class GeoCluster extends Cluster {
 		super(originatingQuery, parent);
 		this.originatingQuery = originatingQuery;
 	}
-	
-	public double getMeanLat() {
-		if(this.getPosts().size()==0){
-			return 0;					//TODO: exception?
-		}
-		/*
-		if(this.getPosts().get(1).getLat()==0 && this.getPosts().get(1).getLon()==0){
-			if(originatingQuery.getLat()!=0 || originatingQuery.getLon()!=0){ //If it's a geoQuery and this is the cluster with the posts without the coordinates
-				return originatingQuery.getLat();
-			}
-		}
-		*/
-		double meanLat = 0;
-		for(Post post: this.getPosts()){
-			meanLat+=post.getLat();
-		}
-		meanLat = meanLat/this.getPosts().size();
-		return meanLat;
-	}
-
-
-	public double getMeanLon() {
-		if(this.getPosts().size()==0){
-			return 0;					//TODO: exception?
-		}
-		/*
-		if(this.getPosts().get(1).getLat()==0 && this.getPosts().get(1).getLon()==0){
-			if(originatingQuery.getLat()!=0 || originatingQuery.getLon()!=0){ //If it's a geoQuery and this is the cluster with the posts without the coordinates
-				return originatingQuery.getLon();
-			}
-		}
-		*/
-		double meanLon = 0;
-		for(Post post: this.getPosts()){
-			meanLon+=post.getLon();
-		}
-		meanLon = meanLon/this.getPosts().size();
-		return meanLon;
-	}
-
 
 	public double getStdDevLat() {
 		if(this.getPosts().size()==0){
 			return 0;					//TODO: exception?
 		}
-		/*
-		if(this.getPosts().get(1).getLat()==0 && this.getPosts().get(1).getLon()==0){
-			if(originatingQuery.getLat()!=0 || originatingQuery.getLon()!=0){ //If it's a geoQuery and this is the cluster with the posts without the coordinates
-				return originatingQuery.getRadius();
-			}
-		}
-		*/
 		if(this.getPosts().size()==1){
 			return 0;
 		}
@@ -83,13 +36,6 @@ public class GeoCluster extends Cluster {
 		if(this.getPosts().size()==0){
 			return 0;					//TODO: exception?
 		}
-		/*
-		if(this.getPosts().get(1).getLat()==0 && this.getPosts().get(1).getLon()==0){
-			if(originatingQuery.getLat()!=0 || originatingQuery.getLon()!=0){ //If it's a geoQuery and this is the cluster with the posts without the coordinates
-				return originatingQuery.getRadius();
-			}
-		}
-		*/
 		if(this.getPosts().size()==1){
 			return 0;
 		}		

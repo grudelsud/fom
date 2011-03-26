@@ -12,6 +12,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import fom.properties.PropertyHandler;
 import fom.resultlogging.ResultLogger;
 import fom.resultlogging.logengines.CSVLogger;
 import fom.resultlogging.logengines.ConsoleLogger;
@@ -113,9 +114,9 @@ public class Main {
 		//CaptureStream
 		if(parser.getOptionValue(captureStreamOpt)!=null){
 			if(parser.getOptionValue(filterGeoTaggedOpt)!=null){
-				new Thread(new StreamCapturer(true)).start();				
+				new Thread(new StreamCapturer(true, new String[0], parseGeoBoxes())).start();				
 			}else{
-				new Thread(new StreamCapturer(false)).start();				
+				new Thread(new StreamCapturer(false, new String[0], parseGeoBoxes())).start();				
 			}
 			return;
 		}
@@ -234,5 +235,22 @@ public class Main {
 		
 		QueryHandler qHandler = new QueryHandler(expEngineName, sources, logger, userId, queryString, startTime, endTime, timeGranularity, geoGranularity, nearLat, nearLon, radius);
 		new Thread(qHandler).start();
+	}
+
+	private static double[][] parseGeoBoxes() {
+		String geoBoxes = PropertyHandler.getStringProperty("GeoBoxes");
+		String[] coords = geoBoxes.split(",");
+		if(coords.length==1){
+			return new double[0][0];
+		}
+		if(coords.length/2>25){
+			System.err.println("A maximum of 25 GeoBoxes is allowed, the list will be truncated");
+		}
+		int limit = coords.length>50?50:coords.length;
+		double[][] result = new double[limit][2];
+		for(int i=0; i<limit; i++){
+			result[i/2][i%2]=Double.parseDouble(coords[i]);
+		}
+		return result;
 	}
 }

@@ -10,6 +10,9 @@ import org.joda.time.DateTime;
 import fom.application.StreamCapturer;
 import fom.geocoding.Geocoder;
 import fom.geocoding.LocalGeonamesGeocoder;
+import fom.langidentification.LanguageIdentifier;
+import fom.langidentification.LanguageIdentifier.Language;
+import fom.langidentification.TextcatLangIdentifier;
 import fom.model.Place;
 import fom.model.Post;
 import fom.model.TwitterPost;
@@ -23,12 +26,15 @@ public class TwitterStatusListener implements StatusListener {
 	private boolean filterGeoTagged;
 	private BlockingQueue<Post> postQueue;
 	private Geocoder geocoder;
+	private LanguageIdentifier langIdentifier;
+	
 	
 	public TwitterStatusListener(StreamCapturer streamCapturer, boolean filterGeoTagged){
 		this.streamCapturer = streamCapturer;
 		this.filterGeoTagged = filterGeoTagged;
 		this.postQueue = new ArrayBlockingQueue<Post>(1000);
 		this.geocoder = new LocalGeonamesGeocoder();
+		this.langIdentifier = new TextcatLangIdentifier();
 		new Thread(new PostQueueProcessor(postQueue)).start();
 	}
 	
@@ -66,13 +72,21 @@ public class TwitterStatusListener implements StatusListener {
     		}
     	}
     	
+    	
     	DateTime created = new DateTime(status.getCreatedAt());
 		int timezone = created.getZone().getOffset(created.getMillis())/(1000*60*60);
         Place place = null;
         if(status.getPlace()!=null){
         	place = new Place(0, 0, status.getPlace().getURL(), status.getPlace().getPlaceType());
         }
-		Post post = new TwitterPost(0, lat, lon, status.getText(), created, created, timezone, place, status.getId(), status.getUser().getId(), status.getUser().getLocation(), coordinatesEstimated);
+        long rtCount = 0;
+        if(status.isRetweet()){
+        	rtCount = status.getRetweetedStatus().getRetweetCount();
+        }
+        int followerCount = status.getUser().getFollowersCount();
+        Language lang = langIdentifier.identifyLanguageOf(status.getText());
+
+        Post post = new TwitterPost(0, lat, lon, status.getText(), created, created, timezone, place, status.getId(), status.getUser().getId(), status.getUser().getLocation(), coordinatesEstimated, lang, rtCount, followerCount);
 		try {
 			postQueue.offer(post, 50, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {

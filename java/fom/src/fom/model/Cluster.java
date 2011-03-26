@@ -57,4 +57,28 @@ public abstract class Cluster {
 		return parentCluster;
 	}
 	
+	public double getMeanLat() {
+		if(this.getPosts().size()==0){
+			return 0;					//TODO: exception?
+		}
+		double meanLat = 0;
+		for(Post post: this.getPosts()){
+			meanLat+=post.getLat();
+		}
+		meanLat = meanLat/this.getPosts().size();
+		return meanLat;
+	}
+
+
+	public double getMeanLon() {
+		if(this.getPosts().size()==0){
+			return 0;					//TODO: exception?
+		}
+		double meanLon = 0;
+		for(Post post: this.getPosts()){
+			meanLon+=post.getLon();
+		}
+		meanLon = meanLon/this.getPosts().size();
+		return meanLon;
+	}
 }

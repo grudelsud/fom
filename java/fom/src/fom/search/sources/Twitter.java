@@ -15,6 +15,9 @@ import twitter4j.TwitterFactory;
 
 import fom.geocoding.Geocoder;
 import fom.geocoding.LocalGeonamesGeocoder;
+import fom.langidentification.LanguageIdentifier;
+import fom.langidentification.LanguageIdentifier.Language;
+import fom.langidentification.TextcatLangIdentifier;
 import fom.model.Post;
 import fom.model.TwitterPost;
 import fom.utils.StringOperations;
@@ -24,10 +27,12 @@ public class Twitter implements Source {
 	
 	private twitter4j.Twitter twitter;
 	private List<Post> results;
+	private LanguageIdentifier langIdentifier;
 	
 	public Twitter(){
 		this.results = new ArrayList<Post>();
 		twitter = new TwitterFactory().getInstance();
+		this.langIdentifier = new TextcatLangIdentifier();
 	}
 
 	@Override
@@ -114,7 +119,11 @@ public class Twitter implements Source {
 		DateTime created = new DateTime(tweet.getCreatedAt());
 		int timezone = created.getZone().getOffset(created.getMillis())/(1000*60*60);
 		
-		results.add(new TwitterPost(0, lat, lon, content, created, created, timezone, null, tweet.getId(), tweet.getFromUserId(), tweet.getLocation(), coordinatesEstimated));
+		Language lang = langIdentifier.identifyLanguageOf(tweet.getText());
+		int rtCount = 0;
+		int follCount = 0;
+		
+		results.add(new TwitterPost(0, lat, lon, content, created, created, timezone, null, tweet.getId(), tweet.getFromUserId(), tweet.getLocation(), coordinatesEstimated,lang, rtCount, follCount));
 	}
 	
 }

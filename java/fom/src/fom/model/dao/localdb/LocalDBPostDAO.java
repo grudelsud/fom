@@ -20,6 +20,7 @@ import org.codehaus.jackson.type.TypeReference;
 import org.joda.time.DateTime;
 
 import fom.indexing.IndexingQueue;
+import fom.langidentification.LanguageIdentifier.Language;
 import fom.model.GenericPost;
 import fom.model.Link;
 import fom.model.Media;
@@ -50,7 +51,7 @@ public class LocalDBPostDAO implements PostDAO {
 	public LocalDBPostDAO(Connection conn) {
 		try {
 			checkAlreadySavedStm = conn.prepareStatement("SELECT id_post FROM fom_post WHERE src = ? AND src_id = ?");
-			savePostStm = conn.prepareStatement("INSERT INTO fom_post(lat,lon,content,created,modified,timezone,meta,src,id_place,src_id,user_location, coordinates_estimated) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+			savePostStm = conn.prepareStatement("INSERT INTO fom_post(lat,lon,content,created,modified,timezone,meta,src,id_place,src_id,user_location, coordinates_estimated, lang) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 			saveMediaStm = conn.prepareStatement("INSERT INTO fom_postmedia(id_media,id_post) VALUES (?,?)");
 			saveTermStm = conn.prepareStatement("INSERT INTO fom_posttag(id_term,id_post) VALUES(?,?)");
 			saveLinkStm = conn.prepareStatement("INSERT INTO fom_postlink(id_post, id_link) VALUES(?,?)");
@@ -64,7 +65,6 @@ public class LocalDBPostDAO implements PostDAO {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 
 	@Override
@@ -112,6 +112,8 @@ public class LocalDBPostDAO implements PostDAO {
 			}
 			
 			savePostStm.setBoolean(12, post.areCoordinatesEstimated());
+			
+			savePostStm.setString(13, post.getLanguage().toString());
 			
 			savePostStm.executeUpdate();
 			ResultSet generatedKeys = savePostStm.getGeneratedKeys();
@@ -179,12 +181,23 @@ public class LocalDBPostDAO implements PostDAO {
 				String source = res.getString("src");
 				String userLocation = res.getString("user_location");
 				boolean coordinatesEstimated = res.getBoolean("coordinates_estimated");
+				String langString = res.getString("lang");
+				Language lang = Language.unknown;
+				if(langString!=null && !langString.equalsIgnoreCase("")){
+					lang = Enum.valueOf(Language.class, res.getString("lang"));					
+				}
 				if(source.equalsIgnoreCase("twitter")){
-					post = new TwitterPost(postId, lat, lon, content, created, modified, timezone, place, new Long(meta.get("tweetId")), new Integer(meta.get("twitterUserId")), userLocation, coordinatesEstimated);
+					long tweetId = Long.parseLong(meta.get("tweetId"));
+					long twitterUserID = Long.parseLong(meta.get("twitterUserId"));
+					
+					long rtCount = meta.get("rtCount")==null?0:Long.parseLong(meta.get("rtCount"));
+					int followerCount = meta.get("followerCount")==null?0:Integer.parseInt(meta.get("followerCount"));
+					
+					post = new TwitterPost(postId, lat, lon, content, created, modified, timezone, place, tweetId, twitterUserID, userLocation, coordinatesEstimated, lang, rtCount, followerCount);
 				} else if(source.equalsIgnoreCase("teamlife")){
-					post = new TeamlifePost(postId, lat, lon, content, created, modified, timezone, place, userLocation, coordinatesEstimated);
+					post = new TeamlifePost(postId, lat, lon, content, created, modified, timezone, place, userLocation, coordinatesEstimated, lang);
 				} else {
-					post = new GenericPost(postId, lat, lon, content, created, modified, timezone, place, userLocation, coordinatesEstimated);
+					post = new GenericPost(postId, lat, lon, content, created, modified, timezone, place, userLocation, coordinatesEstimated, lang);
 				}
 				
 				getMediaStm.setLong(1, post.getId());
@@ -318,21 +331,4 @@ public class LocalDBPostDAO implements PostDAO {
 		}
 		return results;
 	}
-
-	/*
-	public List<Post> getAllPosts(){
-		List<Post> posts = new ArrayList<Post>();
-		try {
-			PreparedStatement stm = conn.prepareStatement("SELECT id_post FROM fom_post");
-			ResultSet res = stm.executeQuery();
-			while(res.next()){
-				posts.add(DAOFactory.getFactory().getPostDAO().retrieve(res.getLong("id_post")));
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return posts;
-	}
-	*/
 }

@@ -5,6 +5,8 @@ import java.util.concurrent.BlockingQueue;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import fom.langidentification.LanguageIdentifier;
+import fom.langidentification.TextcatLangIdentifier;
 import fom.model.Link;
 import fom.model.Post;
 import fom.model.dao.interfaces.PostDAO;
@@ -16,10 +18,12 @@ public class PostQueueProcessor implements Runnable {
 
 	private BlockingQueue<Post> postQueue;
 	private PostDAO postDAO;
+	private LanguageIdentifier langIdentifier;
 	
 	public PostQueueProcessor(BlockingQueue<Post> postQueue){
 		this.postQueue = postQueue;
 		postDAO = LocalDBDAOFactory.getFactory().getPostDAO();
+		langIdentifier = new TextcatLangIdentifier();
 	}	
 	
 	@Override
@@ -27,6 +31,7 @@ public class PostQueueProcessor implements Runnable {
 		while(true){
 			try {
 				Post currentPost = postQueue.take();
+				langIdentifier.identifyLanguageOf(currentPost.getContent());
 				for(String link : StringOperations.extractURLs(currentPost.getContent())){
 					try {
 						Document doc = Jsoup.connect(link).get();

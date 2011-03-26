@@ -5,10 +5,12 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 
+import fom.langidentification.LanguageIdentifier.Language;
+
 public class GenericPost extends Post {
 
-	public GenericPost(long id, double lat, double lon, String content, DateTime created, DateTime modified, int timezone, Place place, String userLocation, boolean coordinatesEstimated) {
-		super(id, lat, lon, content, created, modified, timezone, place, userLocation, coordinatesEstimated);
+	public GenericPost(long id, double lat, double lon, String content, DateTime created, DateTime modified, int timezone, Place place, String userLocation, boolean coordinatesEstimated, Language language) {
+		super(id, lat, lon, content, created, modified, timezone, place, userLocation, coordinatesEstimated, language);
 	}
 
 	@Override

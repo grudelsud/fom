@@ -2,6 +2,7 @@ package fom.application;
 
 import fom.properties.PropertyHandler;
 import fom.streamcapturing.TwitterStatusListener;
+import twitter4j.FilterQuery;
 import twitter4j.StatusListener;
 import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
@@ -12,14 +13,28 @@ public class StreamCapturer implements Runnable {
 	private boolean filterGeoTagged;
 	private StatusListener listener;
 	private TwitterStream twitterStream;
+	private String[] trackKeywords;
+	private double[][] geoBoxes;
+	private boolean sample;
 	
-	public StreamCapturer(boolean filterGeoTagged){
+	public StreamCapturer(boolean filterGeoTagged, String[] trackKeywords, double[][] geoBoxes){
 		this.filterGeoTagged = filterGeoTagged;
+		this.trackKeywords = trackKeywords;
+		this.geoBoxes = geoBoxes;
+		if(trackKeywords.length==0 && geoBoxes.length==0){
+			this.sample = true;
+		} else {
+			this.sample = false;
+		}
 	}
 	
 	public void run() {
 		setupCapturer();
-	    twitterStream.sample();
+		if(sample){
+			twitterStream.sample();
+		} else {
+			twitterStream.filter(new FilterQuery(0, new long[0], trackKeywords, geoBoxes));			
+		}
 	}
 	
 	private void setupCapturer(){
@@ -43,6 +58,10 @@ public class StreamCapturer implements Runnable {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-	    twitterStream.sample();
+		if(sample){
+			twitterStream.sample();
+		} else {
+			twitterStream.filter(new FilterQuery(0, new long[0], trackKeywords, geoBoxes));			
+		}
 	}
 }

@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 
+import fom.langidentification.LanguageIdentifier.Language;
+
 public abstract class Post {
  
 	private long id;
@@ -21,12 +23,13 @@ public abstract class Post {
 	private List<Link> links;
 	private String userLocation;
 	private boolean coordinatesEstimated;
+	private Language language;
 	
 	public abstract Map<String, String> getMeta();
 	public abstract String getSourceName();
 	public abstract long getSourceId();
 
-	public Post(long id, double lat, double lon, String content, DateTime created, DateTime modified, int timezone, Place place, String userLocation, boolean coordinatesEstimated){
+	public Post(long id, double lat, double lon, String content, DateTime created, DateTime modified, int timezone, Place place, String userLocation, boolean coordinatesEstimated, Language lang){
 		this.id = id;
 		this.lat = lat;
 		this.lon = lon;
@@ -37,9 +40,10 @@ public abstract class Post {
 		this.place = place;
 		this.userLocation = userLocation;
 		this.coordinatesEstimated = coordinatesEstimated;
-		media = new ArrayList<Media>();
-		terms = new ArrayList<Term>();
-		links = new ArrayList<Link>();
+		this.media = new ArrayList<Media>();
+		this.terms = new ArrayList<Term>();
+		this.links = new ArrayList<Link>();
+		this.language = lang;
 	}
 	
 	public long getId() {
@@ -107,6 +111,10 @@ public abstract class Post {
 	
 	public void addTerm(Term theTerm){
 		this.terms.add(theTerm);
+	}
+	
+	public Language getLanguage(){
+		return language;
 	}
 	
 }

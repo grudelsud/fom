@@ -27,7 +27,6 @@ import fom.model.dao.interfaces.DAOFactory;
 
 public class LocalDBClusterDAO implements ClusterDAO {
 	
-//	private Connection conn;
 	private PreparedStatement stm;
 //	private PreparedStatement saveTermStm;
 //	private PreparedStatement saveClusterPost;
@@ -38,8 +37,7 @@ public class LocalDBClusterDAO implements ClusterDAO {
 	
 	public LocalDBClusterDAO(Connection conn) {
 		try {
-//			this.conn = conn;
-			stm = conn.prepareStatement("INSERT INTO fom_cluster(meta,terms_meta,posts_meta,id_query,id_parent,type) VALUES(?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+			stm = conn.prepareStatement("INSERT INTO fom_cluster(meta,terms_meta,posts_meta,id_query,id_parent,type, lat, lon) VALUES(?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 //			saveTermStm = conn.prepareStatement("INSERT INTO fom_clusterterm(id_term,id_cluster) VALUES(?,?)");
 //			saveClusterPost = conn.prepareStatement("INSERT INTO fom_clusterpost(id_cluster,id_post) VALUES(?,?)");
 			saveClusterStm = conn.prepareStatement("SELECT meta,id_query FROM fom_cluster WHERE id_cluster=?");
@@ -89,6 +87,13 @@ public class LocalDBClusterDAO implements ClusterDAO {
 				stm.setLong(5, 0);
 			}
 			stm.setInt(6, cluster.getTypeId());
+			if(cluster.getTypeId()==2){
+				stm.setDouble(7, cluster.getMeanLat());
+				stm.setDouble(8, cluster.getMeanLon());
+			} else {
+				stm.setDouble(7, 0);
+				stm.setDouble(8, 0);
+			}
 			stm.executeUpdate();
 			
 			ResultSet generatedKeys = stm.getGeneratedKeys();

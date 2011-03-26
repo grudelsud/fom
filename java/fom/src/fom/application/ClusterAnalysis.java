@@ -88,7 +88,7 @@ public class ClusterAnalysis implements Runnable{
 				query.addCluster(semCluster);
 			}
 		}
-		System.out.println("Topic extracted in " + (System.currentTimeMillis()-ldaStartTime)/1000 + " ms");
+		System.out.println("Topic extracted in " + (System.currentTimeMillis()-ldaStartTime)/1000 + " s");
 		logger.endLog();
 		System.out.println("Logs:\n" + logger.getLogs());
 		System.out.println("Saving results on the DB...");
