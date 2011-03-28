@@ -240,16 +240,16 @@ public class Main {
 	private static double[][] parseGeoBoxes() {
 		String geoBoxes = PropertyHandler.getStringProperty("GeoBoxes");
 		String[] coords = geoBoxes.split(",");
-		if(coords.length==1){
+		if(coords.length < 4){
 			return new double[0][0];
 		}
-		if(coords.length/2>25){
+		if(coords.length > 100){
 			System.err.println("A maximum of 25 GeoBoxes is allowed, the list will be truncated");
 		}
-		int limit = coords.length>50?50:coords.length;
-		double[][] result = new double[limit][2];
-		for(int i=0; i<limit; i++){
-			result[i/2][i%2]=Double.parseDouble(coords[i]);
+		int limit = coords.length > 100 ? 100 : coords.length;
+		double[][] result = new double[limit / 2][2];
+		for(int i = 0; i < limit; i++){
+			result[i/2][i%2] = Double.parseDouble( coords[i] );
 		}
 		return result;
 	}
