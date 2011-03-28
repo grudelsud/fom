@@ -34,7 +34,7 @@ class Query_model extends CI_Model
 	
 	function read()
 	{
-		$this->db->order_by('t_start', 'asc');
+		$this->db->order_by('t_start', 'desc');
 		$query = $this->db->get('query');
 		return $query->result();
 	}

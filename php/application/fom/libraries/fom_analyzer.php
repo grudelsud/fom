@@ -12,12 +12,33 @@ require_once 'class.saplo4php.php';
  *
  */
 class Fom_analyzer {
+	private $yahoo_id = 'xLrgKbPV34HLJfZhNAASAxhYPSrqtEn1CMpRn.wDvdAvRL3PQ4qewGZHglmH37W2osc-';
 	private $saplo_vars = array( 'api_key' => '10f79d243d01f5d24810c63e5c6df67a', 'secret_key' => '8f9738bfd34d62b0e710a5fa9cd12fba');
 	private $saplo_obj;
 	private $saplo_corpus_id;
 
 	function __construct()
 	{
+	}
+
+	function yahoo_extract( $context ) {
+		$url = 'http://search.yahooapis.com/ContentAnalysisService/V1/termExtraction';
+		$post = 'appid='.$this->yahoo_id.'&output=json&context='.urlencode($context);
+		
+		$ch = curl_init();
+
+		// set url
+		curl_setopt($ch, CURLOPT_URL, $url);
+
+		curl_setopt($ch, CURLOPT_POST,3);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+
+		//return the transfer as a string
+		curl_setopt($ch, CURLOPT_HEADER, FALSE);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+
+		$result = curl_exec($ch);
+		return $result;
 	}
 
 	function ted_fetch_transcript( $url ) {

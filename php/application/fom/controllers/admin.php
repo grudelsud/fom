@@ -96,6 +96,79 @@ class Admin extends CI_Controller {
 		}
 	}
 
+	function ted_yahoo_terms()
+	{
+		$this->load->library('fom_analyzer');
+
+		$time = date('Y-m-d h:i:s');
+		
+		// save yahoo terms as if it was a clustering query
+		$query_data = array('id_user'=>1,'query'=>'yahoo extract','created'=>$time,'t_start'=>$time,'t_end'=>$time,'t_granularity'=>'day');
+		$this->db->insert('query',$query_data);
+		$id_query = $this->db->insert_id();
+
+		// load ted's vocabulary
+		$this->db->where('name','ted');
+		$query_vocab = $this->db->get('vocabulary');
+		
+		if( $query_vocab->num_rows() > 0 ) {
+			$row = $query_vocab->row();
+			$id_vocabulary = $row->id_vocabulary;
+		}
+
+		// load all posts where src == ted
+		$this->db->where('src','ted');
+		$query_post = $this->db->get('post');
+
+		foreach ( $query_post->result() as $row ) {
+			
+			// fetch terms from yahoo
+			$terms_json = $this->fom_analyzer->yahoo_extract( $row->content );
+			$terms = json_decode( $terms_json );
+
+			$msg = '';
+			// foreach term, add a reference in the posttag table
+			foreach ($terms->ResultSet->Result as $result) {
+				$this->db->where('name', $result);
+				$this->db->where('id_vocabulary', $id_vocabulary);
+				$query_term = $this->db->get('term');
+
+				if( $query_term->num_rows() > 0 ) {
+					$row_term = $query_term->row();
+					$id_term = $row_term->id_term;
+					$msg .= 'dup: '.$result.' - ';
+				} else {
+					$this->db->insert('term', array('name'=>$result,'id_vocabulary'=>$id_vocabulary));
+					$id_term = $this->db->insert_id();
+				}
+				$this->db->insert('posttag',array('id_term'=>$id_term,'id_post'=>$row->id_post));
+				log_message('error', ' --- ADD POSTTAG --- '.$result);
+			}
+			
+			// and add a row in the cluster table
+			$cluster_data = array('id_query'=>$id_query,'id_parent'=>$row->id_post,'terms_meta'=>$terms_json,'type'=>100,'meta'=>$row->meta);
+			$this->db->insert('cluster',$cluster_data);
+			echo $row->id_post.' ['.$msg.']<br/>';
+		}
+
+//		$events = $this->ted_read_events();
+//		foreach( $events as $name => $event ) {
+//			if( $name != 'undefined') {
+//				foreach( $event as $id_post => $talk ) {
+//					$query = $this->db->query('select fom_link.text as text, fom_post.id_post as id_post, fom_postlink.id_link from fom_link, fom_post, fom_postlink where fom_post.id_post = fom_postlink.id_post and fom_link.id_link = fom_postlink.id_link and fom_post.id_post = '.$id_post);
+//					if( $query->num_rows() > 0 ) {
+//						$row = $query->row();
+//						$terms = $this->fom_analyzer->yahoo_extract( $row->text );
+//						echo $terms;
+//						$cluster_meta = json_encode( array('id_post'=>$id_post, 'event'=>$name,'speaker'=>$talk['speaker'],'url'=>$talk['url']) );
+//						$cluster_data = array('id_query'=>$id_query,'id_parent'=>$id_post,'terms_meta'=>$terms,'type'=>100,'meta'=>$cluster_meta);
+//						$this->db->insert('cluster',$cluster_data);
+//					}
+//				}
+//			}
+//		}
+	}
+
 	function ted_get_corpora()
 	{
 		$this->load->library('fom_analyzer');

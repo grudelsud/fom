@@ -18,16 +18,18 @@ class Xmlrpc extends CI_Controller
 
 	function index()
 	{
-		$config['functions']['cluster_store'] = array('function' => 'Xmlrpc.cluster_store');
+		$config['functions'][''] = array('function' => 'Xmlrpc.');
 
-		$config['functions']['query_store'] = array('function' => 'Xmlrpc.query_store');
-		$config['functions']['query_exec'] = array('function' => 'Xmlrpc.query_exec');
-
-		$config['functions']['post_create'] = array('function' => 'Xmlrpc.post_create');
-		$config['functions']['post_read'] = array('function' => 'Xmlrpc.post_read');
-		$config['functions']['post_delete'] = array('function' => 'Xmlrpc.post_delete');
-
-		$config['functions']['log'] = array('function' => 'Xmlrpc.log');
+//		$config['functions']['cluster_store'] = array('function' => 'Xmlrpc.cluster_store');
+//
+//		$config['functions']['query_store'] = array('function' => 'Xmlrpc.query_store');
+//		$config['functions']['query_exec'] = array('function' => 'Xmlrpc.query_exec');
+//
+//		$config['functions']['post_create'] = array('function' => 'Xmlrpc.post_create');
+//		$config['functions']['post_read'] = array('function' => 'Xmlrpc.post_read');
+//		$config['functions']['post_delete'] = array('function' => 'Xmlrpc.post_delete');
+//
+//		$config['functions']['log'] = array('function' => 'Xmlrpc.log');
 
 		$config['object'] = $this;
 
@@ -35,7 +37,7 @@ class Xmlrpc extends CI_Controller
 		$this->xmlrpcs->initialize( $config );
 		$this->xmlrpcs->serve();
 	}
-
+/*
 	function cluster_store( $request )
 	{
 		// $id_query, $start_t, $end_t, $tc_size, $gc_name, $lat_m, $lat_v, $lon_m, $lon_v, $gc_size, $sc_size, $terms
@@ -226,7 +228,7 @@ class Xmlrpc extends CI_Controller
 		$this->fom_logger->log('', $action, $meta);
 		return $this->xmlrpc->send_response($response);
 	}
-
+*/
 }
 
 /* End of xmlrpc.php */

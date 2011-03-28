@@ -1,19 +1,16 @@
 <div id="query">
 <h1>Queries</h1>
 <table>
-	<tr><th>action</th><th>terms</th><th>date</th></tr>
+	<tr><th>action</th><th>meta</th><th>date</th></tr>
 <?php
 foreach ($queries as $query) {
-	if( isset( $query->query ) ) {
-		$query_values = json_decode($query->query);
-	}
+	$range = $query->t_granularity == 'range' ? ' - '.str_replace('00:00:00', '', $query->t_end) : '';
 	echo '<tr id="q'.$query->id_query.'">'.
 		'<td>'.
 		'<a class="view" href="'.site_url('cluster/read/'.$query->id_query).'"><img src="'.assets_url('assets/img').'/add.png" alt="+" /></a>'.
-//		'<a href="'.site_url('query/delete/'.$query->id_query).'"><img src="'.assets_url('assets/img').'/delete.png" alt="-" /></a>'.
 		'</td>'.
-		'<td>'.( isset( $query_values) ? $query_values->terms : 'free query').'</td>'.
-		'<td>'.$query->created.'</td>'.
+		'<td>'.$query->meta.'</td>'.
+		'<td>'.$query->t_granularity.': '.str_replace('00:00:00', '', $query->t_start).$range.'</td>'.
 		'</tr>';
 }
 ?>
@@ -47,19 +44,6 @@ foreach ($queries as $query) {
 					});
 					divTag.append(ulTag);
 					$('#result').append(divTag);
-				});
-			}
-		});
-	});
-	$('#cluster a.delete').live('click', function(e) {
-		e.preventDefault();
-		$.ajax({
-			url: $(this).attr('href'),
-			dataType: 'json',
-			type: 'GET',
-			success: function(data) {
-				$.each(data, function(i, item){
-					$('#c'+item).empty();
 				});
 			}
 		});

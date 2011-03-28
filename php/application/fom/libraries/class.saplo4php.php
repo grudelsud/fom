@@ -135,6 +135,29 @@ class SaploAPI {
                 return $this->parseResponse($response);
         }
         
+        /**
+         * Delete an existing aticle
+         *
+         * @param Integer $corpusId
+         * @param Integer $articleId
+         */
+		public function corpus_deleteArticle($corpusId, $articleId) {
+			$params = array($corpusId, $articleId);
+			$response = $this->doRequest("corpus.deleteArticle",$params);
+			return $this->parseResponse($response);
+		}
+		
+		/**
+		 * Reset an entire Corpus. This will delete all stored articles 
+		 * in the corpus and all its results and can not be undone.
+		 * 
+		 * @param Integer $corpusId
+		 */
+		public function corpus_reset($corpusId) {
+			$params = array($corpusId);
+			$response = $this->doRequest("corpus.reset",$params);
+			return $this->parseResponse($response);
+		}
         
         /*
          * TAGS METHODS

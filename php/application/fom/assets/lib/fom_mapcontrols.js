@@ -14,6 +14,9 @@ function initialize( initialLocation )
 	};
 	map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
 	mgr = new MarkerManager(map);
+	google.maps.event.addListener(map, 'click', function(event) {
+		$('#footer').empty().append( event.latLng.toString() );
+	});
 }
 
 function loadMarkers( clusterUrl )
@@ -158,7 +161,11 @@ function loadClusterContent( postUrl )
 		success: function(data) {
 			
 			var content = '<h3>Post Content</h3><p>'+data.content+'</p>';
-			content += '<h3>Meta</h3><ul class="post_meta"><li>coordinates: ['+data.lat+', '+data.lon+']</li></ul>';
+			content += '<h3>Meta</h3><ul class="post_meta"><li>coordinates: ['+data.lat+', '+data.lon+']</li>';
+			if(data.coordinates_estimated == 1) {
+				content += '<li>user location: '+data.user_location+'</li>';
+			}
+			content += '</ul>';
 			
 			if( data.links ) {
 				var linkList = '';
