@@ -1,14 +1,17 @@
 package fom.model;
 
+import fom.langidentification.LanguageIdentifier.Language;
+
 public class Link {
 	private long id;
 	private String url;
 	private String content;
+	private Language lang;
 	
 	public Link(String url, String content){
 		this.id = 0;
-		this.setUrl(url);
-		this.setContent(content);
+		this.url = url;
+		this.content = content;
 	}
 
 	public long getId(){
@@ -30,9 +33,16 @@ public class Link {
 	public void setContent(String content) {
 		this.content = content;
 	}
-
+	
 	public String getContent() {
 		return content;
 	}
 	
+	public Language getLanguage(){
+		return lang;
+	}
+	
+	public void setLanguage(Language theLang){
+		this.lang = theLang;
+	}
 }

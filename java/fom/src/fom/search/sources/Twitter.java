@@ -17,7 +17,7 @@ import fom.geocoding.Geocoder;
 import fom.geocoding.LocalGeonamesGeocoder;
 import fom.langidentification.LanguageIdentifier;
 import fom.langidentification.LanguageIdentifier.Language;
-import fom.langidentification.TextcatLangIdentifier;
+import fom.langidentification.Lc4jLangIdentifier;
 import fom.model.Post;
 import fom.model.TwitterPost;
 import fom.utils.StringOperations;
@@ -32,7 +32,7 @@ public class Twitter implements Source {
 	public Twitter(){
 		this.results = new ArrayList<Post>();
 		twitter = new TwitterFactory().getInstance();
-		this.langIdentifier = new TextcatLangIdentifier();
+		this.langIdentifier = new Lc4jLangIdentifier();
 	}
 
 	@Override

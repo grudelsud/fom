@@ -12,7 +12,7 @@ import fom.geocoding.Geocoder;
 import fom.geocoding.LocalGeonamesGeocoder;
 import fom.langidentification.LanguageIdentifier;
 import fom.langidentification.LanguageIdentifier.Language;
-import fom.langidentification.TextcatLangIdentifier;
+import fom.langidentification.Lc4jLangIdentifier;
 import fom.model.Place;
 import fom.model.Post;
 import fom.model.TwitterPost;
@@ -34,7 +34,7 @@ public class TwitterStatusListener implements StatusListener {
 		this.filterGeoTagged = filterGeoTagged;
 		this.postQueue = new ArrayBlockingQueue<Post>(1000);
 		this.geocoder = new LocalGeonamesGeocoder();
-		this.langIdentifier = new TextcatLangIdentifier();
+		this.langIdentifier = new Lc4jLangIdentifier();
 		new Thread(new PostQueueProcessor(postQueue)).start();
 	}
 	

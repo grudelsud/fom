@@ -6,7 +6,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import fom.langidentification.LanguageIdentifier;
-import fom.langidentification.TextcatLangIdentifier;
+import fom.langidentification.Lc4jLangIdentifier;
 import fom.model.Link;
 import fom.model.Post;
 import fom.model.dao.interfaces.PostDAO;
@@ -23,7 +23,7 @@ public class PostQueueProcessor implements Runnable {
 	public PostQueueProcessor(BlockingQueue<Post> postQueue){
 		this.postQueue = postQueue;
 		postDAO = LocalDBDAOFactory.getFactory().getPostDAO();
-		langIdentifier = new TextcatLangIdentifier();
+		langIdentifier = new Lc4jLangIdentifier();
 	}	
 	
 	@Override

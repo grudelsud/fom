@@ -38,7 +38,7 @@
 	<classpathentry kind="lib" path="lib/lc4j/java-getopt-1.0.13.jar"/>
 	<classpathentry kind="lib" path="lib/lc4j/lc4j-0.3.jar"/>
 	<classpathentry kind="lib" path="lib/lc4j/mg4j-3.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/lc4j/jargs.jar"/>
 	<classpathentry kind="lib" path="lib/jExSLI.jar"/>
+	<classpathentry kind="lib" path="lib/jargs.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
