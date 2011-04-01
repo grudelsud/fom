@@ -16,6 +16,7 @@ import fom.langidentification.Lc4jLangIdentifier;
 import fom.model.Place;
 import fom.model.Post;
 import fom.model.TwitterPost;
+import fom.utils.StringOperations;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
 import twitter4j.StatusListener;
@@ -84,7 +85,10 @@ public class TwitterStatusListener implements StatusListener {
         	rtCount = status.getRetweetedStatus().getRetweetCount();
         }
         int followerCount = status.getUser().getFollowersCount();
-        Language lang = langIdentifier.identifyLanguageOf(status.getText());
+        String sanitizedText = StringOperations.removeURLfromString(status.getText());
+        sanitizedText = StringOperations.removeMentions(sanitizedText);
+        sanitizedText = StringOperations.removeNonLettersFromString(sanitizedText);
+        Language lang = langIdentifier.identifyLanguageOf(sanitizedText);
 
         Post post = new TwitterPost(0, lat, lon, status.getText(), created, created, timezone, place, status.getId(), status.getUser().getId(), status.getUser().getLocation(), coordinatesEstimated, lang, rtCount, followerCount);
 		try {

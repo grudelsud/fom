@@ -31,6 +31,10 @@ public class StringOperations {
 		return hashtags;
 	}
 	
+	public static String removeMentions(String input){
+		return input.replaceAll("[@]+([A-Za-z0-9-_]+)", "");
+	}
+	
 	public static String removeStopwords(String input, Language lang){
 		String result = new String("");
 		String[] tokens = input.split("\\s");

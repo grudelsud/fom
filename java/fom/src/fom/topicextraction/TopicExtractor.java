@@ -37,8 +37,9 @@ public class TopicExtractor {
 		for(Post post : posts){
 			String sanitizedPost = post.getContent();
 			sanitizedPost = StringOperations.removeURLfromString(sanitizedPost);
-			sanitizedPost = StringOperations.removeStopwords(sanitizedPost, post.getLanguage());
+			sanitizedPost = StringOperations.removeMentions(sanitizedPost);
 			sanitizedPost = StringOperations.removeNonLettersFromString(sanitizedPost);
+			sanitizedPost = StringOperations.removeStopwords(sanitizedPost, post.getLanguage());
 			
 		//	if(!post.getContent().equalsIgnoreCase(sanitizedPost)){
 		//		System.out.println("Removed stopwords from post:\n\t" + post.getContent() + "\n\t" + sanitizedPost);
@@ -52,8 +53,8 @@ public class TopicExtractor {
 			for(Link link : post.getLinks()){
 				String sanitizedLink = link.getContent();
 				sanitizedLink = StringOperations.removeURLfromString(sanitizedLink);
-				sanitizedLink = StringOperations.removeStopwords(sanitizedLink, link.getLanguage());
 				sanitizedLink = StringOperations.removeNonLettersFromString(sanitizedLink);
+				sanitizedLink = StringOperations.removeStopwords(sanitizedLink, link.getLanguage());
 				if(!sanitizedLink.trim().equalsIgnoreCase("")){
 					Instance linkInst = new Instance(sanitizedLink, null, link, link.getContent());
 					tmpInstanceList.add(linkInst);
