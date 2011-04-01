@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import fom.langidentification.LanguageIdentifier.Language;
+
 public class StringOperations {
 
 	public static String hashtagify(String input){
@@ -29,11 +31,11 @@ public class StringOperations {
 		return hashtags;
 	}
 	
-	public static String removeStopwords(String input){
+	public static String removeStopwords(String input, Language lang){
 		String result = new String("");
 		String[] tokens = input.split("\\s");
 		for(int i=0; i<tokens.length; i++){
-			if(!StopwordChecker.isStopword(tokens[i])){
+			if(!StopwordChecker.getCheckerForLanguage(lang).isStopword(tokens[i])){
 				result = result.concat(tokens[i]);
 				result = result.concat(" ");
 			}
