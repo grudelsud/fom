@@ -6,6 +6,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import fom.langidentification.LanguageIdentifier;
+import fom.langidentification.LanguageIdentifier.Language;
 import fom.langidentification.Lc4jLangIdentifier;
 import fom.model.Link;
 import fom.model.Post;
@@ -31,12 +32,12 @@ public class PostQueueProcessor implements Runnable {
 		while(true){
 			try {
 				Post currentPost = postQueue.take();
-				langIdentifier.identifyLanguageOf(currentPost.getContent());
 				for(String link : StringOperations.extractURLs(currentPost.getContent())){
 					try {
 						Document doc = Jsoup.connect(link).get();
 						if(!BlacklistChecker.isBlacklisted(doc.baseUri())){
-							currentPost.addLink(new Link(doc.baseUri(), doc.body().text()));							
+							Language lang = langIdentifier.identifyLanguageOf(doc.body().text());
+							currentPost.addLink(new Link(doc.baseUri(), doc.body().text(), lang, ""));							
 						}
 					} catch (Exception e) {
 						System.err.println("Invalid link found");

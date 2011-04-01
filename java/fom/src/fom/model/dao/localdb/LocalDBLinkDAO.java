@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import fom.langidentification.LanguageIdentifier.Language;
 import fom.model.Link;
 import fom.model.dao.interfaces.LinkDAO;
 
@@ -18,7 +19,7 @@ public class LocalDBLinkDAO implements LinkDAO {
 	public LocalDBLinkDAO(Connection conn) {
 		try {
 			this.checkAlreadySavedStm = conn.prepareStatement("SELECT id_link FROM fom_link WHERE uri=?");
-			this.saveLinkStm = conn.prepareStatement("INSERT INTO fom_link(uri, text) VALUES(?,?)", Statement.RETURN_GENERATED_KEYS);
+			this.saveLinkStm = conn.prepareStatement("INSERT INTO fom_link(uri, text, lang, meta) VALUES(?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 			this.retrieveLinkStm = conn.prepareStatement("SELECT * FROM fom_link WHERE id_link = ?");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -46,6 +47,8 @@ public class LocalDBLinkDAO implements LinkDAO {
 		try {
 			saveLinkStm.setString(1, link.getUrl());
 			saveLinkStm.setString(2, link.getContent());
+			saveLinkStm.setString(3, link.getLanguage().toString());
+			saveLinkStm.setString(4, link.getMeta());
 			
 			saveLinkStm.executeUpdate();
 			ResultSet key = saveLinkStm.getGeneratedKeys();
@@ -65,7 +68,7 @@ public class LocalDBLinkDAO implements LinkDAO {
 			retrieveLinkStm.setLong(1, linkId);
 			ResultSet res = retrieveLinkStm.executeQuery();
 			if(res.next()){
-				Link link = new Link(res.getString("uri"), res.getString("text"));
+				Link link = new Link(res.getString("uri"), res.getString("text"), Enum.valueOf(Language.class, res.getString("lang")), res.getString("meta"));
 				link.setId(res.getLong("id_link"));
 				return link;
 			}

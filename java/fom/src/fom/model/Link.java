@@ -7,11 +7,14 @@ public class Link {
 	private String url;
 	private String content;
 	private Language lang;
+	private String meta;
 	
-	public Link(String url, String content){
+	public Link(String url, String content, Language lang, String meta){
 		this.id = 0;
 		this.url = url;
 		this.content = content;
+		this.lang = lang;
+		this.meta = meta;
 	}
 
 	public long getId(){
@@ -44,5 +47,13 @@ public class Link {
 	
 	public void setLanguage(Language theLang){
 		this.lang = theLang;
+	}
+
+	public void setMeta(String meta) {
+		this.meta = meta;
+	}
+
+	public String getMeta() {
+		return meta;
 	}
 }
