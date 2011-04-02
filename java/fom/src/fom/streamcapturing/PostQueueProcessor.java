@@ -3,7 +3,9 @@ package fom.streamcapturing;
 import java.util.concurrent.BlockingQueue;
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import fom.langidentification.LanguageIdentifier;
 import fom.langidentification.LanguageIdentifier.Language;
@@ -37,6 +39,18 @@ public class PostQueueProcessor implements Runnable {
 						Document doc = Jsoup.connect(link).get();
 						if(!BlacklistChecker.isBlacklisted(doc.baseUri())){
 							Language lang = langIdentifier.identifyLanguageOf(doc.body().text());
+							
+							//Parse the meta tags and output them to the console:
+							for(Element e : doc.head().getElementsByTag("meta")){
+								for(Attribute a : e.attributes()){
+									if(a.getKey().equalsIgnoreCase("property")){
+										if(a.getValue().startsWith("og:")){
+											System.out.println(e.toString());
+										}
+									}
+								}
+							}
+							
 							currentPost.addLink(new Link(doc.baseUri(), doc.body().text(), lang, ""));							
 						}
 					} catch (Exception e) {

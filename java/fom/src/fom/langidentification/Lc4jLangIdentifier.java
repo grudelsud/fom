@@ -20,7 +20,6 @@ public class Lc4jLangIdentifier implements LanguageIdentifier {
 		List res = lc.findLanguage(new ByteArrayList(text.getBytes()));
 		if(res.size()>0){
 			String lang = res.get(0).toString();
-			System.out.println(lang);
 			int barPosition = lang.indexOf("-");
 			if(barPosition == -1){
 				int dotPosition = lang.indexOf(".");
