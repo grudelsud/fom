@@ -42,4 +42,20 @@ public class TwitterPost extends Post {
 		return tweetId;
 	}
 
+	public long getTweetId() {
+		return tweetId;
+	}
+
+	public long getTwitterUserId() {
+		return twitterUserId;
+	}
+
+	public long getRtCount() {
+		return rtCount;
+	}
+
+	public int getFollowerCount() {
+		return followerCount;
+	}
+
 }

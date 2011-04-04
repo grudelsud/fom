@@ -26,8 +26,9 @@ public class ClusterAnalysis implements Runnable{
 	private String geoGranularity;
 	private String sourceName;
 	private boolean considerApproxGeolocations;
+	private int minRTCount;
 	
-	public ClusterAnalysis(ResultLogger logger, long userId, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity, String sourceName, boolean considerApproxGeolocations){
+	public ClusterAnalysis(ResultLogger logger, long userId, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity, String sourceName, boolean considerApproxGeolocations, int minRTCount){
 		this.logger = logger;
 		this.userId = userId;
 		this.startTime = startTime;
@@ -36,6 +37,7 @@ public class ClusterAnalysis implements Runnable{
 		this.geoGranularity = geoGranularity;
 		this.sourceName = sourceName;
 		this.considerApproxGeolocations = considerApproxGeolocations;
+		this.minRTCount = minRTCount;
 	}
 
 	@Override
@@ -57,7 +59,8 @@ public class ClusterAnalysis implements Runnable{
 		query.getMeta().put("sourceName", sourceName);
 		source.setConsiderApproxGeolocations(considerApproxGeolocations);
 		query.getMeta().put("considerApproxGeolocations", Boolean.toString(considerApproxGeolocations));
-		
+		source.setMinRTCount(minRTCount);
+		query.getMeta().put("minRTCount", Integer.toString(minRTCount));
 		
 		List<Post> posts = source.searchPosts(terms, query.getStartTime(), query.getEndTime(), query.getLat(), query.getLon(), 0);
 
@@ -79,7 +82,7 @@ public class ClusterAnalysis implements Runnable{
 		System.out.println("Extracting topics...");
 		for(GeoCluster geoCluster : geoClusters){
 			logger.addGeoCluster(geoCluster);
-			query.addCluster(geoCluster);
+			query.addCluster(geoCluster);				
 			
 			List<SemanticCluster> currentSemanticClusters = new SemanticClustering(query, geoCluster.getPosts(), geoCluster).performClustering();
 			semanticClusters.addAll(currentSemanticClusters);
@@ -87,6 +90,7 @@ public class ClusterAnalysis implements Runnable{
 				logger.addSemCluster(semCluster);
 				query.addCluster(semCluster);
 			}
+
 		}
 		System.out.println("Topic extracted in " + (System.currentTimeMillis()-ldaStartTime)/1000 + " s");
 		logger.endLog();

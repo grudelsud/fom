@@ -18,11 +18,12 @@ import cc.mallet.util.MalletLogger;
 
 import fom.model.Link;
 import fom.model.Post;
+import fom.model.Topic;
 import fom.utils.StringOperations;
 
 public class TopicExtractor {
 	
-	public static List<List<String>> extractTopics(List<Post> posts){
+	public static List<Topic> extractTopics(List<Post> posts){
 		
 		ArrayList<Pipe> pipelist = new ArrayList<Pipe>();
 		pipelist.add(new CharSequence2TokenSequence());
@@ -69,24 +70,24 @@ public class TopicExtractor {
 		int numberOfTopics = 3;
 		ParallelTopicModel lda = new ParallelTopicModel(numberOfTopics);
 		
-		List<List<String>> topics = new ArrayList<List<String>>();
+		List<Topic> topics = new ArrayList<Topic>();
 
 		lda.addInstances(instances);
 		try {
-			lda.estimate();	
+			lda.estimate();				
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (IllegalStateException e){
+			
 		}
 		
-	//	System.out.println(lda.displayTopWords(5, true));
-		
+		//	System.out.println(lda.displayTopWords(5, true));
 		Object[][] topWords = lda.getTopWords(5);
 		int limit = posts.size()<numberOfTopics?posts.size():numberOfTopics;
 		for(int topicCount=0; topicCount<limit && topicCount<topWords.length; topicCount++){
-			List<String> topic = new ArrayList<String>();
+			Topic topic = new Topic(lda.alpha[topicCount]);
 			for(Object word : topWords[topicCount]){
-				topic.add(word.toString());
+				topic.addWord(word.toString());
 			}
 			topics.add(topic);
 		}

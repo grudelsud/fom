@@ -8,6 +8,7 @@ import fom.model.Post;
 import fom.model.Query;
 import fom.model.SemanticCluster;
 import fom.model.Term;
+import fom.model.Topic;
 import fom.model.Vocabulary;
 import fom.topicextraction.TopicExtractor;
 
@@ -27,10 +28,10 @@ public class SemanticClustering {
 	public List<SemanticCluster> performClustering(){
 		Vocabulary voc = new Vocabulary("MainVoc", "");
 		if(posts.size()>0){
-			List<List<String>> topics = TopicExtractor.extractTopics(posts);
-			for(List<String> topic : topics){
-				SemanticCluster currentCluster = new SemanticCluster(originatingQuery, parentCluster);
-				for(String word : topic){
+			List<Topic> topics = TopicExtractor.extractTopics(posts);
+			for(Topic topic : topics){
+				SemanticCluster currentCluster = new SemanticCluster(originatingQuery, parentCluster, topic.getAlpha());
+				for(String word : topic.getWords()){
 					currentCluster.addTerm(new Term(word, "", null, null, voc));
 				}
 				clusters.add(currentCluster);
