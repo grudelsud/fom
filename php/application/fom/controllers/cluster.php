@@ -20,6 +20,23 @@ class Cluster extends CI_Controller
 		echo $this->Cluster_model->read( $id_query, 'json' );
 	}
 
+	function stat( $id_query ) {
+		$this->load->model('Cluster_model');
+		
+		$stat = array();
+		$geo_clusters = $this->Cluster_model->read( $id_query, 'object' );
+		foreach( $geo_clusters as $geo_cluster ) {
+			$sem_clusters = $this->Cluster_model->read_semantic( $geo_cluster->id_cluster, 'object' );
+			foreach( $sem_clusters as $sem_cluster ) {
+				$terms = explode(';', preg_replace('/\"/', '', $sem_cluster->terms_meta));
+				$stat = array_merge( $stat, $terms );
+			}
+		}
+		$stat = array_count_values( $stat );
+		arsort( $stat );
+		echo json_encode( $stat );
+	}
+
 	function read_semantic( $id_parent )
 	{
 		$this->load->model('Cluster_model');

@@ -18,18 +18,32 @@ class Xmlrpc extends CI_Controller
 
 	function index()
 	{
-		$config['functions'][''] = array('function' => 'Xmlrpc.');
-
-//		$config['functions']['cluster_store'] = array('function' => 'Xmlrpc.cluster_store');
-//
-//		$config['functions']['query_store'] = array('function' => 'Xmlrpc.query_store');
-//		$config['functions']['query_exec'] = array('function' => 'Xmlrpc.query_exec');
-//
-//		$config['functions']['post_create'] = array('function' => 'Xmlrpc.post_create');
-//		$config['functions']['post_read'] = array('function' => 'Xmlrpc.post_read');
-//		$config['functions']['post_delete'] = array('function' => 'Xmlrpc.post_delete');
-//
-//		$config['functions']['log'] = array('function' => 'Xmlrpc.log');
+		$config['functions']['session_create']  = array('function' => 'Xmlrpc.session_create');
+		$config['functions']['session_destroy'] = array('function' => 'Xmlrpc.session_destroy');
+		
+		$config['functions']['article_create'] = array('function' => 'Xmlrpc.article_create');
+		$config['functions']['article_read'] = array('function' => 'Xmlrpc.article_read');
+		$config['functions']['article_extract_terms'] = array('function' => 'Xmlrpc.article_extract_terms');
+		$config['functions']['article_add_context'] = array('function' => 'Xmlrpc.article_add_context');
+		$config['functions']['article_delete_context'] = array('function' => 'Xmlrpc.article_delete_context');
+		$config['functions']['article_delete'] = array('function' => 'Xmlrpc.article_delete');
+		
+		$config['functions']['media_create'] = array('function' => 'Xmlrpc.media_create');
+		$config['functions']['media_read'] = array('function' => 'Xmlrpc.media_read');
+		$config['functions']['media_delete'] = array('function' => 'Xmlrpc.media_delete');
+		
+		$config['functions']['corpus_read_articles'] = array('function' => 'Xmlrpc.corpus_read_articles');
+		$config['functions']['corpus_read_contexts'] = array('function' => 'Xmlrpc.corpus_read_contexts');
+		$config['functions']['corpus_read_media'] = array('function' => 'Xmlrpc.corpus_read_media');
+		
+		$config['functions']['context_create'] = array('function' => 'Xmlrpc.context_create');
+		$config['functions']['context_read'] = array('function' => 'Xmlrpc.context_read');
+		$config['functions']['context_read_articles'] = array('function' => 'Xmlrpc.context_read_articles');
+		$config['functions']['context_add_article'] = array('function' => 'Xmlrpc.context_add_article');
+		$config['functions']['context_extract_terms'] = array('function' => 'Xmlrpc.context_extract_terms');
+		$config['functions']['context_delete'] = array('function' => 'Xmlrpc.context_delete');
+		
+		$config['functions']['term_expand'] = array('function' => 'Xmlrpc.term_expand');
 
 		$config['object'] = $this;
 
@@ -37,6 +51,52 @@ class Xmlrpc extends CI_Controller
 		$this->xmlrpcs->initialize( $config );
 		$this->xmlrpcs->serve();
 	}
+	
+	function session_create( $request ) {
+		$parameters = $request->output_parameters();
+		$par0 = isset($parameters['0'])  ? $parameters[0] : '';
+
+		if( empty( $parameters) ) {
+			$result = 'params: ';
+		} else {
+			$result = 'output here';
+		}
+
+		$response = array(
+			array('cluster_store'  => json_encode( $parameters ),'response' => $result),
+			'struct'
+		);
+		
+		$this->fom_logger->log('', 'info', '[xmlrpc.]');
+		return $this->xmlrpc->send_response($response);
+	}
+
+	function session_destroy( $request ) {}
+
+	function article_create( $request ) {}
+	function article_read( $request ) {}
+	function article_extract_terms( $request ) {}
+	function article_add_context( $request ) {}
+	function article_delete_context( $request ) {}
+	function article_delete( $request ) {}
+
+	function media_create( $request ) {}
+	function media_read( $request ) {}
+	function media_delete( $request ) {}
+
+	function corpus_read_articles( $request ) {}
+	function corpus_read_contexts( $request ) {}
+	function corpus_read_media( $request ) {}
+
+	function context_create( $request ) {}
+	function context_read( $request ) {}
+	function context_read_articles( $request ) {}
+	function context_add_article( $request ) {}
+	function context_extract_terms( $request ) {}
+	function context_delete( $request ) {}
+
+	function term_expand( $request ) {}
+	
 /*
 	function cluster_store( $request )
 	{

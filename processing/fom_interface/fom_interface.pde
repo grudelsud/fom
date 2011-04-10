@@ -1,6 +1,6 @@
 import org.json.*;
 
-String srcCluster = "http://staging.londondroids.com/fom/index.php/cluster";
+String clusterUrl = "http://localhost/";
 
 int width = 800;
 int height = 600;
@@ -11,7 +11,7 @@ void setup()
   size( width, height );
   background( #FFFFFF );
   
-  int cluster_num = getCluster();
+  int cluster_num = getTerms();
   int w_slice = width / ( cluster_num + 1 );
   int h_slice = height / 2;
   
@@ -32,9 +32,9 @@ void draw()
 {
 };
 
-int getCluster()
+ArrayList getTerms()
 {
-  String request = srcCluster + "/read/1/json";
+  String request = clusterUrl;
   JSONArray result = new JSONArray();
   try {
     result = new JSONArray(join( loadStrings( request ), ""));
@@ -48,51 +48,17 @@ int getCluster()
   return result.length();
 };
 
-class Cluster {
-  private int x;
-  private int y;
-  private float sx;
-  private float sy;
+class Term {
+  private float lat_m;
+  private float lon_m;
+  private String term;
   
-  Cluster( int x, int y, float sx, float sy) {
-    this.x = x;
-    this.y = y;
-    this.sx = sx;
-    this.sy = sy;
+  Term( float lat_m, float lon_m, String term ) {
+    this.lat_m = lat_m;
+    this.lon_m = lon_m;
+    this.term = term;
   }
-
   void draw() {
-    noStroke();
-    fill( #ff0000, 100 );
-    ellipse( x, y, sx, sy );
-  }
-
-  void setX( int x ) {
-    this.x = x;
-  }
-  int getX() {
-    return x;
-  }
-
-  void setY( int y ) {
-    this.y = y;
-  }
-  int getY() {
-    return y;
-  }
-
-  void setSx( float sx ) {
-    this.sx = sx;
-  }
-  float getSx() {
-    return sx;
-  }
-
-  void setSy( float sy ) {
-    this.sy = sy;
-  }
-  float getSy() {
-    return sy;
   }
 }
 
