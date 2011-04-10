@@ -35,8 +35,10 @@ public class QueryHandler implements Runnable{
 	double nearLat;
 	double nearLon;
 	int radius;
+	int numberOfTopics;
+	int numberOfWords;
 	
-	public QueryHandler(String expEngineName, List<SourceType> sources, ResultLogger logger, long userId, String queryString, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity, double nearLat, double nearLon, int radius){
+	public QueryHandler(String expEngineName, List<SourceType> sources, ResultLogger logger, long userId, String queryString, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity, double nearLat, double nearLon, int radius, int numberOfTopics, int numberOfWords){
 		this.queryExpander = new QueryExpander(expEngineName);
 		this.searcher = new Searcher();
 		for(SourceType source : sources){
@@ -52,6 +54,8 @@ public class QueryHandler implements Runnable{
 		this.nearLat = nearLat;
 		this.nearLon = nearLon;
 		this.radius = radius;
+		this.numberOfTopics = numberOfTopics;
+		this.numberOfWords = numberOfWords;
 	}
 	
 	
@@ -83,7 +87,7 @@ public class QueryHandler implements Runnable{
 				logger.addGeoCluster(geoCluster);
 				query.addCluster(geoCluster);
 				
-				List<SemanticCluster> currentSemanticClusters = new SemanticClustering(query, geoCluster.getPosts(), geoCluster).performClustering();
+				List<SemanticCluster> currentSemanticClusters = new SemanticClustering(query, geoCluster.getPosts(), geoCluster, numberOfTopics, numberOfWords).performClustering();
 				semanticClusters.addAll(currentSemanticClusters);
 				for(SemanticCluster semCluster : currentSemanticClusters){					
 					logger.addSemCluster(semCluster);

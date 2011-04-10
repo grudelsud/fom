@@ -34,7 +34,7 @@ public class HierarchicalPostCluster {
 		this.radius = Math.max(R, (d+r+R)/2);
 		
 		this.centerLat = (centerLat*clusterObjects.size() + cluster.centerLat*cluster.getObjects().size())/(clusterObjects.size() + cluster.getObjects().size());
-		this.centerLat = (centerLon*clusterObjects.size() + cluster.centerLon*cluster.getObjects().size())/(clusterObjects.size() + cluster.getObjects().size());
+		this.centerLon = (centerLon*clusterObjects.size() + cluster.centerLon*cluster.getObjects().size())/(clusterObjects.size() + cluster.getObjects().size());
 		
 
 		clusterObjects.addAll(cluster.getObjects());

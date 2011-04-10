@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Document;
@@ -25,13 +24,11 @@ public class PostQueueProcessor implements Runnable {
 	private BlockingQueue<Post> postQueue;
 	private PostDAO postDAO;
 	private LanguageIdentifier langIdentifier;
-	private ObjectMapper objMapper;
 	
 	public PostQueueProcessor(BlockingQueue<Post> postQueue){
 		this.postQueue = postQueue;
 		this.postDAO = LocalDBDAOFactory.getFactory().getPostDAO();
 		this.langIdentifier = new Lc4jLangIdentifier();
-		this.objMapper = new ObjectMapper();
 	}	
 	
 	@Override
@@ -47,7 +44,6 @@ public class PostQueueProcessor implements Runnable {
 							
 							Map<String, String> meta = new HashMap<String, String>();
 							
-							//Parse the meta tags and output them to the console:
 							for(Element e : doc.head().getElementsByTag("meta")){
 								for(Attribute a : e.attributes()){
 									if(a.getKey().equalsIgnoreCase("property")){
@@ -66,7 +62,7 @@ public class PostQueueProcessor implements Runnable {
 								}
 							}
 														
-							currentPost.addLink(new Link(doc.baseUri(), doc.body().text(), lang, objMapper.writeValueAsString(meta)));							
+							currentPost.addLink(new Link(doc.baseUri(), doc.body().text(), lang, meta));							
 						}
 					} catch (Exception e) {
 						System.err.println("Invalid link found");

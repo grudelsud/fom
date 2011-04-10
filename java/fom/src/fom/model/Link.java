@@ -1,5 +1,7 @@
 package fom.model;
 
+import java.util.Map;
+
 import fom.langidentification.LanguageIdentifier.Language;
 
 public class Link {
@@ -7,9 +9,9 @@ public class Link {
 	private String url;
 	private String content;
 	private Language lang;
-	private String meta;
+	private Map<String, String> meta;
 	
-	public Link(String url, String content, Language lang, String meta){
+	public Link(String url, String content, Language lang, Map<String, String> meta){
 		this.id = 0;
 		this.url = url;
 		this.content = content;
@@ -20,21 +22,9 @@ public class Link {
 	public long getId(){
 		return id;
 	}
-	
-	public void setId(long id){
-		this.id = id;
-	}
-	
-	public void setUrl(String url) {
-		this.url = url;
-	}
 
 	public String getUrl() {
 		return url;
-	}
-
-	public void setContent(String content) {
-		this.content = content;
 	}
 	
 	public String getContent() {
@@ -44,16 +34,12 @@ public class Link {
 	public Language getLanguage(){
 		return lang;
 	}
-	
-	public void setLanguage(Language theLang){
-		this.lang = theLang;
-	}
 
-	public void setMeta(String meta) {
-		this.meta = meta;
-	}
-
-	public String getMeta() {
+	public Map<String, String> getMeta() {
 		return meta;
+	}
+
+	public void setId(long id) {
+		this.id = id;
 	}
 }

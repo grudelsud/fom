@@ -17,18 +17,22 @@ public class SemanticClustering {
 	private List<Post> posts;
 	private List<SemanticCluster> clusters;
 	private Query originatingQuery;
+	private int numberOfTopics;
+	private int numberOfWords;
 	
-	public SemanticClustering(Query originatingQuery, List<Post> posts, Cluster parentCluster){
+	public SemanticClustering(Query originatingQuery, List<Post> posts, Cluster parentCluster, int numberOfTopics, int numberOfWords){
 		this.originatingQuery = originatingQuery;
 		clusters = new ArrayList<SemanticCluster>();
 		this.posts = posts;
 		this.parentCluster = parentCluster;
+		this.numberOfTopics = numberOfTopics;
+		this.numberOfWords = numberOfWords;
 	}
 	
 	public List<SemanticCluster> performClustering(){
 		Vocabulary voc = new Vocabulary("MainVoc", "");
 		if(posts.size()>0){
-			List<Topic> topics = TopicExtractor.extractTopics(posts);
+			List<Topic> topics = TopicExtractor.extractTopics(posts, numberOfTopics, numberOfWords);
 			for(Topic topic : topics){
 				SemanticCluster currentCluster = new SemanticCluster(originatingQuery, parentCluster, topic.getAlpha());
 				for(String word : topic.getWords()){

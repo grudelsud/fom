@@ -23,8 +23,8 @@ import fom.utils.StringOperations;
 
 public class TopicExtractor {
 	
-	public static List<Topic> extractTopics(List<Post> posts){
-		
+	public static List<Topic> extractTopics(List<Post> posts, int numberOfTopics, int numberOfWords){
+				
 		ArrayList<Pipe> pipelist = new ArrayList<Pipe>();
 		pipelist.add(new CharSequence2TokenSequence());
 		pipelist.add(new TokenSequenceLowercase());
@@ -67,7 +67,6 @@ public class TopicExtractor {
 		
 		MalletLogger.getLogger(ParallelTopicModel.class.getName()).setLevel(Level.OFF);
 		
-		int numberOfTopics = 3;
 		ParallelTopicModel lda = new ParallelTopicModel(numberOfTopics);
 		
 		List<Topic> topics = new ArrayList<Topic>();
@@ -82,7 +81,7 @@ public class TopicExtractor {
 		}
 		
 		//	System.out.println(lda.displayTopWords(5, true));
-		Object[][] topWords = lda.getTopWords(5);
+		Object[][] topWords = lda.getTopWords(numberOfWords);
 		int limit = posts.size()<numberOfTopics?posts.size():numberOfTopics;
 		for(int topicCount=0; topicCount<limit && topicCount<topWords.length; topicCount++){
 			Topic topic = new Topic(lda.alpha[topicCount]);

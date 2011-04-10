@@ -34,7 +34,8 @@ public class Main {
         					"{--rangeStartDay YYYY-MM-DD --rangeEndDay YYYY-MM-DD, --day YYYY-MM-DD, --hour YYYY-MM-DD-HH}\n" +
         					"{--geoGran {poi, neighborhood, city, <custom km radius>}}\n" +
         					"[--considerApproxGeolocations]\n" +
-        					"[--minRTcount <n>]" +
+        					"[--minRTcount <n>] [--minFollCount <n>]" +
+        					"[--nOfTopics <n>] [--nOfWords <n>]" + 
         					"[--consoleLog] [--csvLog] [--folderLog] [--rpcLog]" +
         					"\n" +
         					"\n" +
@@ -69,6 +70,9 @@ public class Main {
 		Option hourAnalysisOpt = parser.addStringOption("hour");
 		Option considerApproxGeoOpt = parser.addBooleanOption("considerApproxGeolocations");
 		Option minRTCountOpt = parser.addIntegerOption("minRTCount");
+		Option numberOfTopicsOpt = parser.addIntegerOption("nOfTopics");
+		Option numberOfWordsOpt = parser.addIntegerOption("nOfWords");
+		Option minFollCountOpt = parser.addIntegerOption("minFollCount");
 		
 		Option firstRunOpt = parser.addBooleanOption("firstRun");
 		
@@ -195,6 +199,9 @@ public class Main {
 			System.exit(-1);
 		}
 		
+		int numberOfTopics = (Integer)parser.getOptionValue(numberOfTopicsOpt, 3);
+		int numberOfWords = (Integer)parser.getOptionValue(numberOfWordsOpt, 5);
+		
 		if(parser.getOptionValue(clusterAnalysisOpt)!=null){
 			//CLUSTER ANALYSIS
 			String sourceName = (String)parser.getOptionValue(sourceNameOpt, "twitter");
@@ -204,18 +211,19 @@ public class Main {
 			String rangeAnalysisEndDay = (String)parser.getOptionValue(rangeEndDayAnalysisOpt);
 			boolean considerApproxGeolocations = (Boolean)parser.getOptionValue(considerApproxGeoOpt, false);
 			int minRTCount = (Integer)parser.getOptionValue(minRTCountOpt, 0);
+			int minFollCount = (Integer)parser.getOptionValue(minFollCountOpt, 0);
 			
 			if(dayAnalysis!= null){
 				dateParser = DateTimeFormat.forPattern("yyyy-MM-dd");
 				startTime = dateParser.parseDateTime(dayAnalysis);
 				endTime = startTime.plusDays(1);
-				new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "day", geoGranularity, sourceName, considerApproxGeolocations, minRTCount)).start();
+				new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "day", geoGranularity, sourceName, considerApproxGeolocations, minRTCount, numberOfTopics, numberOfWords, minFollCount)).start();
 				return;
 			} else if(hourAnalysis!=null){
 				dateParser = DateTimeFormat.forPattern("yyyy-MM-dd-kk");
 				startTime = dateParser.parseDateTime(hourAnalysis);
 				endTime = startTime.plusHours(1);
-				new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "hour", geoGranularity, sourceName, considerApproxGeolocations, minRTCount)).start();				
+				new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "hour", geoGranularity, sourceName, considerApproxGeolocations, minRTCount, numberOfTopics, numberOfWords, minFollCount)).start();				
 				return;
 			} else if(rangeAnalysisStartDay!=null){
 			//	System.out.println(rangeAnalysisStartDay);
@@ -223,7 +231,7 @@ public class Main {
 					dateParser = DateTimeFormat.forPattern("yyyy-MM-dd");
 					startTime = dateParser.parseDateTime(rangeAnalysisStartDay);
 					endTime = dateParser.parseDateTime(rangeAnalysisEndDay).plusDays(1);
-					new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "range", geoGranularity, sourceName, considerApproxGeolocations, minRTCount)).start();
+					new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "range", geoGranularity, sourceName, considerApproxGeolocations, minRTCount, numberOfTopics, numberOfWords, minFollCount)).start();
 					return;
 				} else {
 					printUsage();
@@ -236,7 +244,7 @@ public class Main {
 			return;
 		}
 		
-		QueryHandler qHandler = new QueryHandler(expEngineName, sources, logger, userId, queryString, startTime, endTime, timeGranularity, geoGranularity, nearLat, nearLon, radius);
+		QueryHandler qHandler = new QueryHandler(expEngineName, sources, logger, userId, queryString, startTime, endTime, timeGranularity, geoGranularity, nearLat, nearLon, radius, numberOfTopics, numberOfWords);
 		new Thread(qHandler).start();
 	}
 

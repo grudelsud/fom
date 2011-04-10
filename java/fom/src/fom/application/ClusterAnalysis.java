@@ -8,9 +8,12 @@ import org.joda.time.DateTime;
 import fom.clustering.GeoClustering;
 import fom.clustering.SemanticClustering;
 import fom.model.GeoCluster;
+import fom.model.Link;
 import fom.model.Post;
 import fom.model.Query;
+import fom.model.RelatedLinksCluster;
 import fom.model.SemanticCluster;
+import fom.model.Term;
 import fom.model.TimeCluster;
 import fom.model.dao.interfaces.DAOFactory;
 import fom.resultlogging.ResultLogger;
@@ -27,8 +30,11 @@ public class ClusterAnalysis implements Runnable{
 	private String sourceName;
 	private boolean considerApproxGeolocations;
 	private int minRTCount;
+	private int numberOfTopics;
+	private int numberOfWords;
+	private int minFollCount;
 	
-	public ClusterAnalysis(ResultLogger logger, long userId, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity, String sourceName, boolean considerApproxGeolocations, int minRTCount){
+	public ClusterAnalysis(ResultLogger logger, long userId, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity, String sourceName, boolean considerApproxGeolocations, int minRTCount, int numberOfTopics, int numberOfWords, int minFollCount){
 		this.logger = logger;
 		this.userId = userId;
 		this.startTime = startTime;
@@ -38,6 +44,9 @@ public class ClusterAnalysis implements Runnable{
 		this.sourceName = sourceName;
 		this.considerApproxGeolocations = considerApproxGeolocations;
 		this.minRTCount = minRTCount;
+		this.numberOfTopics = numberOfTopics;
+		this.numberOfWords = numberOfWords;
+		this.minFollCount = minFollCount;
 	}
 
 	@Override
@@ -61,6 +70,11 @@ public class ClusterAnalysis implements Runnable{
 		query.getMeta().put("considerApproxGeolocations", Boolean.toString(considerApproxGeolocations));
 		source.setMinRTCount(minRTCount);
 		query.getMeta().put("minRTCount", Integer.toString(minRTCount));
+		source.setMinFollCount(minFollCount);
+		query.getMeta().put("minFollCount", Integer.toString(minFollCount));
+		
+		query.getMeta().put("numberOfTopics", Integer.toString(numberOfTopics));
+		query.getMeta().put("numberOfWords", Integer.toString(numberOfWords));
 		
 		List<Post> posts = source.searchPosts(terms, query.getStartTime(), query.getEndTime(), query.getLat(), query.getLon(), 0);
 
@@ -84,13 +98,28 @@ public class ClusterAnalysis implements Runnable{
 			logger.addGeoCluster(geoCluster);
 			query.addCluster(geoCluster);				
 			
-			List<SemanticCluster> currentSemanticClusters = new SemanticClustering(query, geoCluster.getPosts(), geoCluster).performClustering();
+			List<SemanticCluster> currentSemanticClusters = new SemanticClustering(query, geoCluster.getPosts(), geoCluster, numberOfTopics, numberOfWords).performClustering();
 			semanticClusters.addAll(currentSemanticClusters);
 			for(SemanticCluster semCluster : currentSemanticClusters){					
 				logger.addSemCluster(semCluster);
 				query.addCluster(semCluster);
 			}
-
+			
+			for(Post p : geoCluster.getPosts()){
+				if(p.getLinks().size()!=0){
+					for(Link l : p.getLinks()){
+						if(l.getMeta().get("keywords")!=null){
+							RelatedLinksCluster relClust = new RelatedLinksCluster(query, geoCluster);
+							relClust.addPost(p);
+							String[] keyws = l.getMeta().get("keywords").split("[,;!]");
+							for(String keyw : keyws){
+								relClust.addTerm(new Term(keyw, "", null, null, null));
+							}
+							query.addCluster(relClust);
+						}
+					}
+				}
+			}
 		}
 		System.out.println("Topic extracted in " + (System.currentTimeMillis()-ldaStartTime)/1000 + " s");
 		logger.endLog();
