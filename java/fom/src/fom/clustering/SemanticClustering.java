@@ -19,20 +19,24 @@ public class SemanticClustering {
 	private Query originatingQuery;
 	private int numberOfTopics;
 	private int numberOfWords;
+	private boolean disableLangDetection;
+	private boolean excludeRelLinksText;
 	
-	public SemanticClustering(Query originatingQuery, List<Post> posts, Cluster parentCluster, int numberOfTopics, int numberOfWords){
+	public SemanticClustering(Query originatingQuery, List<Post> posts, Cluster parentCluster, int numberOfTopics, int numberOfWords, boolean disableLangDetection, boolean excludeRelLinksText){
 		this.originatingQuery = originatingQuery;
 		clusters = new ArrayList<SemanticCluster>();
 		this.posts = posts;
 		this.parentCluster = parentCluster;
 		this.numberOfTopics = numberOfTopics;
 		this.numberOfWords = numberOfWords;
+		this.disableLangDetection = disableLangDetection;
+		this.excludeRelLinksText = excludeRelLinksText;
 	}
 	
 	public List<SemanticCluster> performClustering(){
 		Vocabulary voc = new Vocabulary("MainVoc", "");
 		if(posts.size()>0){
-			List<Topic> topics = TopicExtractor.extractTopics(posts, numberOfTopics, numberOfWords);
+			List<Topic> topics = TopicExtractor.extractTopics(posts, numberOfTopics, numberOfWords, disableLangDetection, excludeRelLinksText);
 			for(Topic topic : topics){
 				SemanticCluster currentCluster = new SemanticCluster(originatingQuery, parentCluster, topic.getAlpha());
 				for(String word : topic.getWords()){

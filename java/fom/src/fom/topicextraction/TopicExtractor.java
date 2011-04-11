@@ -23,7 +23,7 @@ import fom.utils.StringOperations;
 
 public class TopicExtractor {
 	
-	public static List<Topic> extractTopics(List<Post> posts, int numberOfTopics, int numberOfWords){
+	public static List<Topic> extractTopics(List<Post> posts, int numberOfTopics, int numberOfWords, boolean disableLangDetection, boolean excludeRelLinksText){
 				
 		ArrayList<Pipe> pipelist = new ArrayList<Pipe>();
 		pipelist.add(new CharSequence2TokenSequence());
@@ -40,7 +40,10 @@ public class TopicExtractor {
 			sanitizedPost = StringOperations.removeURLfromString(sanitizedPost);
 			sanitizedPost = StringOperations.removeMentions(sanitizedPost);
 			sanitizedPost = StringOperations.removeNonLettersFromString(sanitizedPost);
-			sanitizedPost = StringOperations.removeStopwords(sanitizedPost, post.getLanguage());
+			
+			if(!disableLangDetection){
+				sanitizedPost = StringOperations.removeStopwords(sanitizedPost, post.getLanguage());				
+			}
 			
 		//	if(!post.getContent().equalsIgnoreCase(sanitizedPost)){
 		//		System.out.println("Removed stopwords from post:\n\t" + post.getContent() + "\n\t" + sanitizedPost);
@@ -51,15 +54,19 @@ public class TopicExtractor {
 				tmpInstanceList.add(inst);
 			}
 			
-			for(Link link : post.getLinks()){
-				String sanitizedLink = link.getContent();
-				sanitizedLink = StringOperations.removeURLfromString(sanitizedLink);
-				sanitizedLink = StringOperations.removeNonLettersFromString(sanitizedLink);
-				sanitizedLink = StringOperations.removeStopwords(sanitizedLink, link.getLanguage());
-				if(!sanitizedLink.trim().equalsIgnoreCase("")){
-					Instance linkInst = new Instance(sanitizedLink, null, link, link.getContent());
-					tmpInstanceList.add(linkInst);
-				}
+			if(!excludeRelLinksText){
+				for(Link link : post.getLinks()){
+					String sanitizedLink = link.getContent();
+					sanitizedLink = StringOperations.removeURLfromString(sanitizedLink);
+					sanitizedLink = StringOperations.removeNonLettersFromString(sanitizedLink);
+					if(!disableLangDetection){
+						sanitizedLink = StringOperations.removeStopwords(sanitizedLink, link.getLanguage());						
+					}
+					if(!sanitizedLink.trim().equalsIgnoreCase("")){
+						Instance linkInst = new Instance(sanitizedLink, null, link, link.getContent());
+						tmpInstanceList.add(linkInst);
+					}
+				}				
 			}
 		}
 		

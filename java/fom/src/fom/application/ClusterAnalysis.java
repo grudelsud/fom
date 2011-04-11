@@ -33,8 +33,10 @@ public class ClusterAnalysis implements Runnable{
 	private int numberOfTopics;
 	private int numberOfWords;
 	private int minFollCount;
+	private boolean disableLangDetection;
+	private boolean excludeRelLinksText;
 	
-	public ClusterAnalysis(ResultLogger logger, long userId, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity, String sourceName, boolean considerApproxGeolocations, int minRTCount, int numberOfTopics, int numberOfWords, int minFollCount){
+	public ClusterAnalysis(ResultLogger logger, long userId, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity, String sourceName, boolean considerApproxGeolocations, int minRTCount, int numberOfTopics, int numberOfWords, int minFollCount, boolean disableLangDetection, boolean excludeRelLinksText){
 		this.logger = logger;
 		this.userId = userId;
 		this.startTime = startTime;
@@ -47,6 +49,8 @@ public class ClusterAnalysis implements Runnable{
 		this.numberOfTopics = numberOfTopics;
 		this.numberOfWords = numberOfWords;
 		this.minFollCount = minFollCount;
+		this.disableLangDetection = disableLangDetection;
+		this.excludeRelLinksText = excludeRelLinksText;
 	}
 
 	@Override
@@ -76,6 +80,11 @@ public class ClusterAnalysis implements Runnable{
 		query.getMeta().put("numberOfTopics", Integer.toString(numberOfTopics));
 		query.getMeta().put("numberOfWords", Integer.toString(numberOfWords));
 		
+		query.getMeta().put("langDetectionEnabled", Boolean.toString(!disableLangDetection));
+		query.getMeta().put("relLinksTextEnabled", Boolean.toString(!excludeRelLinksText));
+		
+		System.out.println("Query meta: " + query.getMeta().toString());
+		
 		List<Post> posts = source.searchPosts(terms, query.getStartTime(), query.getEndTime(), query.getLat(), query.getLon(), 0);
 
 		System.out.println("Found " + posts.size() + " posts");
@@ -93,12 +102,13 @@ public class ClusterAnalysis implements Runnable{
 		geoClusters = new GeoClustering(query, posts, query.getGeoGranularity(), timeCluster).performClustering();
 		
 		long ldaStartTime = System.currentTimeMillis();
-		System.out.println("Extracting topics...");
+		int geoClusterCount = 0;
 		for(GeoCluster geoCluster : geoClusters){
 			logger.addGeoCluster(geoCluster);
+			System.out.println("Extracting topics from geoCluser " + ++geoClusterCount + " of " + geoClusters.size() + "...");
 			query.addCluster(geoCluster);				
 			
-			List<SemanticCluster> currentSemanticClusters = new SemanticClustering(query, geoCluster.getPosts(), geoCluster, numberOfTopics, numberOfWords).performClustering();
+			List<SemanticCluster> currentSemanticClusters = new SemanticClustering(query, geoCluster.getPosts(), geoCluster, numberOfTopics, numberOfWords, disableLangDetection, excludeRelLinksText).performClustering();
 			semanticClusters.addAll(currentSemanticClusters);
 			for(SemanticCluster semCluster : currentSemanticClusters){					
 				logger.addSemCluster(semCluster);
@@ -121,10 +131,10 @@ public class ClusterAnalysis implements Runnable{
 				}
 			}
 		}
-		System.out.println("Topic extracted in " + (System.currentTimeMillis()-ldaStartTime)/1000 + " s");
+		System.out.println("Topics extracted in " + (System.currentTimeMillis()-ldaStartTime)/1000 + "s");
 		logger.endLog();
 		System.out.println("Logs:\n" + logger.getLogs());
-		System.out.println("Saving results on the DB...");
+		System.out.println("Saving the results on the DB...");
 		long startTime = System.currentTimeMillis();
 		DAOFactory.getFactory().getQueryDAO().create(query);
 		System.out.println("done in " + (System.currentTimeMillis()-startTime)/1000 + "s");

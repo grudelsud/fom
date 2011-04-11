@@ -26,19 +26,21 @@ public class QueryHandler implements Runnable{
 	private QueryExpander queryExpander;
 	private Searcher searcher;
 	private ResultLogger logger;
-	long userId;
-	String queryString;
-	DateTime startTime;
-	DateTime endTime;
-	String timeGranularity;
-	String geoGranularity;
-	double nearLat;
-	double nearLon;
-	int radius;
-	int numberOfTopics;
-	int numberOfWords;
+	private long userId;
+	private String queryString;
+	private DateTime startTime;
+	private DateTime endTime;
+	private String timeGranularity;
+	private String geoGranularity;
+	private double nearLat;
+	private double nearLon;
+	private int radius;
+	private int numberOfTopics;
+	private int numberOfWords;
+	private boolean disableLangDetection;
+	private boolean excludeRelLinksText;
 	
-	public QueryHandler(String expEngineName, List<SourceType> sources, ResultLogger logger, long userId, String queryString, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity, double nearLat, double nearLon, int radius, int numberOfTopics, int numberOfWords){
+	public QueryHandler(String expEngineName, List<SourceType> sources, ResultLogger logger, long userId, String queryString, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity, double nearLat, double nearLon, int radius, int numberOfTopics, int numberOfWords, boolean disableLangDetection, boolean excludeRelLinksText){
 		this.queryExpander = new QueryExpander(expEngineName);
 		this.searcher = new Searcher();
 		for(SourceType source : sources){
@@ -56,10 +58,12 @@ public class QueryHandler implements Runnable{
 		this.radius = radius;
 		this.numberOfTopics = numberOfTopics;
 		this.numberOfWords = numberOfWords;
+		this.disableLangDetection = disableLangDetection;
+		this.excludeRelLinksText = excludeRelLinksText;
 	}
 	
 	
-	private void executeQuery(long userId, String queryString, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity, double nearLat, double nearLon, int radius){
+	private void executeQuery(){
 		Query query = new Query(userId, queryString, startTime, endTime, timeGranularity, nearLat, nearLon, radius, geoGranularity, new DateTime(), new DateTime().getZone().getOffset(new DateTime().getMillis())/(1000*60*60));
 		List<String> expandedQuery = queryExpander.expandQuery(query.getQuery());
 		for(String expQueryTerm : expandedQuery){
@@ -87,7 +91,7 @@ public class QueryHandler implements Runnable{
 				logger.addGeoCluster(geoCluster);
 				query.addCluster(geoCluster);
 				
-				List<SemanticCluster> currentSemanticClusters = new SemanticClustering(query, geoCluster.getPosts(), geoCluster, numberOfTopics, numberOfWords).performClustering();
+				List<SemanticCluster> currentSemanticClusters = new SemanticClustering(query, geoCluster.getPosts(), geoCluster, numberOfTopics, numberOfWords, disableLangDetection, excludeRelLinksText).performClustering();
 				semanticClusters.addAll(currentSemanticClusters);
 				for(SemanticCluster semCluster : currentSemanticClusters){					
 					logger.addSemCluster(semCluster);
@@ -103,6 +107,6 @@ public class QueryHandler implements Runnable{
 
 	@Override
 	public void run() {
-		this.executeQuery(userId, queryString, startTime, endTime, timeGranularity, geoGranularity, nearLat, nearLon, radius);
+		this.executeQuery();
 	}
 }
