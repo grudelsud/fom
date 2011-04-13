@@ -17,6 +17,7 @@ public class Lc4jLangIdentifier implements LanguageIdentifier {
 	
 	@Override
 	public Language identifyLanguageOf(String text) {
+		@SuppressWarnings("rawtypes")
 		List res = lc.findLanguage(new ByteArrayList(text.getBytes()));
 		if(res.size()>0){
 			String lang = res.get(0).toString();
