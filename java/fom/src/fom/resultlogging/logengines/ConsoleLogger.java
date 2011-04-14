@@ -2,7 +2,7 @@ package fom.resultlogging.logengines;
 
 import fom.model.GeoCluster;
 import fom.model.Query;
-import fom.model.SemanticCluster;
+import fom.model.TopicCluster;
 import fom.model.TimeCluster;
 
 public class ConsoleLogger implements LogEngine {
@@ -23,7 +23,7 @@ public class ConsoleLogger implements LogEngine {
 	}
 
 	@Override
-	public void addSemCluster(SemanticCluster semCluster) {
+	public void addSemCluster(TopicCluster semCluster) {
 		System.out.println("\t\t-) " + semCluster.getTerms().toString());
 	}
 

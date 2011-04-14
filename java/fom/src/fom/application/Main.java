@@ -36,6 +36,7 @@ public class Main {
         					"[--considerApproxGeolocations]\n" +
         					"[--minRTcount <n>] [--minFollCount <n>]\n" +
         					"[--nOfTopics <n>] [--nOfWords <n>]\n" + 
+        					"[--nOfKeywords <n>]\n" +
         					"[--disableLangDetection] [--excludeRelLinksText]\n" +
         					"[--consoleLog] [--csvLog] [--folderLog] [--rpcLog]" +
         					"\n" +
@@ -75,6 +76,7 @@ public class Main {
 		Option minRTCountOpt = parser.addIntegerOption("minRTCount");
 		Option numberOfTopicsOpt = parser.addIntegerOption("nOfTopics");
 		Option numberOfWordsOpt = parser.addIntegerOption("nOfWords");
+		Option numberOfKeywordsOpt = parser.addIntegerOption("nOfKeywords");
 		Option minFollCountOpt = parser.addIntegerOption("minFollCount");
 		Option disableLangDetectorOpt = parser.addBooleanOption("disableLangDetection");
 		Option excludeRelLinksTextOpt = parser.addBooleanOption("excludeRelLinksText");
@@ -206,6 +208,7 @@ public class Main {
 		
 		int numberOfTopics = (Integer)parser.getOptionValue(numberOfTopicsOpt, 3);
 		int numberOfWords = (Integer)parser.getOptionValue(numberOfWordsOpt, 5);
+		int numberOfKeywords = (Integer)parser.getOptionValue(numberOfKeywordsOpt, 10);
 		
 		boolean disableLangDetector = (Boolean)parser.getOptionValue(disableLangDetectorOpt, false);
 		boolean excludeRelLinksText = (Boolean)parser.getOptionValue(excludeRelLinksTextOpt, false);
@@ -225,13 +228,13 @@ public class Main {
 				dateParser = DateTimeFormat.forPattern("yyyy-MM-dd");
 				startTime = dateParser.parseDateTime(dayAnalysis);
 				endTime = startTime.plusDays(1);
-				new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "day", geoGranularity, sourceName, considerApproxGeolocations, minRTCount, numberOfTopics, numberOfWords, minFollCount, disableLangDetector, excludeRelLinksText)).start();
+				new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "day", geoGranularity, sourceName, considerApproxGeolocations, minRTCount, numberOfTopics, numberOfWords, minFollCount, disableLangDetector, excludeRelLinksText, numberOfKeywords)).start();
 				return;
 			} else if(hourAnalysis!=null){
 				dateParser = DateTimeFormat.forPattern("yyyy-MM-dd-kk");
 				startTime = dateParser.parseDateTime(hourAnalysis);
 				endTime = startTime.plusHours(1);
-				new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "hour", geoGranularity, sourceName, considerApproxGeolocations, minRTCount, numberOfTopics, numberOfWords, minFollCount, disableLangDetector, excludeRelLinksText)).start();				
+				new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "hour", geoGranularity, sourceName, considerApproxGeolocations, minRTCount, numberOfTopics, numberOfWords, minFollCount, disableLangDetector, excludeRelLinksText, numberOfKeywords)).start();				
 				return;
 			} else if(rangeAnalysisStartDay!=null){
 			//	System.out.println(rangeAnalysisStartDay);
@@ -239,7 +242,7 @@ public class Main {
 					dateParser = DateTimeFormat.forPattern("yyyy-MM-dd");
 					startTime = dateParser.parseDateTime(rangeAnalysisStartDay);
 					endTime = dateParser.parseDateTime(rangeAnalysisEndDay).plusDays(1);
-					new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "range", geoGranularity, sourceName, considerApproxGeolocations, minRTCount, numberOfTopics, numberOfWords, minFollCount, disableLangDetector, excludeRelLinksText)).start();
+					new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "range", geoGranularity, sourceName, considerApproxGeolocations, minRTCount, numberOfTopics, numberOfWords, minFollCount, disableLangDetector, excludeRelLinksText, numberOfKeywords)).start();
 					return;
 				} else {
 					printUsage();

@@ -6,13 +6,14 @@ import java.util.List;
 import org.joda.time.DateTime;
 
 import fom.clustering.GeoClustering;
-import fom.clustering.SemanticClustering;
+import fom.clustering.SemanticKeywordClustering;
+import fom.clustering.SemanticTopicClustering;
 import fom.model.GeoCluster;
 import fom.model.Link;
 import fom.model.Post;
 import fom.model.Query;
-import fom.model.RelatedLinksCluster;
-import fom.model.SemanticCluster;
+import fom.model.KeywordCluster;
+import fom.model.TopicCluster;
 import fom.model.Term;
 import fom.model.TimeCluster;
 import fom.model.dao.interfaces.DAOFactory;
@@ -35,8 +36,9 @@ public class ClusterAnalysis implements Runnable{
 	private int minFollCount;
 	private boolean disableLangDetection;
 	private boolean excludeRelLinksText;
+	private int numberOfKeywords;
 	
-	public ClusterAnalysis(ResultLogger logger, long userId, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity, String sourceName, boolean considerApproxGeolocations, int minRTCount, int numberOfTopics, int numberOfWords, int minFollCount, boolean disableLangDetection, boolean excludeRelLinksText){
+	public ClusterAnalysis(ResultLogger logger, long userId, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity, String sourceName, boolean considerApproxGeolocations, int minRTCount, int numberOfTopics, int numberOfWords, int minFollCount, boolean disableLangDetection, boolean excludeRelLinksText, int numberOfKeywords){
 		this.logger = logger;
 		this.userId = userId;
 		this.startTime = startTime;
@@ -51,6 +53,7 @@ public class ClusterAnalysis implements Runnable{
 		this.minFollCount = minFollCount;
 		this.disableLangDetection = disableLangDetection;
 		this.excludeRelLinksText = excludeRelLinksText;
+		this.numberOfKeywords = numberOfKeywords;
 	}
 
 	@Override
@@ -80,6 +83,8 @@ public class ClusterAnalysis implements Runnable{
 		query.getMeta().put("numberOfTopics", Integer.toString(numberOfTopics));
 		query.getMeta().put("numberOfWords", Integer.toString(numberOfWords));
 		
+		query.getMeta().put("numberOfKeywords", Integer.toString(numberOfKeywords));
+		
 		query.getMeta().put("langDetectionEnabled", Boolean.toString(!disableLangDetection));
 		query.getMeta().put("relLinksTextEnabled", Boolean.toString(!excludeRelLinksText));
 		
@@ -92,7 +97,7 @@ public class ClusterAnalysis implements Runnable{
 		System.out.println("Starting analysis...");
 		
 		List<GeoCluster> geoClusters = new ArrayList<GeoCluster>();
-		List<SemanticCluster> semanticClusters = new ArrayList<SemanticCluster>();
+		List<TopicCluster> semanticClusters = new ArrayList<TopicCluster>();
 		
 		TimeCluster timeCluster = new TimeCluster(query);
 		timeCluster.setStartTime(startTime);
@@ -108,30 +113,21 @@ public class ClusterAnalysis implements Runnable{
 			System.out.println("Extracting topics from geoCluser " + ++geoClusterCount + " of " + geoClusters.size() + "...");
 			query.addCluster(geoCluster);				
 			
-			List<SemanticCluster> currentSemanticClusters = new SemanticClustering(query, geoCluster.getPosts(), geoCluster, numberOfTopics, numberOfWords, disableLangDetection, excludeRelLinksText).performClustering();
+			//Extract topics
+			List<TopicCluster> currentSemanticClusters = new SemanticTopicClustering(query, geoCluster.getPosts(), geoCluster, numberOfTopics, numberOfWords, disableLangDetection, excludeRelLinksText).performClustering();
 			semanticClusters.addAll(currentSemanticClusters);
-			for(SemanticCluster semCluster : currentSemanticClusters){					
+			for(TopicCluster semCluster : currentSemanticClusters){					
 				logger.addSemCluster(semCluster);
 				query.addCluster(semCluster);
 			}
 			
-			for(Post p : geoCluster.getPosts()){
-				if(p.getLinks().size()!=0){
-					for(Link l : p.getLinks()){
-						if(l.getMeta().get("keywords")!=null){
-							RelatedLinksCluster relClust = new RelatedLinksCluster(query, geoCluster);
-							relClust.addPost(p);
-							String[] keyws = l.getMeta().get("keywords").split("[,;!]");
-							for(String keyw : keyws){
-								relClust.addTerm(new Term(keyw, "", null, null, null));
-							}
-							query.addCluster(relClust);
-						}
-					}
-				}
-			}
+			//Extract keywords
+			System.out.println("Extracting keywords from geoCluser " + geoClusterCount + " of " + geoClusters.size() + "...");
+			KeywordCluster keywordCluster = new SemanticKeywordClustering(query, geoCluster.getPosts(), geoCluster, numberOfKeywords).performClustering();
+			query.addCluster(keywordCluster);
+			
 		}
-		System.out.println("Topics extracted in " + (System.currentTimeMillis()-ldaStartTime)/1000 + "s");
+		System.out.println("Semantic clusters extracted in " + (System.currentTimeMillis()-ldaStartTime)/1000 + "s");
 		logger.endLog();
 		System.out.println("Logs:\n" + logger.getLogs());
 		System.out.println("Saving the results on the DB...");

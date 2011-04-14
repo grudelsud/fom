@@ -10,7 +10,7 @@ import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 
 import fom.model.GeoCluster;
 import fom.model.Query;
-import fom.model.SemanticCluster;
+import fom.model.TopicCluster;
 import fom.model.Term;
 import fom.model.TimeCluster;
 import fom.properties.PropertyHandler;
@@ -23,7 +23,7 @@ public class RPCRemoteLogger implements LogEngine{
 	private int geoClusterCount;
 	private GeoCluster lastGeoCluster;
 	private int semClusterCount;
-	private SemanticCluster lastSemCluster;
+	private TopicCluster lastSemCluster;
 	private XmlRpcClient xmlRpcClient;
 	
 	public RPCRemoteLogger(){
@@ -84,7 +84,7 @@ public class RPCRemoteLogger implements LogEngine{
 	}
 
 	@Override
-	public void addSemCluster(SemanticCluster semCluster) {
+	public void addSemCluster(TopicCluster semCluster) {
 		if(lastSemCluster!=semCluster){
 			lastSemCluster = semCluster;
 			semClusterCount++;

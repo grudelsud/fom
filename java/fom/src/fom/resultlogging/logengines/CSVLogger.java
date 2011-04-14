@@ -2,7 +2,7 @@ package fom.resultlogging.logengines;
 
 import fom.model.GeoCluster;
 import fom.model.Query;
-import fom.model.SemanticCluster;
+import fom.model.TopicCluster;
 import fom.model.Term;
 import fom.model.TimeCluster;
 
@@ -14,7 +14,7 @@ public class CSVLogger implements LogEngine{
 	private int geoClusterCount;
 	private GeoCluster lastGeoCluster;
 	private int semClusterCount;
-	private SemanticCluster lastSemCluster;
+	private TopicCluster lastSemCluster;
 	private boolean finalized=false;
 	
 	@Override
@@ -55,7 +55,7 @@ public class CSVLogger implements LogEngine{
 	}
 
 	@Override
-	public void addSemCluster(SemanticCluster semCluster) {
+	public void addSemCluster(TopicCluster semCluster) {
 		if(lastSemCluster!=semCluster){
 			lastSemCluster = semCluster;
 			semClusterCount++;

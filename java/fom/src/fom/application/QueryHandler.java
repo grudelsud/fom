@@ -6,12 +6,12 @@ import java.util.List;
 import org.joda.time.DateTime;
 
 import fom.clustering.GeoClustering;
-import fom.clustering.SemanticClustering;
+import fom.clustering.SemanticTopicClustering;
 import fom.clustering.TimeClustering;
 import fom.model.GeoCluster;
 import fom.model.Post;
 import fom.model.Query;
-import fom.model.SemanticCluster;
+import fom.model.TopicCluster;
 import fom.model.Term;
 import fom.model.TimeCluster;
 import fom.model.Vocabulary;
@@ -78,7 +78,7 @@ public class QueryHandler implements Runnable{
 		
 		List<TimeCluster> timeClusters = new ArrayList<TimeCluster>();
 		List<GeoCluster> geoClusters = new ArrayList<GeoCluster>();
-		List<SemanticCluster> semanticClusters = new ArrayList<SemanticCluster>();
+		List<TopicCluster> semanticClusters = new ArrayList<TopicCluster>();
 		
 		timeClusters = new TimeClustering(query, posts, query.getTimeGranularity()).performClustering();
 		for(TimeCluster timeCluster : timeClusters){
@@ -91,9 +91,9 @@ public class QueryHandler implements Runnable{
 				logger.addGeoCluster(geoCluster);
 				query.addCluster(geoCluster);
 				
-				List<SemanticCluster> currentSemanticClusters = new SemanticClustering(query, geoCluster.getPosts(), geoCluster, numberOfTopics, numberOfWords, disableLangDetection, excludeRelLinksText).performClustering();
+				List<TopicCluster> currentSemanticClusters = new SemanticTopicClustering(query, geoCluster.getPosts(), geoCluster, numberOfTopics, numberOfWords, disableLangDetection, excludeRelLinksText).performClustering();
 				semanticClusters.addAll(currentSemanticClusters);
-				for(SemanticCluster semCluster : currentSemanticClusters){					
+				for(TopicCluster semCluster : currentSemanticClusters){					
 					logger.addSemCluster(semCluster);
 					query.addCluster(semCluster);
 				}

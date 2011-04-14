@@ -63,7 +63,7 @@ public class GreedyHAC implements Clusterer {
 		for(HierarchicalPostCluster cluster : clusters){
 			results.add(cluster.getObjects());
 		}
-		System.out.println("Clustering completed in " + (System.currentTimeMillis()-startTime)/1000 + " sec, found " + clusters.size() + "clusters");
+		System.out.println("Clustering completed in " + (System.currentTimeMillis()-startTime)/1000 + " sec, found " + clusters.size() + " clusters");
 		return results;
 	}
 }

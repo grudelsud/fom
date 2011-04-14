@@ -19,7 +19,7 @@ import fom.model.Cluster;
 import fom.model.GeoCluster;
 import fom.model.Post;
 import fom.model.Query;
-import fom.model.SemanticCluster;
+import fom.model.TopicCluster;
 import fom.model.Term;
 import fom.model.TimeCluster;
 import fom.model.dao.interfaces.ClusterDAO;
@@ -172,7 +172,7 @@ public class LocalDBClusterDAO implements ClusterDAO {
 					//TODO: set the proper parent!
 					System.err.println("!!! FIX THE BUG IN LocalDBClusterDAO.retrieve() !!!");
 				} else if(meta.get("type").equalsIgnoreCase("semantic")){
-					cluster = new SemanticCluster(originatingQuery, null, 0);
+					cluster = new TopicCluster(originatingQuery, null, 0);
 					System.err.println("!!! FIX THE BUG IN LocalDBClusterDAO.retrieve() !!!");
 				} else if(meta.get("type").equalsIgnoreCase("time")){
 					cluster = new TimeCluster(originatingQuery);

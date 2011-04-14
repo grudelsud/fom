@@ -5,7 +5,7 @@ import java.util.List;
 
 import fom.model.GeoCluster;
 import fom.model.Query;
-import fom.model.SemanticCluster;
+import fom.model.TopicCluster;
 import fom.model.TimeCluster;
 import fom.resultlogging.logengines.LogEngine;
 
@@ -35,7 +35,7 @@ public class ResultLogger {
 			engine.addGeoCluster(geoCluster);
 		}
 	}
-	public void addSemCluster(SemanticCluster semCluster){
+	public void addSemCluster(TopicCluster semCluster){
 		for(LogEngine engine : logEngines){
 			engine.addSemCluster(semCluster);
 		}

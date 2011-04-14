@@ -66,8 +66,9 @@ public class GeoClustering {
 				clusters.add(currentCluster);
 			}			
 		}
-		
-		clusters.add(notGeoTagged);
+		if(notGeoTagged.getPosts().size()!=0){
+			clusters.add(notGeoTagged);			
+		}
 		return clusters;
 	}
 }
