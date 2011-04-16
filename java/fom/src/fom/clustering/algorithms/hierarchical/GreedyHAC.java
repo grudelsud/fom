@@ -21,45 +21,42 @@ public class GreedyHAC implements Clusterer {
 	public List<List<Post>> performClustering(List<Post> data){
 		long startTime = System.currentTimeMillis();
 		List<List<Post>> results = new ArrayList<List<Post>>();
-		boolean shouldMerge = true;
 		
 		List<HierarchicalPostCluster> clusters = new ArrayList<HierarchicalPostCluster>(data.size());
 		for(Post obj : data){
 			clusters.add(new HierarchicalPostCluster(obj));
 		}
 		
-
-		int lastFirstIndexMerged = 0;
+		boolean didMerge = true;
+		List<Integer> toBeRemoved = new ArrayList<Integer>();
 		
-		while(shouldMerge){
-			shouldMerge=false;
-			int toBeMergedFirstIndex = 0;
-			int toBeMergedSecondIndex = 0;
-			
+		while(didMerge){
+			didMerge = false;
+			int lastIMerged = 0;
 			for(int i=0; i<clusters.size(); i++){
-				for(int j=i+1; j<clusters.size(); j++){
-					double distance = distMeasure.getDistance(clusters.get(i), clusters.get(j));
-					if(distance<limit){
-						shouldMerge=true;
-						toBeMergedFirstIndex = i;
-						toBeMergedSecondIndex = j;
-						break;
-					}						
+				HierarchicalPostCluster clusterI = clusters.get(i);
+				for(int j=0; j<clusters.size(); j++){
+					if(i!=j && distMeasure.getDistance(clusterI, clusters.get(j))<limit){
+						clusterI.mergeWith(clusters.get(j));
+						toBeRemoved.add(j);
+						didMerge = true;
+					}
 				}
-				if(shouldMerge){
+				if(didMerge){
+					int removedCount = 0;
+					for(Integer j : toBeRemoved){
+						clusters.remove(j.intValue()-removedCount++);
+					}
+					toBeRemoved.clear();
+					
+					if(lastIMerged!=i){
+						System.out.println("Merging posts: " + clusters.size() + " clusters found");
+					}
 					break;
 				}
 			}
-			if(shouldMerge){
-				clusters.get(toBeMergedFirstIndex).mergeWith(clusters.get(toBeMergedSecondIndex));
-				clusters.remove(toBeMergedSecondIndex);
-				if(toBeMergedFirstIndex!=lastFirstIndexMerged){
-					System.out.println(((float)toBeMergedFirstIndex/(float)clusters.size())*100 + "%");
-					lastFirstIndexMerged = toBeMergedFirstIndex;
-				}
-			}
 		}
-		
+				
 		for(HierarchicalPostCluster cluster : clusters){
 			results.add(cluster.getObjects());
 		}

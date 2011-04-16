@@ -9,12 +9,10 @@ import fom.clustering.GeoClustering;
 import fom.clustering.SemanticKeywordClustering;
 import fom.clustering.SemanticTopicClustering;
 import fom.model.GeoCluster;
-import fom.model.Link;
 import fom.model.Post;
 import fom.model.Query;
 import fom.model.KeywordCluster;
 import fom.model.TopicCluster;
-import fom.model.Term;
 import fom.model.TimeCluster;
 import fom.model.dao.interfaces.DAOFactory;
 import fom.resultlogging.ResultLogger;
@@ -88,7 +86,7 @@ public class ClusterAnalysis implements Runnable{
 		query.getMeta().put("langDetectionEnabled", Boolean.toString(!disableLangDetection));
 		query.getMeta().put("relLinksTextEnabled", Boolean.toString(!excludeRelLinksText));
 		
-		System.out.println("Query meta: " + query.getMeta().toString());
+		System.out.println("\tQuery meta: " + query.getMeta().toString());
 		
 		List<Post> posts = source.searchPosts(terms, query.getStartTime(), query.getEndTime(), query.getLat(), query.getLon(), 0);
 
