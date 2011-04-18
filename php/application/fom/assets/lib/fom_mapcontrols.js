@@ -22,12 +22,14 @@ function initialize( initialLocation )
 function showStats()
 {
 	var queryId = $('#queries').val();
+	$('#ajax_loader').empty().html('<img src="'+assetsUrl+'/img/ajax-loader.gif" alt="loading">');
 	$('#query_meta').empty().append( queryMetaArray[queryId] );
 	$.ajax({
 		url: siteUrl + '/cluster/stat/'+queryId+'/jpg',
 		dataType: 'text',
 		success: function(data) {
 			$('#query_meta').append( '<img src="'+data+'" alt="query stats" />').toggle('fast');
+			$('#ajax_loader').empty();
 		}
 	});
 

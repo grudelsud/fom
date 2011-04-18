@@ -27,8 +27,7 @@ td, th { border: 1px solid #DDD; border-width: 0 1px 1px 0; padding: 3px; }
 /**
  * ID presentation
  */
-#header img { border: 0; float: left; }
-#disp_stats img { float: none; padding-left: 5px; }
+#header img { border: 0; padding-left: 5px; }
 #navigation ul { list-style-type: none; }
 
 #content h3, #post_content h3 { border-bottom: 1px solid #777; }

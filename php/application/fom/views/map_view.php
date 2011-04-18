@@ -34,6 +34,7 @@
 	var queryMetaArray = <?php echo json_encode($query_meta_array); ?>;
 	var initialLocation = new google.maps.LatLng(45, 10);
 	var siteUrl = '<?php echo site_url(); ?>';
+	var assetsUrl = '<?php echo assets_url('assets') ?>';
 	var clusterUrl = '<?php echo site_url('cluster/read/'.$query_sel); ?>';
 	
 	$(document).ready(function() {
@@ -44,12 +45,12 @@
 </head>
 <body>
 	<div id="header">
-		<a href="<?php echo base_url(); ?>"><img src="<?php echo assets_url('assets/img') ?>/logo_small.png" alt="Flux of MEME"/></a>
+		<a href="<?php echo base_url(); ?>"><img src="<?php echo assets_url('assets/img') ?>/logo_small.png" alt="Flux of MEME" style="float:left;"/></a>
 		<div id="navigation">
 		<?php 
 		if( isset($query_array) ) {
 			echo form_label('Select date ', 'queries'). form_dropdown('queries', $query_array, $query_sel, 'id="queries"'); 
-		}?><span id="disp_stats"><img src="<?php echo assets_url('assets/img') ?>/data_grid.png" alt="display query stats" onClick="showStats()" /></span>
+		}?><span id="disp_stats"><img src="<?php echo assets_url('assets/img') ?>/data_grid.png" alt="display query stats" onClick="showStats()" /></span><span id="ajax_loader"></span>
 		</div>
 		<div id="query_meta" style="display:none;"></div>
 	</div><!-- end of #header -->
