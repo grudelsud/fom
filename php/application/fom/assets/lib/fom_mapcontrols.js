@@ -21,17 +21,22 @@ function initialize( initialLocation )
 
 function showStats()
 {
-	var queryId = $('#queries').val();
-	$('#ajax_loader').empty().html('<img src="'+assetsUrl+'/img/ajax-loader.gif" alt="loading">');
-	$('#query_meta').empty().append( queryMetaArray[queryId] );
-	$.ajax({
-		url: siteUrl + '/cluster/stat/'+queryId+'/jpg',
-		dataType: 'text',
-		success: function(data) {
-			$('#query_meta').append( '<img src="'+data+'" alt="query stats" />').toggle('fast');
-			$('#ajax_loader').empty();
-		}
-	});
+	if( $('#query_meta').is(':visible') ) {
+		$('#query_meta').empty().toggle('fast');
+	} else {
+		var queryId = $('#queries').val();
+		$('#ajax_loader').empty().html('<img src="'+assetsUrl+'/img/ajax-loader.gif" alt="loading">');
+		
+		$('#query_meta').empty().append( queryMetaArray[queryId] );
+		$.ajax({
+			url: siteUrl + '/cluster/stat/'+queryId+'/jpg',
+			dataType: 'text',
+			success: function(data) {
+				$('#query_meta').append( '<img src="'+data+'" alt="query stats" />').toggle('fast');
+				$('#ajax_loader').empty();
+			}
+		});
+	}
 
 //	new pv.Panel()
 //	.width(150)
@@ -150,10 +155,13 @@ function loadContent( cluster )
 	var slat = Math.round(cluster.stdDevLat*1000)/1000;
 	var slon = Math.round(cluster.stdDevLon*1000)/1000;
 
+	var area = Math.round(clusterArea( slat, slon ) * 1000)/1000;
+	var radius = 80 * (slat + slon) / 2;
+	
 	var content = '<h3>Cluster Meta</h3>';
 	
 	content += '<ul class="cluster_meta"><li>geo: &mu; ['+lat+', '+lon+'] - &sigma; ['+slat+', '+slon+']</li>';
-	content += '<li>surface: '+ clusterArea( slat, slon ) +' km<sup>2</sup></li></ul>';
+	content += '<li>radius: '+ radius +' km, surface: '+ area +' km<sup>2</sup></li></ul>';
 	content += '<h3 class="cluster_topics">Topics</h3>';
 
 	$('#post_content').empty().fadeOut('fast');
@@ -163,13 +171,22 @@ function loadContent( cluster )
 		url: siteUrl + '/cluster/read_semantic/'+cluster.id_cluster,
 		dataType: 'json',
 		success: function(data) {
-			var semClusterList = $('<ul class="cluster_topics"></ul>');
+			var scoreArray = Array();
+			var keysArray = Array();
 			$.each(data, function(i, semCluster) {
-				var terms = semCluster.terms_meta;
 				var score = Math.round(semCluster.score*1000)/1000;
+				var terms = semCluster.terms_meta;
 				terms = terms.replace(/[^a-zA-Z 0-9]+/g, ' ');
-				semClusterList.append('<li>[score: '+score+']'+terms+'</li>');
+				scoreArray[score] = terms;
+				keysArray.push( score );
 			});
+			var semClusterList = $('<ul class="cluster_topics"></ul>');
+
+			keysArray.sort(function(a,b) {return b-a;});
+			for( var i = 0; i < keysArray.length; i++ ) {
+				var key = keysArray[i];
+				semClusterList.append('<li>[score: '+key+']'+scoreArray[key]+'</li>');
+			}
 			$('h3.cluster_topics').after( semClusterList );
 		}
 	});
@@ -193,7 +210,7 @@ function loadContent( cluster )
 	for( i in postArray ) {
 		postList += '<a href="'+siteUrl+'/cluster/read_post/'+postArray[i]+'">'+i+'</a> ';
 	}
-	$('#content').append('<h3 class="cluster_posts">Post list:</h3><p>'+postList+'</p>');
+	$('#content').append('<h3 class="cluster_posts">Post list [total: '+postArray.length+']:</h3><p>'+postList+'</p>');
 }
 
 /**
