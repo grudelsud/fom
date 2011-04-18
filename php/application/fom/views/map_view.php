@@ -1,6 +1,8 @@
 <?php 
 	$query_sel = $queries[0]->id_query;
+	$query_meta_array = array();
 	foreach ( $queries as $query ) {
+		$query_meta_array[$query->id_query] = $query->meta;
 		if( 'range' == $query->t_granularity ) {
 			$label = date('D j M, Y', strtotime( $query->t_start )).' - '.date('D j M, Y', strtotime( $query->t_end ));
 		} else {
@@ -27,7 +29,9 @@
 	<script type="text/javascript" src="<?php echo assets_url('assets/lib') ?>/markermanager_packed.js"></script>
 
 	<script type="text/javascript" src="<?php echo assets_url('assets/lib') ?>/fom_mapcontrols.js"></script>
+	<script type="text/javascript" src="<?php echo assets_url('assets/lib') ?>/protovis-r3.2.js"></script>
 	<script type="text/javascript">
+	var queryMetaArray = <?php echo json_encode($query_meta_array); ?>;
 	var initialLocation = new google.maps.LatLng(45, 10);
 	var siteUrl = '<?php echo site_url(); ?>';
 	var clusterUrl = '<?php echo site_url('cluster/read/'.$query_sel); ?>';
@@ -45,22 +49,27 @@
 		<?php 
 		if( isset($query_array) ) {
 			echo form_label('Select date ', 'queries'). form_dropdown('queries', $query_array, $query_sel, 'id="queries"'); 
-		}?>
+		}?><span id="disp_stats"><img src="<?php echo assets_url('assets/img') ?>/data_grid.png" alt="display query stats" onClick="showStats()" /></span>
 		</div>
+		<div id="query_meta" style="display:none;"></div>
 	</div><!-- end of #header -->
 	<div id="map_canvas"></div>
 
 	<div id="content" style="display: none;"></div>
 	<div id="post_content" style="display: none;"></div>
 
+	<!-- <div id="stat" style="position: absolute; width: 400px; height: 400px; background: #996; z-index: 200;"><script type="text/javascript+protovis">showStats();</script></div> -->
+
 	<div id="footer"></div>
 
 <script type="text/javascript" >
 $(function() {
 	$('#queries').change(function() {
-		var clusterUrl = '<?php echo site_url('cluster/read'); ?>/' + $(this).val();
+		var queryId = $(this).val();
+		var clusterUrl = '<?php echo site_url('cluster/read'); ?>/' + queryId;
 		$('#content').empty().fadeOut('fast');
 		$('#post_content').empty().fadeOut('fast');
+		$('#query_meta').empty().fadeOut('fast');
 		deleteOverlays();
 		loadMarkers( clusterUrl );
 	});

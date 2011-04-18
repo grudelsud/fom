@@ -19,6 +19,26 @@ function initialize( initialLocation )
 	});
 }
 
+function showStats()
+{
+	var queryId = $('#queries').val();
+	$('#query_meta').empty().append( queryMetaArray[queryId] );
+	$.ajax({
+		url: siteUrl + '/cluster/stat/'+queryId+'/jpg',
+		dataType: 'text',
+		success: function(data) {
+			$('#query_meta').append( '<img src="'+data+'" alt="query stats" />').toggle('fast');
+		}
+	});
+
+//	new pv.Panel()
+//	.width(150)
+//	.height(150)
+//	.anchor("center").add(pv.Label)
+//	.text("Hello, world!")
+//	.root.render();
+}
+
 function loadMarkers( clusterUrl )
 {
 	$.ajax({
@@ -53,7 +73,7 @@ function addMarker( cluster )
 			fillColor: "#FF0000",
 			fillOpacity: clusterOpacity( cluster.posts_meta ),
 			map: map,
-			radius: clusterArea(cluster.stdDevLat, cluster.stdDevLon),
+			radius: 80 * clusterArea(cluster.stdDevLat, cluster.stdDevLon),
 			strokeColor: "#FFFFFF",
 			strokeWeight: 2,
 			zIndex: 1
@@ -85,8 +105,17 @@ function clusterArea( stdDevLat, stdDevLon )
 	// conversion values defined on wikipedia: http://en.wikipedia.org/wiki/Geographic_coordinate_system
 //	var stdDevLatMet = 110600 * latDegminsec[0] + 1843 * latDegminsec[1] + 30.715 * latDegminsec[2];
 //	var stdDevLonMet = 111300 * lonDegminsec[0] + 1855 * lonDegminsec[1] + 19.22  * lonDegminsec[2];
-		
-	return Math.PI * stdDevLat * stdDevLon * 1000;
+
+//	Longitudinal length equivalents at selected latitudes
+//	Latitude 		Town 				Degree 		Minute 		Second 		±0.0001¡
+//	60¡ 			Saint Petersburg 	55.65 km 	0.927 km 	15.42 m 	5.56 m
+//	51¡ 28' 38" N 	Greenwich 			69.29 km 	1.155 km 	19.24 m 	6.93 m
+//	45¡ 			Bordeaux 			78.7 km 	1.31 km 	21.86 m 	7.87 m
+//	30¡ 			New Orleans 		96.39 km 	1.61 km 	26.77 m 	9.63 m
+//	0¡ 				Quito 				111.3 km 	1.855 km 	30.92 m 	11.13 m
+
+	// assuming we all live in bordeaux, hence 8m
+	return Math.PI * stdDevLat * stdDevLon * 6400;
 }
 
 function dec2degminsec( value )
@@ -113,14 +142,16 @@ function dec2degminsec( value )
  */
 function loadContent( cluster )
 {
+	var lat = Math.round(cluster.meanLat*1000)/1000;
+	var lon = Math.round(cluster.meanLon*1000)/1000;
 
-	var lat = Math.round(cluster.meanLat*Math.pow(10,3))/Math.pow(10,3);
-	var lon = Math.round(cluster.meanLon*Math.pow(10,3))/Math.pow(10,3);
+	var slat = Math.round(cluster.stdDevLat*1000)/1000;
+	var slon = Math.round(cluster.stdDevLon*1000)/1000;
 
 	var content = '<h3>Cluster Meta</h3>';
 	
-	content += '<ul class="cluster_meta"><li>coordinates: ['+lat+', '+lon+']</li>';
-	content += '<li>surface: '+ clusterArea( cluster.stdDevLat, cluster.stdDevLon ) +'</li></ul>';
+	content += '<ul class="cluster_meta"><li>geo: &mu; ['+lat+', '+lon+'] - &sigma; ['+slat+', '+slon+']</li>';
+	content += '<li>surface: '+ clusterArea( slat, slon ) +' km<sup>2</sup></li></ul>';
 	content += '<h3 class="cluster_topics">Topics</h3>';
 
 	$('#post_content').empty().fadeOut('fast');
@@ -133,8 +164,23 @@ function loadContent( cluster )
 			var semClusterList = $('<ul class="cluster_topics"></ul>');
 			$.each(data, function(i, semCluster) {
 				var terms = semCluster.terms_meta;
+				var score = Math.round(semCluster.score*1000)/1000;
 				terms = terms.replace(/[^a-zA-Z 0-9]+/g, ' ');
-				semClusterList.append('<li>'+terms+'</li>');
+				semClusterList.append('<li>[score: '+score+']'+terms+'</li>');
+			});
+			$('h3.cluster_topics').after( semClusterList );
+		}
+	});
+
+	$.ajax({
+		url: siteUrl + '/cluster/read_keywords/'+cluster.id_cluster,
+		dataType: 'json',
+		success: function(data) {
+			var semClusterList = $('<ul class="cluster_topics"></ul>');
+			$.each(data, function(i, semCluster) {
+				var terms = semCluster.terms_meta;
+				terms = terms.replace(/[^a-zA-Z 0-9]+/g, ' ');
+				semClusterList.append('<li>keywords: '+terms+'</li>');
 			});
 			$('h3.cluster_topics').after( semClusterList );
 		}

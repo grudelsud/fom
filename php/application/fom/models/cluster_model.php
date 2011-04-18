@@ -90,6 +90,29 @@ class Cluster_model extends CI_Model
 		}
 	}
 
+	function read_keywords( $id_parent, $format = 'json' )
+	{
+		$this->db->where('type', 4);
+		$this->db->where('id_parent', $id_parent);
+		$query = $this->db->get('cluster');
+		$results = $query->result();
+
+		if( $format == 'json' ) {
+			$clusters = array();
+			foreach( $results as $result ) {
+				$cluster_values = json_decode( $result->meta, TRUE );
+				$cluster_values['id_cluster'] = $result->id_cluster;
+				$cluster_values['id_query'] = $result->id_query;
+				// include terms_meta for semantic clusters
+				$cluster_values['terms_meta'] = $result->terms_meta;
+				$clusters[] = $cluster_values;
+			}
+			return json_encode( $clusters );
+		} else {
+			return $results;
+		}
+	}
+	
 	function delete( $id_cluster )
 	{
 		$this->db->where( 'id_cluster', $id_cluster );

@@ -17,8 +17,9 @@ td, th { border: 1px solid #DDD; border-width: 0 1px 1px 0; padding: 3px; }
 
 #header { background: #333; position: fixed; top: 0; z-index: 100; height: 50px; width: 100%; }
 #navigation { padding: 11px 0 0; }
-#map_canvas { position: absolute; top: 50px; z-index: 99; width: 100%; height: 100%; }
+#query_meta { background: url('../img/bg_query_stat.png') no-repeat; position: fixed; left: 90px; top: 45px; width: 455px; height: 620px; z-index: 100; padding: 30px 10px; }
 
+#map_canvas { position: absolute; top: 50px; z-index: 99; width: 100%; height: 100%; }
 #content { background: url('../img/alpha70_333.png'); position: fixed; right: 0; top: 40px; width: 380px; height: 100%; z-index: 100; padding: 10px; }
 #post_content { background: url('../img/alpha70_333.png'); position: fixed; right: 400px; top: 40px; width: 380px; height: 100%; z-index: 100; padding: 10px; }
 #footer { background: #333; position: fixed; bottom: 0; z-index: 100; height: 20px; width: 100%; }
@@ -27,6 +28,7 @@ td, th { border: 1px solid #DDD; border-width: 0 1px 1px 0; padding: 3px; }
  * ID presentation
  */
 #header img { border: 0; float: left; }
+#disp_stats img { float: none; padding-left: 5px; }
 #navigation ul { list-style-type: none; }
 
 #content h3, #post_content h3 { border-bottom: 1px solid #777; }

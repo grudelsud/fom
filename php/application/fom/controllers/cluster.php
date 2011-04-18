@@ -20,9 +20,9 @@ class Cluster extends CI_Controller
 		echo $this->Cluster_model->read( $id_query, 'json' );
 	}
 
-	function stat( $id_query ) {
+	function stat( $id_query, $format = 'json' ) {
 		$this->load->model('Cluster_model');
-		
+
 		$stat = array();
 		$geo_clusters = $this->Cluster_model->read( $id_query, 'object' );
 		foreach( $geo_clusters as $geo_cluster ) {
@@ -33,14 +33,44 @@ class Cluster extends CI_Controller
 			}
 		}
 		$stat = array_count_values( $stat );
+
+		// maybe we can get rid of this using protovis?
 		arsort( $stat );
-		echo json_encode( $stat );
+
+		if( $format == 'json' ) {
+			$pvdata = array();
+			foreach( $stat as $key => $val ) {
+				if( $val < 2 ) break;
+				$pvdata[]['topic'] = $key;
+				$pvdata[]['freq'] = $val;
+			}
+			echo json_encode( $pvdata );
+		} else {
+			$data = array();
+			$label = array();
+			foreach( $stat as $key => $val ) {
+				if( $val < 5 ) break;
+				$data[] = $val;
+				$label[] = urlencode( $key );
+			}
+			$url  = 'https://chart.googleapis.com/chart?cht=bhs';
+			$url .= '&amp;chd=t:'.implode(',', $data);
+			$url .= '&amp;chxt=x,y&amp;chxl=1:|'.implode('|', $label).'|';
+			$url .= '&amp;chco=30a8c0&amp;chf=bg,s,333333&amp;chg=10,100,1,5&amp;chs=450x400';
+			echo $url;
+		}
 	}
 
 	function read_semantic( $id_parent )
 	{
 		$this->load->model('Cluster_model');
 		echo $this->Cluster_model->read_semantic( $id_parent, 'json' );
+	}
+	
+	function read_keywords( $id_parent )
+	{
+		$this->load->model('Cluster_model');
+		echo $this->Cluster_model->read_keywords( $id_parent, 'json' );
 	}
 	
 	function read_post( $id_post )
