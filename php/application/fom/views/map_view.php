@@ -5,6 +5,8 @@
 		$query_meta_array[$query->id_query] = $query->meta;
 		if( 'range' == $query->t_granularity ) {
 			$label = date('D j M, Y', strtotime( $query->t_start )).' - '.date('D j M, Y', strtotime( $query->t_end ));
+		} else if( 'hour' == $query->t_granularity ) {
+			$label = date('D j M, Y \hH', strtotime( $query->t_start ));
 		} else {
 			$label = date('D j M, Y', strtotime( $query->t_start ));
 		}
