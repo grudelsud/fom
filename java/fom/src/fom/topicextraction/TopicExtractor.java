@@ -16,6 +16,7 @@ import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
 import cc.mallet.util.MalletLogger;
 
+import fom.langidentification.LanguageIdentifier.Language;
 import fom.model.Link;
 import fom.model.Post;
 import fom.model.Topic;
@@ -23,8 +24,8 @@ import fom.utils.StringOperations;
 
 public class TopicExtractor {
 	
-	public static List<Topic> extractTopics(List<Post> posts, int numberOfTopics, int numberOfWords, boolean disableLangDetection, boolean excludeRelLinksText){
-				
+	public static List<Topic> extractTopics(List<Post> posts, int numberOfTopics, int numberOfWords, boolean disableLangDetection, boolean excludeRelLinksText, Language language){
+		
 		ArrayList<Pipe> pipelist = new ArrayList<Pipe>();
 		pipelist.add(new CharSequence2TokenSequence());
 		pipelist.add(new TokenSequenceLowercase());
@@ -44,10 +45,6 @@ public class TopicExtractor {
 			if(!disableLangDetection){
 				sanitizedPost = StringOperations.removeStopwords(sanitizedPost, post.getLanguage());				
 			}
-			
-		//	if(!post.getContent().equalsIgnoreCase(sanitizedPost)){
-		//		System.out.println("Removed stopwords from post:\n\t" + post.getContent() + "\n\t" + sanitizedPost);
-		//	}
 			
 			if(!sanitizedPost.trim().equalsIgnoreCase("")){
 				Instance inst = new Instance(sanitizedPost, null, post, post.getContent());
@@ -91,7 +88,7 @@ public class TopicExtractor {
 		Object[][] topWords = lda.getTopWords(numberOfWords);
 		int limit = posts.size()<numberOfTopics?posts.size():numberOfTopics;
 		for(int topicCount=0; topicCount<limit && topicCount<topWords.length; topicCount++){
-			Topic topic = new Topic(lda.alpha[topicCount]);
+			Topic topic = new Topic(lda.alpha[topicCount], language);
 			for(Object word : topWords[topicCount]){
 				topic.addWord(word.toString());
 			}

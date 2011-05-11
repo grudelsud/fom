@@ -108,7 +108,7 @@ public class ClusterAnalysis implements Runnable{
 		int geoClusterCount = 0;
 		for(GeoCluster geoCluster : geoClusters){
 			logger.addGeoCluster(geoCluster);
-			System.out.println("Extracting topics from geoCluser " + ++geoClusterCount + " of " + geoClusters.size() + "...");
+			System.out.println("Extracting topics from geoCluster " + ++geoClusterCount + " of " + geoClusters.size() + "...");
 			query.addCluster(geoCluster);				
 			
 			//Extract topics
@@ -120,7 +120,7 @@ public class ClusterAnalysis implements Runnable{
 			}
 			
 			//Extract keywords
-			System.out.println("Extracting keywords from geoCluser " + geoClusterCount + " of " + geoClusters.size() + "...");
+			System.out.println("Extracting keywords from geoCluster " + geoClusterCount + " of " + geoClusters.size() + "...");
 			KeywordCluster keywordCluster = new SemanticKeywordClustering(query, geoCluster.getPosts(), geoCluster, numberOfKeywords).performClustering();
 			query.addCluster(keywordCluster);
 			
