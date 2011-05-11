@@ -35,8 +35,9 @@ public class ClusterAnalysis implements Runnable{
 	private boolean disableLangDetection;
 	private boolean excludeRelLinksText;
 	private int numberOfKeywords;
+	private boolean disableLangMapping;
 	
-	public ClusterAnalysis(ResultLogger logger, long userId, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity, String sourceName, boolean considerApproxGeolocations, int minRTCount, int numberOfTopics, int numberOfWords, int minFollCount, boolean disableLangDetection, boolean excludeRelLinksText, int numberOfKeywords){
+	public ClusterAnalysis(ResultLogger logger, long userId, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity, String sourceName, boolean considerApproxGeolocations, int minRTCount, int numberOfTopics, int numberOfWords, int minFollCount, boolean disableLangDetection, boolean excludeRelLinksText, int numberOfKeywords, boolean disableLangMapping){
 		this.logger = logger;
 		this.userId = userId;
 		this.startTime = startTime;
@@ -52,6 +53,7 @@ public class ClusterAnalysis implements Runnable{
 		this.disableLangDetection = disableLangDetection;
 		this.excludeRelLinksText = excludeRelLinksText;
 		this.numberOfKeywords = numberOfKeywords;
+		this.disableLangMapping = disableLangMapping;
 	}
 
 	@Override
@@ -85,6 +87,7 @@ public class ClusterAnalysis implements Runnable{
 		
 		query.getMeta().put("langDetectionEnabled", Boolean.toString(!disableLangDetection));
 		query.getMeta().put("relLinksTextEnabled", Boolean.toString(!excludeRelLinksText));
+		query.getMeta().put("langMappingEnabled", Boolean.toString(!disableLangMapping));
 		
 		System.out.println("\tQuery meta: " + query.getMeta().toString());
 		
@@ -112,7 +115,7 @@ public class ClusterAnalysis implements Runnable{
 			query.addCluster(geoCluster);				
 			
 			//Extract topics
-			List<TopicCluster> currentSemanticClusters = new SemanticTopicClustering(query, geoCluster.getPosts(), geoCluster, numberOfTopics, numberOfWords, disableLangDetection, excludeRelLinksText).performClustering();
+			List<TopicCluster> currentSemanticClusters = new SemanticTopicClustering(query, geoCluster.getPosts(), geoCluster, numberOfTopics, numberOfWords, disableLangDetection, excludeRelLinksText, disableLangMapping).performClustering();
 			semanticClusters.addAll(currentSemanticClusters);
 			for(TopicCluster semCluster : currentSemanticClusters){					
 				logger.addSemCluster(semCluster);

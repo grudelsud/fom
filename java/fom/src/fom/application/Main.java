@@ -37,7 +37,7 @@ public class Main {
         					"[--minRTcount <n>] [--minFollCount <n>]\n" +
         					"[--nOfTopics <n>] [--nOfWords <n>]\n" + 
         					"[--nOfKeywords <n>]\n" +
-        					"[--disableLangDetection] [--excludeRelLinksText]\n" +
+        					"[--disableLangDetection] [--excludeRelLinksText] [--disableLangMaps]\n" +
         					"[--consoleLog] [--csvLog] [--folderLog] [--rpcLog]" +
         					"\n" +
         					"\n" +
@@ -80,6 +80,7 @@ public class Main {
 		Option minFollCountOpt = parser.addIntegerOption("minFollCount");
 		Option disableLangDetectorOpt = parser.addBooleanOption("disableLangDetection");
 		Option excludeRelLinksTextOpt = parser.addBooleanOption("excludeRelLinksText");
+		Option disableLangMappingOpt = parser.addBooleanOption("disableLangMaps");
 		
 		Option firstRunOpt = parser.addBooleanOption("firstRun");
 		
@@ -212,6 +213,8 @@ public class Main {
 		
 		boolean disableLangDetector = (Boolean)parser.getOptionValue(disableLangDetectorOpt, false);
 		boolean excludeRelLinksText = (Boolean)parser.getOptionValue(excludeRelLinksTextOpt, false);
+		boolean disableLangMapping = (Boolean)parser.getOptionValue(disableLangMappingOpt, false);
+		
 		
 		if(parser.getOptionValue(clusterAnalysisOpt)!=null){
 			//CLUSTER ANALYSIS
@@ -228,13 +231,13 @@ public class Main {
 				dateParser = DateTimeFormat.forPattern("yyyy-MM-dd");
 				startTime = dateParser.parseDateTime(dayAnalysis);
 				endTime = startTime.plusDays(1);
-				new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "day", geoGranularity, sourceName, considerApproxGeolocations, minRTCount, numberOfTopics, numberOfWords, minFollCount, disableLangDetector, excludeRelLinksText, numberOfKeywords)).start();
+				new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "day", geoGranularity, sourceName, considerApproxGeolocations, minRTCount, numberOfTopics, numberOfWords, minFollCount, disableLangDetector, excludeRelLinksText, numberOfKeywords, disableLangMapping)).start();
 				return;
 			} else if(hourAnalysis!=null){
 				dateParser = DateTimeFormat.forPattern("yyyy-MM-dd-kk");
 				startTime = dateParser.parseDateTime(hourAnalysis);
 				endTime = startTime.plusHours(1);
-				new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "hour", geoGranularity, sourceName, considerApproxGeolocations, minRTCount, numberOfTopics, numberOfWords, minFollCount, disableLangDetector, excludeRelLinksText, numberOfKeywords)).start();				
+				new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "hour", geoGranularity, sourceName, considerApproxGeolocations, minRTCount, numberOfTopics, numberOfWords, minFollCount, disableLangDetector, excludeRelLinksText, numberOfKeywords, disableLangMapping)).start();				
 				return;
 			} else if(rangeAnalysisStartDay!=null){
 			//	System.out.println(rangeAnalysisStartDay);
@@ -242,7 +245,7 @@ public class Main {
 					dateParser = DateTimeFormat.forPattern("yyyy-MM-dd");
 					startTime = dateParser.parseDateTime(rangeAnalysisStartDay);
 					endTime = dateParser.parseDateTime(rangeAnalysisEndDay).plusDays(1);
-					new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "range", geoGranularity, sourceName, considerApproxGeolocations, minRTCount, numberOfTopics, numberOfWords, minFollCount, disableLangDetector, excludeRelLinksText, numberOfKeywords)).start();
+					new Thread(new ClusterAnalysis(logger, userId, startTime, endTime, "range", geoGranularity, sourceName, considerApproxGeolocations, minRTCount, numberOfTopics, numberOfWords, minFollCount, disableLangDetector, excludeRelLinksText, numberOfKeywords, disableLangMapping)).start();
 					return;
 				} else {
 					printUsage();
@@ -255,7 +258,7 @@ public class Main {
 			return;
 		}
 		
-		QueryHandler qHandler = new QueryHandler(expEngineName, sources, logger, userId, queryString, startTime, endTime, timeGranularity, geoGranularity, nearLat, nearLon, radius, numberOfTopics, numberOfWords, disableLangDetector, excludeRelLinksText);
+		QueryHandler qHandler = new QueryHandler(expEngineName, sources, logger, userId, queryString, startTime, endTime, timeGranularity, geoGranularity, nearLat, nearLon, radius, numberOfTopics, numberOfWords, disableLangDetector, excludeRelLinksText, disableLangMapping);
 		new Thread(qHandler).start();
 	}
 

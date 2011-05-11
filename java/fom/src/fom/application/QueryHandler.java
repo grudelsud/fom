@@ -39,8 +39,9 @@ public class QueryHandler implements Runnable{
 	private int numberOfWords;
 	private boolean disableLangDetection;
 	private boolean excludeRelLinksText;
+	private boolean disableLangMapping;
 	
-	public QueryHandler(String expEngineName, List<SourceType> sources, ResultLogger logger, long userId, String queryString, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity, double nearLat, double nearLon, int radius, int numberOfTopics, int numberOfWords, boolean disableLangDetection, boolean excludeRelLinksText){
+	public QueryHandler(String expEngineName, List<SourceType> sources, ResultLogger logger, long userId, String queryString, DateTime startTime, DateTime endTime, String timeGranularity, String geoGranularity, double nearLat, double nearLon, int radius, int numberOfTopics, int numberOfWords, boolean disableLangDetection, boolean excludeRelLinksText, boolean disableLangMapping){
 		this.queryExpander = new QueryExpander(expEngineName);
 		this.searcher = new Searcher();
 		for(SourceType source : sources){
@@ -60,6 +61,7 @@ public class QueryHandler implements Runnable{
 		this.numberOfWords = numberOfWords;
 		this.disableLangDetection = disableLangDetection;
 		this.excludeRelLinksText = excludeRelLinksText;
+		this.disableLangMapping = disableLangMapping;
 	}
 	
 	
@@ -91,7 +93,7 @@ public class QueryHandler implements Runnable{
 				logger.addGeoCluster(geoCluster);
 				query.addCluster(geoCluster);
 				
-				List<TopicCluster> currentSemanticClusters = new SemanticTopicClustering(query, geoCluster.getPosts(), geoCluster, numberOfTopics, numberOfWords, disableLangDetection, excludeRelLinksText).performClustering();
+				List<TopicCluster> currentSemanticClusters = new SemanticTopicClustering(query, geoCluster.getPosts(), geoCluster, numberOfTopics, numberOfWords, disableLangDetection, excludeRelLinksText, disableLangMapping).performClustering();
 				semanticClusters.addAll(currentSemanticClusters);
 				for(TopicCluster semCluster : currentSemanticClusters){					
 					logger.addSemCluster(semCluster);

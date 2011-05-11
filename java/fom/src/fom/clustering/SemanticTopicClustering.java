@@ -24,8 +24,9 @@ public class SemanticTopicClustering {
 	private int numberOfWords;
 	private boolean disableLangDetection;
 	private boolean excludeRelLinksText;
+	private boolean disableLangMapping;
 	
-	public SemanticTopicClustering(Query originatingQuery, List<Post> posts, Cluster parentCluster, int numberOfTopics, int numberOfWords, boolean disableLangDetection, boolean excludeRelLinksText){
+	public SemanticTopicClustering(Query originatingQuery, List<Post> posts, Cluster parentCluster, int numberOfTopics, int numberOfWords, boolean disableLangDetection, boolean excludeRelLinksText, boolean disableLangMapping){
 		this.originatingQuery = originatingQuery;
 		clusters = new ArrayList<TopicCluster>();
 		this.posts = posts;
@@ -34,12 +35,19 @@ public class SemanticTopicClustering {
 		this.numberOfWords = numberOfWords;
 		this.disableLangDetection = disableLangDetection;
 		this.excludeRelLinksText = excludeRelLinksText;
+		this.disableLangMapping = disableLangMapping;
 	}
 	
 	public List<TopicCluster> performClustering(){
 		Vocabulary voc = new Vocabulary("MainVoc", "");
 		if(posts.size()>0){
-			Map<Language, List<Post>> languagePostsMap = splitPostByLanguage(posts);
+			Map<Language, List<Post>> languagePostsMap = null;
+			if(!disableLangMapping){
+				languagePostsMap = splitPostByLanguage(posts);				
+			} else {
+				languagePostsMap = new HashMap<Language, List<Post>>();
+				languagePostsMap.put(Language.unknown, posts);
+			}
 			for(Language lang : languagePostsMap.keySet()){
 				List<Topic> topics = TopicExtractor.extractTopics(languagePostsMap.get(lang), numberOfTopics, numberOfWords, disableLangDetection, excludeRelLinksText, lang);
 				for(Topic topic : topics){
