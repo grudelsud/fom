@@ -1,5 +1,6 @@
 package fom.model.dao.localdb;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,6 +8,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.joda.time.DateTime;
 
 import fom.model.Cluster;
@@ -22,6 +26,7 @@ public class LocalDBQueryDAO implements QueryDAO {
 	private PreparedStatement saveQueryStm;
 	private PreparedStatement getClusterStm;
 	private PreparedStatement getTermsStm;
+	private ObjectMapper objMapper;
 	
 	public LocalDBQueryDAO(Connection conn) {
 		try {
@@ -30,7 +35,7 @@ public class LocalDBQueryDAO implements QueryDAO {
 			saveQueryStm = conn.prepareStatement("SELECT * FROM fom_query WHERE id_query=?");
 			getClusterStm = conn.prepareStatement("SELECT id_cluster FROM fom_cluster WHERE id_query=?");
 			getTermsStm = conn.prepareStatement("SELECT id_term FROM fom_querytag WHERE id_query=?");
-
+			objMapper = new ObjectMapper();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -52,7 +57,7 @@ public class LocalDBQueryDAO implements QueryDAO {
 			stm.setString(8, query.getGeoGranularity());
 			stm.setTimestamp(9, new Timestamp(query.getCreated().toDate().getTime()));
 			stm.setInt(10, query.getTimezone());
-			stm.setString(11, query.getMeta().toString());
+			stm.setString(11, objMapper.writeValueAsString(query.getMeta()));
 			stm.executeUpdate();
 			
 			ResultSet generatedKeys = stm.getGeneratedKeys();
@@ -72,6 +77,15 @@ public class LocalDBQueryDAO implements QueryDAO {
 			}
 			
 		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (JsonGenerationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return queryId;
