@@ -17,22 +17,99 @@ function initialize( initialLocation )
 	google.maps.event.addListener(map, 'click', function(event) {
 		$('#footer').empty().append( event.latLng.toString() );
 	});
+	map.enableKeyDragZoom({
+		boxStyle: {
+			border: "1px dashed #DDDDDD",
+			backgroundColor: "transparent",
+			opacity: 1.0
+		},
+		veilStyle: {
+			backgroundColor: "#333333",
+			opacity: 0.70,
+			cursor: "crosshair"
+		},
+		visualEnabled: true,
+		visualPosition: google.maps.ControlPosition.LEFT,
+		visualPositionOffset: new google.maps.Size(35, 0),
+		visualPositionIndex: null,
+		visualSprite: "http://maps.gstatic.com/mapfiles/ftr/controls/dragzoom_btn.png",
+		visualSize: new google.maps.Size(20, 20),
+		visualTips: {
+			off: "Turn on",
+			on: "Turn off"
+		}
+	});
+	var dz = map.getDragZoomObject();
+	google.maps.event.addListener(dz, 'dragend', function (bnds) {
+		showDZObjectStats(bnds);
+	});
 }
 
-function showStats()
+function showDZObjectStats(bnds)
 {
+	var swLat = bnds.getSouthWest().lat();
+	var swLon = bnds.getSouthWest().lng();
+	var neLat = bnds.getNorthEast().lat();
+	var neLon = bnds.getNorthEast().lng();
+	
+	var dzoUrl = siteUrl + '/cluster/dzstat/'+swLat+'/'+swLon+'/'+neLat+'/'+neLon;
+	$.ajax({
+		url: dzoUrl,
+		dataType: 'json',
+		success: function( data ) {
+			var content = '<h3>Box stats</h3><p>SW['+swLat+','+swLon+'] NE['+neLat+','+neLon+']</p>';
+			var chartNumPost = '<img src="'+data.charts.chartUrlPosts+'" alt="chart num posts" />';
+			var chartNumCluster = '<img src="'+data.charts.chartUrlClusters+'" alt="chart num posts" />';
+			var i = 0;
+			$.each(data.dates, function(time, stat) {
+				i++;
+				var q_content = '<p><input type="checkbox" name="q'+i+'" id="q'+i+'"><label for="q'+i+'">['+time+']</label><span id="poststat'+i+'"></span></p>';
+				content += q_content;
+			});
+			
+			// clear all overlays
+			if( $('#query_meta').is(':visible') ) {
+				$('#query_meta').empty().toggle('fast');
+			}
+			$('#post_content').empty().fadeOut('fast');
+			
+			$('#content').empty().append( content ).fadeIn('fast');
+			$('#post_content').empty().append( chartNumPost + chartNumCluster ).fadeIn('fast');
+		}
+	});
+}
+
+function showQueryStats()
+{
+	// if it's already visible, just turn it off
 	if( $('#query_meta').is(':visible') ) {
 		$('#query_meta').empty().toggle('fast');
 	} else {
+		// display a spinner while waiting result from the server
 		var queryId = $('#queries').val();
 		$('#ajax_loader').empty().html('<img src="'+assetsUrl+'/img/ajax-loader.gif" alt="loading">');
 		
-		$('#query_meta').empty().append( queryMetaArray[queryId] );
+		$('#query_meta').empty();
+		
 		$.ajax({
-			url: siteUrl + '/cluster/stat/'+queryId+'/jpg',
-			dataType: 'text',
+			url: siteUrl + '/cluster/stat/'+queryId,
+			dataType: 'json',
 			success: function(data) {
-				$('#query_meta').append( '<img src="'+data+'" alt="query stats" />').toggle('fast');
+				// all good, received results! remove the spinner and display the stats
+				var queryStats = $('<ul></ul>');
+				queryStats.append('<li>topics/cluster: '+data.numberOfTopics+'</li>');
+				queryStats.append('<li>terms/topic: '+data.numberOfWords+'</li>');
+				queryStats.append('<li>min followers:'+data.minFollCount+'</li>');
+
+				queryStats.append('<li>time granularity: '+data.tGranularity+'</li>');
+				queryStats.append('<li>geo granularity: '+data.geoGranularity+'</li>');
+
+				queryStats.append('<li>geo clusters: '+data.gClusterNumTot+'</li>');
+				queryStats.append('<li>sem clusters: '+data.sClusterNumTot+'</li>');
+				queryStats.append('<li>tot terms: '+data.termsNumTot+' ('+data.termsNumOverbias+' over a bias of '+data.tfBias+')</li>');
+
+				$('#query_meta').append( queryStats ).append('<img src="'+data.chartUrl+'" title="TF-IDF chart"/>').toggle('fast');
+//				$('#query_meta').append( '<img src="'+data.chartUrl+'" alt="query stats" />').toggle('fast');
 				$('#ajax_loader').empty();
 			}
 		});
@@ -176,7 +253,7 @@ function loadContent( cluster )
 			$.each(data, function(i, semCluster) {
 				var score = Math.round(semCluster.score*1000)/1000;
 				var terms = semCluster.terms_meta;
-				terms = terms.replace(/[^a-zA-Z 0-9]+/g, ' ');
+				terms = '[lang: '+semCluster.language+']'+terms.replace(/[^a-zA-Z 0-9]+/g, ' ');
 				scoreArray[score] = terms;
 				keysArray.push( score );
 			});

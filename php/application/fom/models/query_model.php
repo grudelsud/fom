@@ -32,11 +32,19 @@ class Query_model extends CI_Model
 		return $this->db->insert_id();
 	}
 	
-	function read()
+	function read( $id_query = '' )
 	{
 		$this->db->order_by('t_start', 'desc');
+		if( !empty( $id_query ) ) {
+			$this->db->where('id_query', $id_query );
+		}
 		$query = $this->db->get('query');
-		return $query->result();
+
+		if( $query->num_rows() > 1 ) {
+			return $query->result();
+		} else {
+			return $query->row();
+		}
 	}
 	
 	function delete( $id_query )
