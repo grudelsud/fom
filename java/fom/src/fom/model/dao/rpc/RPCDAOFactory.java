@@ -2,6 +2,8 @@ package fom.model.dao.rpc;
 
 import fom.model.dao.interfaces.ClusterDAO;
 import fom.model.dao.interfaces.DAOFactory;
+import fom.model.dao.interfaces.FeedDAO;
+import fom.model.dao.interfaces.FeedItemDAO;
 import fom.model.dao.interfaces.LinkDAO;
 import fom.model.dao.interfaces.MediaDAO;
 import fom.model.dao.interfaces.PlaceDAO;
@@ -52,6 +54,14 @@ public class RPCDAOFactory extends DAOFactory {
 		return new RPCLinkDAO();
 	}
 	
+	@Override
+	public FeedDAO getFeedDAO() {
+		throw new UnsupportedOperationException();
+	}
 	
+	@Override
+	public FeedItemDAO getFeedItemDAO() {
+		throw new UnsupportedOperationException();
+	}
 
 }

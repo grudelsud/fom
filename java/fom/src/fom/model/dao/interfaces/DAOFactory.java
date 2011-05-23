@@ -35,5 +35,7 @@ public abstract class DAOFactory {
 	public abstract TermDAO getTermDAO();
 	public abstract VocabularyDAO getVocabularyDAO();
 	public abstract LinkDAO getLinkDAO();
+	public abstract FeedDAO getFeedDAO();
+	public abstract FeedItemDAO getFeedItemDAO();
 	
 }

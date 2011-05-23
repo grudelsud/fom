@@ -47,6 +47,8 @@ public class PropertyHandler {
 	}
 	
 	public static int getIntProperty(String propertyName){
-		return Integer.parseInt(PropertyHandler.getInstance().getProperties().getProperty(propertyName));
+		return Integer.parseInt(PropertyHandler.getInstance().getProperties().getProperty(propertyName).trim());
 	}
+	
+	
 }

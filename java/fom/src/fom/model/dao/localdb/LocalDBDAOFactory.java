@@ -6,6 +6,8 @@ import java.sql.SQLException;
 
 import fom.model.dao.interfaces.ClusterDAO;
 import fom.model.dao.interfaces.DAOFactory;
+import fom.model.dao.interfaces.FeedDAO;
+import fom.model.dao.interfaces.FeedItemDAO;
 import fom.model.dao.interfaces.LinkDAO;
 import fom.model.dao.interfaces.MediaDAO;
 import fom.model.dao.interfaces.PlaceDAO;
@@ -24,7 +26,9 @@ public class LocalDBDAOFactory extends DAOFactory {
 	private LocalDBQueryDAO queryDAO;
 	private LocalDBTermDAO termDAO;
 	private LocalDBVocabularyDAO vocabularyDAO;
-	private LinkDAO linkDAO;
+	private LocalDBLinkDAO linkDAO;
+	private LocalDBFeedDAO feedDAO;
+	private LocalDBFeedItemDAO feedItemDAO;
 	
 	public LocalDBDAOFactory(){
 		Connection conn = getConnection();
@@ -36,6 +40,8 @@ public class LocalDBDAOFactory extends DAOFactory {
 		termDAO = new LocalDBTermDAO(conn);
 		vocabularyDAO = new LocalDBVocabularyDAO(conn);
 		linkDAO = new LocalDBLinkDAO(conn);
+		feedDAO = new LocalDBFeedDAO(conn);
+		feedItemDAO = new LocalDBFeedItemDAO(conn);
 	}
 	
 	private Connection getConnection() {
@@ -90,4 +96,13 @@ public class LocalDBDAOFactory extends DAOFactory {
 		return linkDAO;
 	}
 
+	@Override
+	public FeedDAO getFeedDAO() {
+		return feedDAO;
+	}
+
+	@Override
+	public FeedItemDAO getFeedItemDAO() {
+		return feedItemDAO;
+	}
 }

@@ -9,6 +9,12 @@ public class Term {
 	private Term parent;
 	private Vocabulary vocabulary;
 		
+	public Term(String name, Vocabulary vocabulary){
+		super();
+		this.name = name;
+		this.vocabulary = vocabulary;
+	}
+	
 	public Term(String name, String url, Term syn, Term parent, Vocabulary vocabulary) {
 		super();
 		this.name = name;

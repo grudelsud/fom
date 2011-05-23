@@ -1,0 +1,20 @@
+#Format: feedUrl, feedCategory, language [, lat, lon, influenceRadiusKm]
+
+#Italiani nazionali:
+
+#La Repubblica:
+http://www.repubblica.it/rss/cronaca/rss2.0.xml, cronaca, italian
+http://www.repubblica.it/rss/economia/rss2.0.xml, economia, italian
+http://www.repubblica.it/rss/esteri/rss2.0.xml, esteri, italian
+http://www.repubblica.it/rss/politica/rss2.0.xml, politica, italian
+http://www.repubblica.it/rss/sport/rss2.0.xml, sport, italian
+http://www.repubblica.it/rss/tecnologia/rss2.0.xml, tecnologia, italian
+
+
+#Italiani locali:
+
+#La Nazione - Firenze:
+http://it.lanazione.feedsportal.com/c/33332/f/565714/index.rss, cronaca, italian, 43.768615, 11.25721, 15
+
+#Il Giorno - Milano:
+http://it.ilgiorno.feedsportal.com/c/33333/f/565729/index.rss, cronaca, italian, 45.460131, 9.212036, 30

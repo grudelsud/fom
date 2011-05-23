@@ -21,7 +21,7 @@ public class LocalDBTermDAO implements TermDAO {
 	public LocalDBTermDAO(Connection conn) {
 		try {
 			stm  = conn.prepareStatement("INSERT INTO fom_term(name, id_termsyn, id_termparent, id_vocabulary, uri) VALUES (?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-			getTermByNameStm = conn.prepareStatement("SELECT id_term FROM fom_term WHERE name LIKE ?");
+			getTermByNameStm = conn.prepareStatement("SELECT id_term FROM fom_term WHERE name LIKE ? AND uri LIKE ?");
 			getTermByIdStm  = conn.prepareStatement("SELECT * FROM fom_term WHERE id_term=?");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -35,7 +35,8 @@ public class LocalDBTermDAO implements TermDAO {
 			if(term.getId()!=0){
 				return term.getId();
 			}
-			getTermByNameStm.setString(1, term.getName()); 			//TODO: controllare l'uri????
+			getTermByNameStm.setString(1, term.getName());
+			getTermByNameStm.setString(2, term.getUrl());
 			ResultSet getTermRes = getTermByNameStm.executeQuery();
 			if(getTermRes.next()){
 				term.setId(getTermRes.getLong("id_term"));
@@ -84,6 +85,7 @@ public class LocalDBTermDAO implements TermDAO {
 				Term parent = DAOFactory.getFactory().getTermDAO().retrieve(res.getLong("id_termparent"));
 				Vocabulary vocabulary = DAOFactory.getFactory().getVocabularyDAO().retrieve(res.getLong("id_vocabulary"));
 				term = new Term(name, url, syn, parent, vocabulary);
+				term.setId(termId);
 			}
 		} catch (SQLException e) {
 			// TODO: handle exception

@@ -57,6 +57,11 @@ public class Main {
         					"fom --captureStream [--filterGeoTagged]" +
         					"\n" +
         					"\n" +
+        					"FEED RETRIEVER" +
+        					"\n" +
+        					"fom --feedRetrieval" +
+        					"\n" +
+        					"\n" +
         					"FIRST RUN:" +
         					"fom --firstRun");
     }
@@ -107,6 +112,8 @@ public class Main {
 		Option folderLogOpt = parser.addBooleanOption("folderLog");
 		Option rpcLogOpt = parser.addBooleanOption("rpcLog");
 		
+		Option feedRetrievalOpt = parser.addBooleanOption("feedRetrieval");
+		
 		try {
 			parser.parse(args);
 		} catch (IllegalOptionValueException e) {
@@ -122,6 +129,12 @@ public class Main {
 		//First Run
 		if(parser.getOptionValue(firstRunOpt)!=null){
 			FirstRun.main(new String[0]);
+			return;
+		}
+		
+		//Feed Retrieval
+		if(parser.getOptionValue(feedRetrievalOpt)!=null){
+			new FeedRetriever().start();
 			return;
 		}
 		

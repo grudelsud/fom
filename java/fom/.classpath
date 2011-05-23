@@ -40,5 +40,7 @@
 	<classpathentry kind="lib" path="lib/lc4j/mg4j-3.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/jExSLI.jar"/>
 	<classpathentry kind="lib" path="lib/jargs.jar"/>
+	<classpathentry kind="lib" path="lib/jdom.jar"/>
+	<classpathentry kind="lib" path="lib/rome-1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
