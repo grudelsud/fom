@@ -57,24 +57,47 @@ function showDZObjectStats(bnds)
 		url: dzoUrl,
 		dataType: 'json',
 		success: function( data ) {
-			var content = '<h3>Box stats</h3><p>SW['+swLat+','+swLon+'] NE['+neLat+','+neLon+']</p>';
+			var content = '<h3>Cluster stats</h3><p>SW['+swLat+','+swLon+'] NE['+neLat+','+neLon+']</p>';
 			var chartNumPost = '<img src="'+data.charts.chartUrlPosts+'" alt="chart num posts" />';
 			var chartNumCluster = '<img src="'+data.charts.chartUrlClusters+'" alt="chart num posts" />';
 			var i = 0;
-			$.each(data.dates, function(time, stat) {
-				i++;
-				var q_content = '<p><input type="checkbox" name="q'+i+'" id="q'+i+'"><label for="q'+i+'">['+time+']</label><span id="poststat'+i+'"></span></p>';
-				content += q_content;
-			});
+//			var details = '';
+//			$.each(data.dates, function(time, stat) {
+//				i++;
+//				var q_content = '<p><input type="checkbox" name="q'+i+'" id="q'+i+'"><label for="q'+i+'">['+time+']</label><span id="poststat'+i+'"></span></p>';
+//				details += q_content;
+//			});
 			
 			// clear all overlays
 			if( $('#query_meta').is(':visible') ) {
 				$('#query_meta').empty().toggle('fast');
 			}
 			$('#post_content').empty().fadeOut('fast');
+
+			var divStatForm = $('<div id="div_stat_form"></div>');
+			var statForm = '<h3>Post stats</h3><form name="stat_form" id="stat_form" method="post" action="">';
+			statForm += '<p><label for="since">since</label><input type="text" name="since" id="since"></p>';
+			statForm += '<p><label for="until">until</label><input type="text" name="until" id="until"></p>';
+			statForm += '<p><label><input type="radio" name="timespan" value="daily" id="timespan_0" checked>daily</label><br>';
+			statForm += '<label><input type="radio" name="timespan" value="hourly" id="timespan_1">hourly</label></p>';
+			statForm += '<p><input type="submit" name="submit" id="submit" value="Submit"></p>';
+			statForm += '<input type="hidden" name="swLat" id="swLat" value="'+swLat+'"><input type="hidden" name="swLon" id="swLon" value="'+swLon+'">';
+			statForm += '<input type="hidden" name="neLat" id="neLat" value="'+neLat+'"><input type="hidden" name="neLon" id="neLon" value="'+neLon+'"></form>';
+			statForm += '<div id="div_stat_result"></div>';
+
+			divStatForm.append( statForm );
 			
-			$('#content').empty().append( content ).fadeIn('fast');
-			$('#post_content').empty().append( chartNumPost + chartNumCluster ).fadeIn('fast');
+
+			$('#content').empty().append( content + chartNumPost + chartNumCluster ).fadeIn('fast');
+			$('#post_content').empty().append( statForm ).fadeIn('fast');
+
+			$('#since').live('click', function() { $(this).datepicker({showOn:'focus', dateFormat: 'yy-mm-dd'}).focus(); });
+			$('#until').live('click', function() { $(this).datepicker({showOn:'focus', dateFormat: 'yy-mm-dd'}).focus(); });
+			
+			$('#stat_form').live('submit', function(e) {
+				e.preventDefault();
+				showPostStats();
+			});
 		}
 	});
 }
@@ -109,18 +132,29 @@ function showQueryStats()
 				queryStats.append('<li>tot terms: '+data.termsNumTot+' ('+data.termsNumOverbias+' over a bias of '+data.tfBias+')</li>');
 
 				$('#query_meta').append( queryStats ).append('<img src="'+data.chartUrl+'" title="TF-IDF chart"/>').toggle('fast');
-//				$('#query_meta').append( '<img src="'+data.chartUrl+'" alt="query stats" />').toggle('fast');
 				$('#ajax_loader').empty();
 			}
 		});
 	}
+}
 
-//	new pv.Panel()
-//	.width(150)
-//	.height(150)
-//	.anchor("center").add(pv.Label)
-//	.text("Hello, world!")
-//	.root.render();
+function showPostStats() 
+{
+	var params = $('#stat_form').serialize();
+	var searchUrl = siteUrl + '/search/dzstat/'+params.replace(/&/g,'/');
+
+	$.ajax({
+		url: searchUrl,
+		dataType: 'json',
+		success: function(data) {
+			var title = 'Stat for ' + $('#since').val();
+			var res = $('<ul></ul>');
+			$.each(data.result, function(lang, count) {
+				res.append('<li>'+lang+': '+count+'</li>');
+			});
+			$('#div_stat_result').empty().append( title ).append( res );
+		}
+	});
 }
 
 function loadMarkers( clusterUrl )

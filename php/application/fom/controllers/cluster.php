@@ -81,27 +81,51 @@ class Cluster extends CI_Controller
 			$meta = json_decode( $cluster->meta, TRUE );
 			
 			$time_sequence[] = $meta['endTime'];
+			$time_humanreadable[] = date('D j.n.y H.i', strtotime($meta['endTime']));
 			$time_values[$meta['endTime']] = $tc_values;
 		}
 
 		// sort the key array of timings, and create single stat arrays (number of posts and clusters) according to the new sorting
 		arsort($time_sequence);
+		$max_posts = 0;
+		$max_clusters = 0;
+
 		foreach( $time_sequence as $time ) {
 			$stat_output['dates'][$time] = $time_values[$time];
-			$num_posts[] = $time_values[$time]['num_posts'];
-			$num_clusters[] = $time_values[$time]['num_clusters'];
-		}
-		
-		//  implode the arrays and create the google chart urls
-		$url_posts  = 'https://chart.googleapis.com/chart?cht=bhs';
-		$url_posts .= '&amp;chd=t:'.implode(',', $num_posts);
-		$url_posts .= '&amp;chxt=x,y&amp;chxl=1:|'.implode('|', $time_sequence).'|';
-		$url_posts .= '&amp;chco=30a8c0&amp;chf=bg,s,333333&amp;chg=10,100,1,5&amp;chs=400x300';
 
-		$url_clusters  = 'https://chart.googleapis.com/chart?cht=bhs';
-		$url_clusters .= '&amp;chd=t:'.implode(',', $num_clusters);
-		$url_clusters .= '&amp;chxt=x,y&amp;chxl=1:|'.implode('|', $time_sequence).'|';
-		$url_clusters .= '&amp;chco=30a8c0&amp;chf=bg,s,333333&amp;chg=10,100,1,5&amp;chs=400x300';
+			$np = $time_values[$time]['num_posts'];
+			$nc = $time_values[$time]['num_clusters'];
+
+			$max_posts = $np > $max_posts ? $np : $max_posts;
+			$max_clusters = $nc > $max_clusters ? $nc : $max_clusters;
+
+			$num_posts[] = $np;
+			$num_clusters[] = $nc;
+		}
+
+		//  implode the arrays and create the google chart urls
+		$url_base  = 'http://chart.apis.google.com/chart';
+		$url_base .= '?chf=bg,s,333333';	// background
+		$url_base .= '&chxs=0,676767,11.5,1,_,676767|1,676767,11.5,1,l,676767';
+		$url_base .= '&chxt=x,y';	// visible axis
+		$url_base .= '&chbh=a';		// bar chart type
+		$url_base .= '&chs=400x300';	// chart size
+		$url_base .= '&cht=bhs';		// chart type = bars
+		$url_base .= '&chco=30A8C0';	// bar colours
+		$url_base .= '&chdlp=t';		// legend position
+		$url_base .= '&chma=|11';	// chart margins
+		
+		$url_posts = $url_base;
+		$url_posts .= '&chdl=Number+of+Posts';	// chart legend
+		$url_posts .= '&chxl=1:|'.implode('|', array_reverse( $time_humanreadable ));
+		$url_posts .= '&chxr=0,0,'.$max_posts.'|1,0,0';	// axis scale
+		$url_posts .= '&chd='.googlechart_extencode($num_posts);
+		
+		$url_clusters = $url_base;
+		$url_clusters .= '&chdl=Number+of+Clusters';	// chart legend
+		$url_clusters .= '&chxl=1:|'.implode('|', array_reverse( $time_humanreadable ));
+		$url_clusters .= '&chxr=0,0,'.$max_clusters.'|1,0,0';	// axis scale
+		$url_clusters .= '&chd='.googlechart_extencode($num_clusters);
 
 		$stat_output['charts']['chartUrlPosts'] = $url_posts;
 		$stat_output['charts']['chartUrlClusters'] = $url_clusters;
@@ -110,26 +134,6 @@ class Cluster extends CI_Controller
 		echo json_encode( $stat_output );
 	}
 
-	/*
-	private function extEncode($values, $max = 4095, $min = 0){
-		$extended_table = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-.';
-		$chardata = 'e:';
-		$delta = $max - $min;
-		$size = (strlen($extended_table));
-		foreach($values as $k => $v){
-			if($v >= $min && $v <= $max){
-				$first = substr($extended_table, round(($v - $min) / $size * $max / $delta),1);
-				$second = substr($extended_table, ((($v - $min) % $size) * $max / $delta), 1);
-				$chardata .= "$first$second";
-			} else {
-				$chardata .= '__'; // Value out of max range;
-			}
-		}
-		return($chardata);
-	}
-
-	*/
-	
 	function stat( $id_query )
 	{
 		$this->load->model('Cluster_model');
@@ -193,10 +197,27 @@ class Cluster extends CI_Controller
 			$chart_data[] = $val;
 			$chart_label[] = urlencode( $key );
 		}
-		$url  = 'https://chart.googleapis.com/chart?cht=bhs';
-		$url .= '&amp;chd=t:'.implode(',', $chart_data);
-		$url .= '&amp;chxt=x,y&amp;chxl=1:|'.implode('|', $chart_label).'|';
-		$url .= '&amp;chco=30a8c0&amp;chf=bg,s,333333&amp;chg=10,100,1,5&amp;chs=450x400';
+
+		$max = $chart_data[0];
+		
+		$stat_output->chartData = $chart_data;
+		$stat_output->chartLabel = $chart_label;
+
+		$url  = 'http://chart.apis.google.com/chart';
+		$url .= '?chf=bg,s,333333';	// background
+		$url .= '&chxl=1:|'.implode('|', array_reverse( $chart_label ));
+		$url .= '&chxr=0,0,'.$max.'|1,0,0';	// axis scale
+		$url .= '&chxs=0,676767,11.5,1,_,676767|1,676767,11.5,1,l,676767';
+		$url .= '&chxt=x,y';	// visible axis
+		$url .= '&chbh=a';		// bar chart type
+		$url .= '&chs=450x400';	// chart size
+		$url .= '&cht=bhs';		// chart type = bars
+		$url .= '&chco=30A8C0';	// bar colours
+		$url .= '&chd='.googlechart_extencode($chart_data);
+		$url .= '&chdl=TF-IDF';	// chart legend
+		$url .= '&chdlp=t';		// legend position
+		$url .= '&chma=|11';	// chart margins
+		$url .= '&chtt=Query+Stats';
 
 		$stat_output->chartUrl = $url;
 		echo json_encode( $stat_output );

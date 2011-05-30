@@ -30,18 +30,21 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
 	<title>Flux of MEME</title>
-  
+
+	<style type="text/css"> @import "<?php echo assets_url('assets/css') ?>/dark-hive/jquery-ui-1.8.13.custom.css"; </style>
 	<link type="text/css" href="<?php echo assets_url('assets/css') ?>/map_style.css" rel="stylesheet" media="screen" />
-	<style type="text/css"> @import "<?php echo assets_url('assets/lib') ?>/jquery.datepick/redmond.datepick.css"; </style>
+  
+	<script type="text/javascript" src="<?php echo assets_url('assets/lib') ?>/jquery-1.5.1.min.js"></script>
+	<script type="text/javascript" src="<?php echo assets_url('assets/lib') ?>/jquery-ui-1.8.13.custom.min.js"></script>
 
 	<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script> 
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
-	<script type="text/javascript" src="<?php echo assets_url('assets/lib') ?>/jquery-1.5.min.js"></script>
 	<script type="text/javascript" src="<?php echo assets_url('assets/lib') ?>/markermanager_packed.js"></script>
 	<script type="text/javascript" src="<?php echo assets_url('assets/lib') ?>/keydragzoom_packed.js"></script>
 
 	<script type="text/javascript" src="<?php echo assets_url('assets/lib') ?>/fom_mapcontrols.js"></script>
-	<script type="text/javascript" src="<?php echo assets_url('assets/lib') ?>/protovis-r3.2.js"></script>
+
 	<script type="text/javascript">
 	var initialLocation = new google.maps.LatLng(45, 10);
 	var siteUrl = '<?php echo site_url(); ?>';
