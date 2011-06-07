@@ -17,9 +17,13 @@ class Map extends CI_Controller
 	
 	function index()
 	{
-		$this->load->model('query_model');
-		$data['queries'] = $this->query_model->read();
-		$this->load->view('map_view', $data);
+		if( !$this->session->userdata('id_user') ) {
+			$this->load->view('auth_view');
+		} else {		
+			$this->load->model('query_model');
+			$data['queries'] = $this->query_model->read();
+			$this->load->view('map_view', $data);
+		}
 	}
 }
 

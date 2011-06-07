@@ -1,11 +1,12 @@
-</div><!-- end of #content -->
+</div><!-- end of #content_wide -->
+<div id="footer"></div>
 
-<div id="footer">
-</div><!-- end of #footer -->
-</div><!-- end of #wrapper -->
-
-<div id="debug_bar"><span>[+|-]</span>
-<div id="debug_content"><pre><?php var_dump( $this->session ); ?></pre></div>
+<div id="debug_bar" style="display: none;"><span>[+|-]</span>
+<div id="debug_content"><pre>
+	<?php 
+		var_dump( $this->session );
+	?>
+</pre></div>
 </div>
 <script type="text/javascript">
 	$('#debug_bar span').click(function() {

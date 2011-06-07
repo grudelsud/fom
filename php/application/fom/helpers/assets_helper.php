@@ -16,7 +16,7 @@ if ( ! function_exists('googlechart_extencode'))
 		$characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-.';
 
 		$scale = 4095;
-		$max = max($array);
+		$max = @max($array);
 		$scaled_array = array();
 		foreach($array as $value) {
 			$scaled = ($value/$max) * $scale;

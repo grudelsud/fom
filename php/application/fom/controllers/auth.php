@@ -1,28 +1,73 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
-* Class User: handles 
+* Class Auth: handles user registration / authentication
 * 
 * @author TMA
 * @version 1.0 2010-11-18
 */
-class User extends CI_Controller
+class Auth extends CI_Controller
 {
 	
 	function __construct()
 	{
 		parent::__construct();
+		$this->load->config('application');
 	}
 
-	function auth()
+	function index()
+	{
+		$this->load->view('auth_view');
+	}
+
+	function login()
+	{
+		$user_login = $this->input->post('user_login');
+		$user_pass = $this->input->post('user_pass');
+
+		if( FALSE != $user_login ) {
+			$this->db->where('user_login', $user_login);
+			$query = $this->db->get('user');
+
+			if ($query->num_rows() > 0) {
+				$row = $query->row(); 
+				if( 0 == strcmp($row->user_pass, md5( $user_pass )) ) {
+					$id_user = $row->id_user;
+					$this->session->set_userdata('id_user', $id_user);
+					$this->session->set_userdata('user_login', $user_login);
+				}
+			}
+		}
+
+		if( !$this->session->userdata('id_user') ) {
+			$data = array('user_login' => $user_login, 'ip_address' => $this->session->userdata('ip_address'));
+			$this->fom_logger->log('', 'login_attempt', $data);
+			$this->load->view('auth_view');
+		} else {
+			$this->fom_logger->log($id_user, 'login', '');
+			redirect('/');
+		}
+	}
+	
+	function logout()
+	{
+		$id_user = $this->session->userdata('id_user');
+		$this->fom_logger->log($id_user, 'logout', '');
+		
+		$data = array( 'id_user' => '', 'user_login' => '' );
+		$this->session->unset_userdata( $data );
+		redirect('/');
+	}
+
+	function auth_twitter()
 	{
 		// This is how we do a basic auth:
 		// $this->twitter->auth('user', 'password');
 	
 		// Fill in your twitter oauth client keys here
 	
-		$consumer_key = '';
-		$consumer_key_secret = '';
+		$consumer_key = $this->config->item('twitter_consumer_key');
+		$consumer_key_secret = $this->config->item('twitter_consumer_key_secret');
 
 		// For this example, we're going to get and save our access_token and access_token_secret
 		// in session data, but you might want to use a database instead :)

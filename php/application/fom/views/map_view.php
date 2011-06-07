@@ -32,7 +32,7 @@
 	<title>Flux of MEME</title>
 
 	<style type="text/css"> @import "<?php echo assets_url('assets/css') ?>/dark-hive/jquery-ui-1.8.13.custom.css"; </style>
-	<link type="text/css" href="<?php echo assets_url('assets/css') ?>/map_style.css" rel="stylesheet" media="screen" />
+	<link type="text/css" href="<?php echo assets_url('assets/css') ?>/style.css" rel="stylesheet" media="screen" />
   
 	<script type="text/javascript" src="<?php echo assets_url('assets/lib') ?>/jquery-1.5.1.min.js"></script>
 	<script type="text/javascript" src="<?php echo assets_url('assets/lib') ?>/jquery-ui-1.8.13.custom.min.js"></script>
@@ -54,20 +54,27 @@
 	$(document).ready(function() {
 		initialize( initialLocation );
 		loadMarkers( clusterUrl );
+		$('#logo').hover(function(e) { $('#menu').fadeIn('fast'); } );
+		$('#menu').hover(function(e) {}, function(e) {$('#menu').fadeOut('fast');});
 	});
 	</script>
 </head>
 <body>
 	<div id="header">
-		<a href="<?php echo base_url(); ?>"><img src="<?php echo assets_url('assets/img') ?>/logo_small.png" alt="Flux of MEME" style="float:left;"/></a>
+		<div id="logo"><a href="<?php echo base_url(); ?>"><img src="<?php echo assets_url('assets/img') ?>/logo_small.png" alt="Flux of MEME" style="float:left;"/></a></div><!-- end of #logo -->
+		<div id="menu" style="display: none;"><ul><li><a href="<?php echo site_url('auth/logout'); ?>">logout</a></li></ul></div><!-- end of #menu -->
 		<div id="navigation">
 		<?php 
 		if( isset($query_array) ) {
-			echo form_label('Select date ', 'queries'). form_dropdown('queries', $query_array, $query_sel, 'id="queries"'); 
-		}?><span id="disp_stats"><img src="<?php echo assets_url('assets/img') ?>/data_grid.png" alt="display query stats" onClick="showQueryStats()" /></span><span id="ajax_loader"></span>
-		</div>
+			echo form_label('Select date: ', 'queries'). form_dropdown('queries', $query_array, $query_sel, 'id="queries"'); 
+		}?>
+		<span id="disp_stats"><img src="<?php echo assets_url('assets/img') ?>/data_grid.png" alt="display query stats" onClick="showQueryStats()" /></span>
+		<span id="showhide_panels"><img src="<?php echo assets_url('assets/img') ?>/cog.png" alt="toggle panels" /></span>
+		<span id="ajax_loader"></span>
+		</div><!-- end of #navigation -->
 		<div id="query_meta" style="display:none;"></div>
 	</div><!-- end of #header -->
+
 	<div id="map_canvas"></div>
 
 	<div id="content" style="display: none;"></div>
@@ -88,6 +95,10 @@ $(function() {
 		deleteOverlays();
 		loadMarkers( clusterUrl );
 	});
+});
+
+$(function() {
+	$('#showhide_panels').click(function(e) { $('#post_content').toggle(); $('#content').toggle(); });
 });
 
 $(function() {

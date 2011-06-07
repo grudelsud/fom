@@ -15,7 +15,7 @@ function initialize( initialLocation )
 	map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
 	mgr = new MarkerManager(map);
 	google.maps.event.addListener(map, 'click', function(event) {
-		$('#footer').empty().append( event.latLng.toString() );
+		$('#footer').empty().append( 'clicked on: ' + event.latLng.toString() );
 	});
 	map.enableKeyDragZoom({
 		boxStyle: {
@@ -24,7 +24,7 @@ function initialize( initialLocation )
 			opacity: 1.0
 		},
 		veilStyle: {
-			backgroundColor: "#333333",
+			backgroundColor: "#333355",
 			opacity: 0.70,
 			cursor: "crosshair"
 		},
@@ -41,67 +41,13 @@ function initialize( initialLocation )
 	});
 	var dz = map.getDragZoomObject();
 	google.maps.event.addListener(dz, 'dragend', function (bnds) {
-		showDZObjectStats(bnds);
+		dragZoom(bnds);
 	});
 }
 
-function showDZObjectStats(bnds)
-{
-	var swLat = bnds.getSouthWest().lat();
-	var swLon = bnds.getSouthWest().lng();
-	var neLat = bnds.getNorthEast().lat();
-	var neLon = bnds.getNorthEast().lng();
-	
-	var dzoUrl = siteUrl + '/cluster/dzstat/'+swLat+'/'+swLon+'/'+neLat+'/'+neLon;
-	$.ajax({
-		url: dzoUrl,
-		dataType: 'json',
-		success: function( data ) {
-			var content = '<h3>Cluster stats</h3><p>SW['+swLat+','+swLon+'] NE['+neLat+','+neLon+']</p>';
-			var chartNumPost = '<img src="'+data.charts.chartUrlPosts+'" alt="chart num posts" />';
-			var chartNumCluster = '<img src="'+data.charts.chartUrlClusters+'" alt="chart num posts" />';
-			var i = 0;
-//			var details = '';
-//			$.each(data.dates, function(time, stat) {
-//				i++;
-//				var q_content = '<p><input type="checkbox" name="q'+i+'" id="q'+i+'"><label for="q'+i+'">['+time+']</label><span id="poststat'+i+'"></span></p>';
-//				details += q_content;
-//			});
-			
-			// clear all overlays
-			if( $('#query_meta').is(':visible') ) {
-				$('#query_meta').empty().toggle('fast');
-			}
-			$('#post_content').empty().fadeOut('fast');
-
-			var divStatForm = $('<div id="div_stat_form"></div>');
-			var statForm = '<h3>Post stats</h3><form name="stat_form" id="stat_form" method="post" action="">';
-			statForm += '<p><label for="since">since</label><input type="text" name="since" id="since"></p>';
-			statForm += '<p><label for="until">until</label><input type="text" name="until" id="until"></p>';
-			statForm += '<p><label><input type="radio" name="timespan" value="daily" id="timespan_0" checked>daily</label><br>';
-			statForm += '<label><input type="radio" name="timespan" value="hourly" id="timespan_1">hourly</label></p>';
-			statForm += '<p><input type="submit" name="submit" id="submit" value="Submit"></p>';
-			statForm += '<input type="hidden" name="swLat" id="swLat" value="'+swLat+'"><input type="hidden" name="swLon" id="swLon" value="'+swLon+'">';
-			statForm += '<input type="hidden" name="neLat" id="neLat" value="'+neLat+'"><input type="hidden" name="neLon" id="neLon" value="'+neLon+'"></form>';
-			statForm += '<div id="div_stat_result"></div>';
-
-			divStatForm.append( statForm );
-			
-
-			$('#content').empty().append( content + chartNumPost + chartNumCluster ).fadeIn('fast');
-			$('#post_content').empty().append( statForm ).fadeIn('fast');
-
-			$('#since').live('click', function() { $(this).datepicker({showOn:'focus', dateFormat: 'yy-mm-dd'}).focus(); });
-			$('#until').live('click', function() { $(this).datepicker({showOn:'focus', dateFormat: 'yy-mm-dd'}).focus(); });
-			
-			$('#stat_form').live('submit', function(e) {
-				e.preventDefault();
-				showPostStats();
-			});
-		}
-	});
-}
-
+/**
+ * this function called after click on top-left icon for query details
+ */
 function showQueryStats()
 {
 	// if it's already visible, just turn it off
@@ -138,21 +84,102 @@ function showQueryStats()
 	}
 }
 
+/**
+ * this function only displays #content and #post_content panels with query forms for posts and clusters
+ */
+function dragZoom(bnds)
+{
+	var swLat = bnds.getSouthWest().lat();
+	var swLon = bnds.getSouthWest().lng();
+	var neLat = bnds.getNorthEast().lat();
+	var neLon = bnds.getNorthEast().lng();
+	
+	var divClusterStatForm = $('<div id="div_clusterstat_form"></div>');
+	var divPostStatForm = $('<div id="div_poststat_form"></div>');
+
+	var clusterStatForm = '<h3>Cluster stats</h3><form name="cluster_stat_form" id="cluster_stat_form" method="post" action="">';
+	clusterStatForm += '<label for="c_since">since:</label><input type="text" name="c_since" id="c_since">';
+	clusterStatForm += '<label for="c_until">until:</label><input type="text" name="c_until" id="c_until">';
+//	clusterStatForm += '<label><input type="radio" name="c_timespan" value="daily" id="timespan_0" checked>daily</label>';
+//	clusterStatForm += '<label><input type="radio" name="c_timespan" value="hourly" id="timespan_1">hourly</label>';
+	clusterStatForm += '<input type="submit" name="submit" id="submit" value="Submit">';
+	clusterStatForm += '<input type="hidden" name="swLat" id="swLat" value="'+swLat+'"><input type="hidden" name="swLon" id="swLon" value="'+swLon+'">';
+	clusterStatForm += '<input type="hidden" name="neLat" id="neLat" value="'+neLat+'"><input type="hidden" name="neLon" id="neLon" value="'+neLon+'"></form>';
+	clusterStatForm += '<div id="div_cluster_stat_result"></div>';
+
+	var postStatForm = '<h3>Post stats</h3><form name="post_stat_form" id="post_stat_form" method="post" action="">';
+	postStatForm += '<label for="p_since">since:</label><input type="text" name="p_since" id="p_since">';
+	postStatForm += '<label for="p_until">until:</label><input type="text" name="p_until" id="p_until">';
+	postStatForm += '<label><input class="radio" type="radio" name="p_timespan" value="daily" id="timespan_2" checked> daily</label>';
+	postStatForm += '<label><input class="radio" type="radio" name="p_timespan" value="hourly" id="timespan_3"> hourly</label>';
+	postStatForm += '<input type="submit" name="submit" id="submit" value="Submit">';
+	postStatForm += '<input type="hidden" name="swLat" id="swLat" value="'+swLat+'"><input type="hidden" name="swLon" id="swLon" value="'+swLon+'">';
+	postStatForm += '<input type="hidden" name="neLat" id="neLat" value="'+neLat+'"><input type="hidden" name="neLon" id="neLon" value="'+neLon+'"></form>';
+	postStatForm += '<div id="div_post_stat_result"></div>';
+
+	divClusterStatForm.append( clusterStatForm );
+	divPostStatForm.append( postStatForm );
+
+	$('#content').empty().append( clusterStatForm ).fadeIn('fast');
+	$('#post_content').empty().append( postStatForm ).fadeIn('fast');
+
+	$('#c_since').live('click', function() { $(this).datepicker({showOn:'focus', dateFormat: 'yy-mm-dd'}).focus(); });
+	$('#c_until').live('click', function() { $(this).datepicker({showOn:'focus', dateFormat: 'yy-mm-dd'}).focus(); });
+
+	$('#p_since').live('click', function() { $(this).datepicker({showOn:'focus', dateFormat: 'yy-mm-dd'}).focus(); });
+	$('#p_until').live('click', function() { $(this).datepicker({showOn:'focus', dateFormat: 'yy-mm-dd'}).focus(); });
+
+	$('#cluster_stat_form').live('submit', function(e) {
+		e.preventDefault();
+		showClusterStats();
+	});
+
+	$('#post_stat_form').live('submit', function(e) {
+		e.preventDefault();
+		showPostStats();
+	});
+}
+
+function showClusterStats()
+{
+	var params = $('#cluster_stat_form').serialize();
+	var searchUrl = siteUrl + '/cluster/dzstat/'+params.replace(/&/g,'/');
+
+	$('#div_cluster_stat_result').empty().html('<img src="'+assetsUrl+'/img/ajax-loader.gif" alt="loading">');
+
+	$.ajax({
+		url: searchUrl,
+		dataType: 'json',
+		success: function( data ) {
+			var chartNumPost = '<img src="'+data.charts.chartUrlPosts+'" alt="chart num posts" />';
+			var chartNumCluster = '<img src="'+data.charts.chartUrlClusters+'" alt="chart num posts" />';
+			
+			$('#div_cluster_stat_result').empty().append( chartNumPost + chartNumCluster );
+		}
+	});
+}
+
 function showPostStats() 
 {
-	var params = $('#stat_form').serialize();
+	var params = $('#post_stat_form').serialize();
 	var searchUrl = siteUrl + '/search/dzstat/'+params.replace(/&/g,'/');
+
+	$('#div_post_stat_result').empty().html('<img src="'+assetsUrl+'/img/ajax-loader.gif" alt="loading">');
 
 	$.ajax({
 		url: searchUrl,
 		dataType: 'json',
 		success: function(data) {
-			var title = 'Stat for ' + $('#since').val();
+			var title = 'Post stats for interval [' + $('#p_since').val() + ' - ' + $('#p_until').val() + ']';
 			var res = $('<ul></ul>');
-			$.each(data.result, function(lang, count) {
-				res.append('<li>'+lang+': '+count+'</li>');
+			$.each(data.result, function(day, langs) {
+				var values = '';
+				$.each(langs, function(lang, count) {
+					values += lang+'['+count+'] ';
+				});
+				res.append('<li>'+day+': '+values+'</li>');
 			});
-			$('#div_stat_result').empty().append( title ).append( res );
+			$('#div_post_stat_result').empty().append( title ).append( res );
 		}
 	});
 }

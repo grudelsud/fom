@@ -6,7 +6,7 @@
  * @author TMA
  * @version 1.0 2011-03-02
  */
-class Admin extends CI_Controller {
+class Ted_admin extends CI_Controller {
 
 	function __construct()
 	{
@@ -16,10 +16,7 @@ class Admin extends CI_Controller {
 
 	function index()
 	{
-		log_message('error', '--- we are in admin now ---');
-		$data['view'] = 'admin/admin';
-		$this->load->view('template_view', $data);
-
+		redirect('/auth');
 	}
 
 	/**

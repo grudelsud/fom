@@ -13,13 +13,20 @@ class Logger_model extends CI_Model
 	{
 		parent::__construct();
 	}
-	
+
+	/**
+	 * log access on this installation
+	 * 
+	 * @param numeric $id_user
+	 * @param string $action
+	 * @param array $meta
+	 */
 	function create( $id_user = '', $action = '', $meta = '' )
 	{
 		$data = array(
 			'id_user' => (empty($id_user) ? 1 : $id_user),
 			'action' => $action,
-			'meta' => $meta,
+			'meta' => json_encode( $meta ),
 			'created' => date( 'Y-m-d h:i:s' )
 		);
 		$this->db->insert('log', $data);

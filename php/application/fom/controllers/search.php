@@ -8,36 +8,18 @@
 */
 class Search extends CI_Controller
 {
-
 	function __construct()
 	{
 		parent::__construct();
 	}
 
-	function index()
-	{
-//		$this->load->library('twitter');
-//		$data['trends'] = $this->twitter->search('trends');
-		$data['view'] = 'includes/search';
-		$this->load->view('template_view', $data);
-	}
-
-	function result()
-	{
-		$this->load->model('query_model');
-		$data['queries'] = $this->query_model->read();
-		$data['view'] = 'includes/result';
-		$this->load->view('template_view', $data);
-	}
-	
 	// example function call: http://vampireweekend.local/fom/index.php/search/dzstat/since=/until=/timespan=daily/swLat=44.09176715496926/swLon=10.120849609375/neLat=45.0310656020628/neLon=11.966552734375
-	
 	function dzstat( $since, $until, $timespan, $swLat, $swLon, $neLat, $neLon )
 	{
 		$stat_output = array();
-		$since = preg_replace('/since=/', '', $since);
-		$until = preg_replace('/until=/', '', $until);
-		$timespan = preg_replace('/timespan=/', '', $timespan);
+		$since = strtotime( preg_replace('/p_since=/', '', $since) );
+		$until = strtotime( preg_replace('/p_until=/', '', $until) );
+		$timespan = preg_replace('/p_timespan=/', '', $timespan);
 		$swLat = preg_replace('/swLat=/', '', $swLat);
 		$swLon = preg_replace('/swLon=/', '', $swLon);
 		$neLat = preg_replace('/neLat=/', '', $neLat);
@@ -45,30 +27,48 @@ class Search extends CI_Controller
 		
 		$sql = '';
 		$result = array();
-		if( !empty( $since ) ) {
-			$f_since = date('Y-m-d H:i:s', strtotime($since));
-			$f_until = date('Y-m-d H:i:s', strtotime($since) + 3600 * 24);
-			$sql = "SELECT lang, count(*) as number FROM `fom_post` WHERE lat > ".$swLat." and lat < ".$neLat." and lon > ".$swLon." and lon < ".$neLon." and created between '".$f_since."' and '".$f_until."' group by lang";
-			
-			$query = $this->db->query( $sql );
-			$result['other'] = 0;
-			$total = 0;
-			$eval_langs = array('dummy', 'english', 'italian', 'french', 'spanish', 'german', 'portuguese');
-			foreach( $query->result() as $row ) {
-				$total += $row->number;
-				if( array_search( $row->lang, $eval_langs ) ) {
-					$result[$row->lang] = $row->number;
-				} else {
-					$result['other'] += $row->number;
-				}
+		$eval_langs = array('dummy', 'english', 'italian', 'french', 'spanish', 'german', 'portuguese');
+		
+		if( $since && $until ) {
+			if( $timespan == 'daily' ) {
+				$t_increment = 86400;
+			} else {
+				$t_increment = 3600;
 			}
-			$result['total'] = $total;
+			for( $i = $since; $i <= $until; $i += $t_increment ) {
+				$f_since = date('Y-m-d H:i:s', $i);
+				$f_until = date('Y-m-d H:i:s', $i + $t_increment);
+
+				$sql = "SELECT lang, count(*) as number FROM `fom_post` WHERE lat > ".$swLat." and lat < ".$neLat." and lon > ".$swLon." and lon < ".$neLon." and created between '".$f_since."' and '".$f_until."' group by lang";
+				$query = $this->db->query( $sql );
+
+				$day_result = array();
+				$day_result['total'] = 0;
+				$day_result['other'] = 0;
+
+				foreach( $query->result() as $row ) {
+					$day_result['total'] += $row->number;
+
+					if( array_search( $row->lang, $eval_langs ) ) {
+						$day_result[$row->lang] = $row->number;
+					} else {
+						$day_result['other'] += $row->number;
+					}
+				}
+				arsort( $day_result );
+				$since_hr = date('D j.n.y H.i', $i);
+				$result[$since_hr] = $day_result;
+			}
+			
 		}
 		$stat_output['result'] = $result;
 //		$stat_output['query'] = $sql;
 		echo json_encode( $stat_output );
 	}
 
+	/*
+	 * unused, used to be the endpoint for views/search_form.php
+	 */
 	function query()
 	{
 		$terms = $this->input->post('terms');
