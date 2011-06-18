@@ -20,7 +20,12 @@ class Auth extends CI_Controller
 		$this->load->view('auth_view');
 	}
 
-	function login()
+	/**
+	 * accepts login/password in post, returns auth token if get parameter == 'token'
+	 * 
+	 * @param string $return
+	 */
+	function login( $return = '' )
 	{
 		$user_login = $this->input->post('user_login');
 		$user_pass = $this->input->post('user_pass');
@@ -40,12 +45,19 @@ class Auth extends CI_Controller
 		}
 
 		if( !$this->session->userdata('id_user') ) {
-			$data = array('user_login' => $user_login, 'ip_address' => $this->session->userdata('ip_address'));
+			$ip_address = $this->session->userdata('ip_address');
+			$data = array('user_login' => $user_login, 'ip_address' => $ip_address);
 			$this->fom_logger->log('', 'login_attempt', $data);
 			$this->load->view('auth_view');
 		} else {
+			$id_user = $this->session->userdata('id_user');
 			$this->fom_logger->log($id_user, 'login', '');
-			redirect('/');
+			
+			if( $return == 'token' ) {
+				echo json_encode(array('token'=>md5( $id_user )));
+			} else {
+				redirect('/');
+			}
 		}
 	}
 	

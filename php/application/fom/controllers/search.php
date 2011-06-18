@@ -27,7 +27,7 @@ class Search extends CI_Controller
 		
 		$sql = '';
 		$result = array();
-		$eval_langs = array('dummy', 'english', 'italian', 'french', 'spanish', 'german', 'portuguese');
+		$eval_langs = array('total', 'english', 'italian', 'french', 'spanish', 'german', 'portuguese');
 		
 		if( $since && $until ) {
 			if( $timespan == 'daily' ) {
@@ -42,8 +42,7 @@ class Search extends CI_Controller
 				$sql = "SELECT lang, count(*) as number FROM `fom_post` WHERE lat > ".$swLat." and lat < ".$neLat." and lon > ".$swLon." and lon < ".$neLon." and created between '".$f_since."' and '".$f_until."' group by lang";
 				$query = $this->db->query( $sql );
 
-				$day_result = array();
-				$day_result['total'] = 0;
+				$day_result = array_fill_keys($eval_langs, 0);
 				$day_result['other'] = 0;
 
 				foreach( $query->result() as $row ) {
@@ -55,13 +54,17 @@ class Search extends CI_Controller
 						$day_result['other'] += $row->number;
 					}
 				}
-				arsort( $day_result );
-				$since_hr = date('D j.n.y H.i', $i);
-				$result[$since_hr] = $day_result;
+				if( $t_increment == 3600 ) {
+					$since_hr = date('y.n.j D H.i', $i);
+				} else {
+					$since_hr = date('y.n.j D', $i);
+				}
+
+				$result[] = array_merge( array('date'=>$since_hr), $day_result);
 			}
 			
 		}
-		$stat_output['result'] = $result;
+		$stat_output['aaData'] = $result;
 //		$stat_output['query'] = $sql;
 		echo json_encode( $stat_output );
 	}

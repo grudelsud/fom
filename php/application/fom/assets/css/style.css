@@ -11,7 +11,7 @@ p { padding-bottom: 5px; }
 input, select, textarea, button { border: 1px solid #DDD; padding: 5px; }
 img { border: 0; }
 textarea { font-size: 0.9em; }
-table { width: 100%; }
+table { width: 100%; font-size: 0.8em; }
 th { background: #DDD; text-align: left; font-weight: normal; color: #FFF; }
 td, th { border: 1px solid #DDD; border-width: 0 1px 1px 0; padding: 3px; }
 
@@ -21,12 +21,12 @@ td, th { border: 1px solid #DDD; border-width: 0 1px 1px 0; padding: 3px; }
 #menu ul { list-style-type: none; margin: 0; padding: 0; }
 #menu li a { display: block; width: 200px; padding: 15px; background: #333; border-top: 1px solid #DDD; }
 
-#query_meta { background: url('../img/bg_query_stat.png') no-repeat; position: fixed; left: 90px; top: 45px; width: 455px; height: 620px; z-index: 100; padding: 30px 10px; }
+#query_meta { background: url('../img/bg_query_stat.png') no-repeat; position: fixed; left: 90px; top: 45px; width: 455px; height: 620px; z-index: 1000; padding: 30px 10px; }
 
-#map_canvas { position: absolute; top: 50px; z-index: 99; width: 100%; height: 100%; }
+#map_canvas { position: absolute; top: 50px; z-index: 10; width: 100%; height: 100%; }
 
-#content { background: url('../img/alpha70_333.png'); position: fixed; right: 0; top: 40px; width: 380px; height: 100%; z-index: 100; padding: 10px 10px 50px; overflow: scroll; }
-#post_content { background: url('../img/alpha70_333.png'); position: fixed; right: 400px; top: 40px; width: 380px; height: 100%; z-index: 100; padding: 10px; overflow: scroll; }
+#content { background: url('../img/alpha70_333.png'); position: fixed; right: 0; top: 0; width: 380px; height: 100%; z-index: 1000; padding: 50px 10px; overflow: scroll; }
+#post_content { background: url('../img/alpha70_333.png'); position: fixed; right: 400px; top: 0; width: 380px; height: 100%; z-index: 1000; padding: 50px 10px; overflow: scroll; }
 #content_wide { margin: 55px 25px 0; color: #333; }
 
 #content label, #post_content label, #content_wide label { display: block; margin: 0 0 3px; }
@@ -45,3 +45,10 @@ td, th { border: 1px solid #DDD; border-width: 0 1px 1px 0; padding: 3px; }
 #content h3, #post_content h3 { border-bottom: 1px solid #777; }
 
 .ui-widget { font-family: Trebuchet, Arial, sans-serif; font-size: 0.9em; }
+.dataTables_filter { float: none; text-align: left; }
+.dataTables_length { float: none; }
+#datatable thead th {  background-color: #FFF; color: #333; }
+#datatable tr.odd {  background-color: #446; }
+#datatable tr.odd td.sorting_1 {  background-color: #335; }
+#datatable tr.even { background-color: #444; }
+#datatable tr.even td.sorting_1 { background-color: #333; }

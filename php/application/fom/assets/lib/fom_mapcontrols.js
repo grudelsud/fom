@@ -170,16 +170,52 @@ function showPostStats()
 		url: searchUrl,
 		dataType: 'json',
 		success: function(data) {
-			var title = 'Post stats for interval [' + $('#p_since').val() + ' - ' + $('#p_until').val() + ']';
+			var title = '<h3>Result for interval [' + $('#p_since').val() + ' - ' + $('#p_until').val() + ']</h3>';
 			var res = $('<ul></ul>');
-			$.each(data.result, function(day, langs) {
-				var values = '';
-				$.each(langs, function(lang, count) {
-					values += lang+'['+count+'] ';
-				});
-				res.append('<li>'+day+': '+values+'</li>');
+
+			// 'english', 'italian', 'french', 'spanish', 'german', 'portuguese'
+
+			var datatable = '<table cellpadding="0" cellspacing="0" border="0" id="datatable">';
+			datatable += '<thead><tr>';
+			datatable += '<th width="18%">Date</th>';
+			datatable += '<th>Tot</th>';
+			datatable += '<th>EN</th>';
+			datatable += '<th>IT</th>';
+			datatable += '<th>FR</th>';
+			datatable += '<th>ES</th>';
+			datatable += '<th>DE</th>';
+			datatable += '<th>PT</th>';
+			datatable += '<th>Other</th>';
+			datatable += '</tr></thead>';
+			datatable += '<tbody></tbody>';
+			datatable += '</table>';
+
+//			$.each(data.result, function(day, langs) {
+//				var values = '';
+//				$.each(langs, function(lang, count) {
+//					values += lang+'['+count+'] ';
+//				});
+//				res.append('<li>'+day+': '+values+'</li>');
+//			});
+			
+			$('#div_post_stat_result').empty().append( title ).append( datatable );
+
+			var oTable = $('#datatable').dataTable({
+				"bProcessing": true,
+				"bLengthChange": false,
+				"aaData": data.aaData,
+				"aoColumns": [
+					{ "mDataProp": "date" },
+					{ "mDataProp": "total" },
+					{ "mDataProp": "english" },
+					{ "mDataProp": "italian" },
+					{ "mDataProp": "french" },
+					{ "mDataProp": "spanish" },
+					{ "mDataProp": "german" },
+					{ "mDataProp": "portuguese" },
+					{ "mDataProp": "other" }
+				]
 			});
-			$('#div_post_stat_result').empty().append( title ).append( res );
 		}
 	});
 }

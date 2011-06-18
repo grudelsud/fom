@@ -146,8 +146,9 @@ class Cluster extends CI_Controller
 
 		//  implode the arrays and create the google chart urls
 		$url_base  = 'http://chart.apis.google.com/chart';
-		$url_base .= '?chf=bg,s,333333';	// background
-		$url_base .= '&chxs=0,676767,11.5,1,_,676767|1,676767,11.5,1,l,676767';
+		$url_base .= '?chf=bg,s,33333300';	// background
+		$url_base .= '&chts=EFEFEF,11.5'; // title colour
+		$url_base .= '&chxs=0,EEEEEE,11.5,1,_,EEEEEE|1,EEEEEE,11.5,1,l,EEEEEE';
 		$url_base .= '&chxt=x,y';	// visible axis
 		$url_base .= '&chbh=a';		// bar chart type
 		$url_base .= '&chs=350x200';	// chart size
@@ -156,14 +157,14 @@ class Cluster extends CI_Controller
 		$url_base .= '&chma=|11';	// chart margins
 		
 		$url_posts = $url_base;
-		$url_posts .= '&chdl=Number+of+Clustered+Posts';	// chart legend
+		$url_posts .= '&chdl=Clustered+Posts';	// chart legend
 		$url_posts .= '&chxl=1:|'.implode('|', array_reverse( $time_humanreadable ));
 		$url_posts .= '&chxr=0,0,'.$max_posts.'|1,0,0';	// axis scale
 		$url_posts .= '&chco=FF776B';	// bar colours
 		$url_posts .= '&chd='.googlechart_extencode($num_posts);
 		
 		$url_clusters = $url_base;
-		$url_clusters .= '&chdl=Number+of+Clusters';	// chart legend
+		$url_clusters .= '&chdl=Clusters';	// chart legend
 		$url_clusters .= '&chxl=1:|'.implode('|', array_reverse( $time_humanreadable ));
 		$url_clusters .= '&chxr=0,0,'.$max_clusters.'|1,0,0';	// axis scale
 		$url_clusters .= '&chco=30A8C0';	// bar colours
@@ -216,6 +217,7 @@ class Cluster extends CI_Controller
 
 			foreach( $sem_clusters as $sem_cluster ) {
 				$terms = explode(';', preg_replace('/\"/', '', $sem_cluster->terms_meta));
+				$terms = array_filter( $terms, function($value) { return strlen($value) > 2; });
 				$tf_idf = array_merge( $tf_idf, $terms );
 			}
 		}
@@ -259,7 +261,7 @@ class Cluster extends CI_Controller
 		$url .= '&chxs=0,676767,11.5,1,_,676767|1,676767,11.5,1,l,676767';
 		$url .= '&chxt=x,y';	// visible axis
 		$url .= '&chbh=a';		// bar chart type
-		$url .= '&chs=450x400';	// chart size
+		$url .= '&chs=450x470';	// chart size
 		$url .= '&cht=bhs';		// chart type = bars
 		$url .= '&chco=30A8C0';	// bar colours
 		$url .= '&chd='.googlechart_extencode($chart_data);
