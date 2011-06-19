@@ -33,11 +33,15 @@
 
 	<style type="text/css"> @import "<?php echo assets_url('assets/css') ?>/dark-hive/jquery-ui-1.8.13.custom.css"; </style>
 	<style type="text/css"> @import "<?php echo assets_url('assets/css') ?>/datatable.css"; </style>
+	<style type="text/css"> @import "<?php echo assets_url('assets/css') ?>/TableTools.css"; </style>
 	<link type="text/css" href="<?php echo assets_url('assets/css') ?>/style.css" rel="stylesheet" media="screen" />
   
 	<script type="text/javascript" src="<?php echo assets_url('assets/lib') ?>/jquery-1.5.1.min.js"></script>
 	<script type="text/javascript" src="<?php echo assets_url('assets/lib') ?>/jquery-ui-1.8.13.custom.min.js"></script>
 	<script type="text/javascript" src="<?php echo assets_url('assets/lib') ?>/jquery.dataTables.min.js"></script>
+
+	<script type="text/javascript" src="<?php echo assets_url('assets/lib') ?>/ZeroClipboard.js"></script>
+	<script type="text/javascript" src="<?php echo assets_url('assets/lib') ?>/TableTools.js"></script>
 
 	<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script> 
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>

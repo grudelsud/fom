@@ -214,7 +214,12 @@ function showPostStats()
 					{ "mDataProp": "german" },
 					{ "mDataProp": "portuguese" },
 					{ "mDataProp": "other" }
-				]
+				],
+				"sDom": 'Tlfrtip',
+				"oTableTools": {
+					"sSwfPath": assetsUrl + "/swf/copy_cvs_xls_pdf.swf",
+					"aButtons": [ "copy", "csv" ]
+				}
 			});
 		}
 	});

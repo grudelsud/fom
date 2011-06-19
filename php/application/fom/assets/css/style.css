@@ -47,8 +47,12 @@ td, th { border: 1px solid #DDD; border-width: 0 1px 1px 0; padding: 3px; }
 .ui-widget { font-family: Trebuchet, Arial, sans-serif; font-size: 0.9em; }
 .dataTables_filter { float: none; text-align: left; }
 .dataTables_length { float: none; }
+div.dataTables_filter input { width: 200px !important; }
 #datatable thead th {  background-color: #FFF; color: #333; }
 #datatable tr.odd {  background-color: #446; }
 #datatable tr.odd td.sorting_1 {  background-color: #335; }
 #datatable tr.even { background-color: #444; }
 #datatable tr.even td.sorting_1 { background-color: #333; }
+
+button.DTTT_button { color: #DDD; }
+div.DTTT_container { margin-top: 1em; }
