@@ -67,6 +67,28 @@ class Cluster_model extends CI_Model
 		}
 	}
 
+	function export_posts( $id_cluster, $format = 'json' )
+	{
+		$this->db->where('id_cluster', $id_cluster);
+		$query = $this->db->get('cluster');
+		
+		$result = array();
+		if( $query->num_rows() > 0 ) {
+			$row = $query->row();
+			$posts = explode( ' ', $row->posts_meta );
+			
+			$this->load->model('Post_model');
+			foreach( $posts as $post ) {
+				$result[] = $this->Post_model->read_id( $post, 'object' );
+			}
+		}
+		if( 'json' == $format ) {
+			return json_encode( $result );
+		} else {
+			return $result;
+		}	
+	}
+
 	function read_semantic( $id_parent, $format = 'json' )
 	{
 		$this->db->where('type', 3);

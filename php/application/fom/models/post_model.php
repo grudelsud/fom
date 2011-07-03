@@ -36,18 +36,18 @@ class Post_model extends CI_Model
 	{
 		$this->db->where( 'id_post', $id_post );
 		$query = $this->db->get('post');
-		if( $format == 'json' ) {
-			if( $query->num_rows() > 0 ) {
-				$post = $query->row();
-				
+		if( $query->num_rows() > 0 ) {
+			$post = $query->row();
+			if( $format == 'json' ) {
+
 				// decode metas and unset property from original object
 				$post_meta = json_decode( $post->meta );
 				unset( $post->meta );
-				
+
 				// fetch related links
 				$this->db->where( 'id_post', $id_post );
 				$query_link = $this->db->get('postlink');
-				
+
 				if( $query_link->num_rows() > 0 ) {
 					$links = '';
 					foreach( $query_link->result() as $row ) {
@@ -56,14 +56,14 @@ class Post_model extends CI_Model
 					// export links in a new property as string of concatenated ids
 					$post->links = $links;
 				}
-				
+
 				// merge objects and encode
 				return json_encode( array_merge((array)$post, (array)$post_meta));
 			} else {
-				return json_encode( array() );
+				return $query->row();
 			}
 		} else {
-			return $query->result();
+			return json_encode( new stdClass() );
 		}
 	}
 

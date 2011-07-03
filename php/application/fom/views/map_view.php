@@ -70,15 +70,17 @@
 		<div id="logo"><a href="<?php echo base_url(); ?>"><img src="<?php echo assets_url('assets/img') ?>/logo_small.png" alt="Flux of MEME" style="float:left;"/></a></div><!-- end of #logo -->
 		<div id="menu" style="display: none;"><ul><li><a href="<?php echo site_url('auth/logout'); ?>">logout</a></li></ul></div><!-- end of #menu -->
 		<div id="navigation">
+		<span id="search"><img src="<?php echo assets_url('assets/img') ?>/google_custom_search.png" alt="search topic" /></span>
 		<?php 
 		if( isset($query_array) ) {
-			echo form_label('Select date: ', 'queries'). form_dropdown('queries', $query_array, $query_sel, 'id="queries"'); 
+			echo form_label('or select date: ', 'queries'). form_dropdown('queries', $query_array, $query_sel, 'id="queries"'); 
 		}?>
 		<span id="disp_stats"><img src="<?php echo assets_url('assets/img') ?>/data_grid.png" alt="display query stats" onClick="showQueryStats()" /></span>
 		<span id="showhide_panels"><img src="<?php echo assets_url('assets/img') ?>/cog.png" alt="toggle panels" /></span>
-		<span id="ajax_loader"></span>
+		<span id="ajax_loader" style="display:none"><img src="<?php echo assets_url('assets/img') ?>/ajax-loader.gif" alt="loading..." /></span>
 		</div><!-- end of #navigation -->
 		<div id="query_meta" style="display:none;"></div>
+		<div id="subnav"><span id="about"><img src="<?php echo assets_url('assets/img') ?>/information.png" alt="search topic" /></span></div>
 	</div><!-- end of #header -->
 
 	<div id="map_canvas"></div>
@@ -86,11 +88,52 @@
 	<div id="content" style="display: none;"></div>
 	<div id="post_content" style="display: none;"></div>
 
-	<!-- <div id="stat" style="position: absolute; width: 400px; height: 400px; background: #996; z-index: 200;"><script type="text/javascript+protovis">showStats();</script></div> -->
+	<div id="about_content" title="About Flux of MEME">
+		<p>Yet another data mining tool - geo-clustering and topic extraction. Uses HAC + LDA, developed in Java and PHP with an unbelievable number of libraries.</p>
+		<p>Concept, direction and development:<br/><a href="http://tom.londondroids.com">TMA</a></p>
+		<p>Research and development support:<br/>Giuseppe Serra &amp; Federico Frappi</p>
+		<p>With the precious sponsorship of:<br/>Telecom Italia - Working Capital</p>
+		<p>Special thanks:<br/>Marco Bertini, MICC - UniFi</p>
+	</div>
+	<div id="search_content" title="Flux of MEME - Search topic">
+		<form name="topic_search_form" id="topic_search_form" method="post" action="">
+		<span id="search_ajax_loader"><img src="<?php echo assets_url('assets/img') ?>/ajax-loader.gif" alt="loading..." /></span>
+		<input type="text" name="t_query" id="t_query">
+		<label><input class="radio" type="radio" name="t_class" value="all" id="t_class_1" checked> all</label>
+		<label><input class="radio" type="radio" name="t_class" value="topics" id="t_class_2"> topics</label>
+		<label><input class="radio" type="radio" name="t_class" value="keywords" id="t_class_3"> keywords</label>
+		</form>
+		<div id="search_result"></div>
+	</div>
+
+	<div id="legend_content" title="Colour legend">
+	</div>
 
 	<div id="footer"></div>
 
 <script type="text/javascript" >
+$(function() {
+	$('#search_result a').live('click', function(event) {
+		event.preventDefault();
+		var searchUrl = $(this).attr('href');
+		$( "#search_content" ).dialog( 'close' );
+		letBreathe( searchUrl );
+	});
+});
+
+$(function() {
+	$('#t_query').keyup(function() {
+		var t_query = $(this).val();
+		var t_class = $('#topic_search_form input:radio:checked').val();
+		if( t_query.length > 1 ) {
+			searchTopics( t_query, t_class );
+			$('#search_result').show();
+		} else {
+			$('#search_result').empty().hide();
+		}
+	});
+});
+
 $(function() {
 	$('#queries').change(function() {
 		var queryId = $(this).val();
@@ -104,11 +147,46 @@ $(function() {
 });
 
 $(function() {
-	$('#showhide_panels').click(function(e) { $('#post_content').toggle(); $('#content').toggle(); });
+	$( "#legend_content" ).dialog({
+		autoOpen: false
+	});
 });
 
 $(function() {
-	$('#content a').live('click', function(event) {
+	$( "#about_content" ).dialog({
+		autoOpen: false
+	});
+
+	$( "#about" ).click(function() {
+		$( "#about_content" ).dialog( "open" );
+		return false;
+	});
+});
+
+$(function() {
+	$( "#search_content" ).dialog({
+		autoOpen: false,
+		modal: true
+	});
+
+	$( "#search" ).click(function() {
+		$( "#search_content" ).dialog( "open" );
+		return false;
+	});
+});
+
+$(function() {
+	$('#showhide_panels').click(function(e) { 
+		if( $('#post_content, #content').is(':visible') ) {
+			$('#post_content, #content').fadeOut('fast');
+		} else {
+			$('#post_content, #content').fadeIn('fast');
+		}
+	});
+});
+
+$(function() {
+	$('#content a.postUrl').live('click', function(event) {
 		event.preventDefault();
 		var postUrl = $(this).attr('href');
 		loadClusterContent( postUrl );

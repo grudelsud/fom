@@ -28,6 +28,57 @@ class Cluster extends CI_Controller
 	}
 
 	/**
+	*
+	* parses a string formatted as in: ID1xID2xID3 and returns...
+	*
+	* @param Geocluster1xGeocluster2x... $list
+	*/
+	function read_list( $list )
+	{
+		// profiling! save some log in the database
+		$id_user = $this->session->userdata('id_user');
+		if( !$id_user ) {
+			$id_user = 1;
+		}
+		$this->fom_logger->log($id_user, 'query_read_least', array('list'=>$list));
+		$cluster_list = explode('x', $list);
+
+		$clusters = array();
+		foreach( $cluster_list as $id_cluster ) {
+			$this->db->where('id_cluster', $id_cluster);
+			$query = $this->db->get('cluster');
+			$results = $query->result();
+
+			$time_parent = -1;
+			$time_meta = array();
+				
+			foreach( $results as $result ) {
+				$cluster_values = json_decode( $result->meta, TRUE );
+				$cluster_values['id_cluster'] = $result->id_cluster;
+				$cluster_values['id_query'] = $result->id_query;
+				// include post meta for geo clusters
+				$cluster_values['posts_meta'] = $result->posts_meta;
+
+				// TODO: optimize database structure, the following extra query to fecth just one date is highly inefficient
+				// checking that id_parent is always the same is already saving a lot though
+				if( $time_parent != $result->id_parent ) {
+					$time_parent = $result->id_parent;
+					$this->db->where('id_cluster', $result->id_parent);
+					$query = $this->db->get('cluster');
+					if( $query->num_rows() > 0 ) {
+						$row = $query->row();
+						$time_meta = json_decode( $row->meta, TRUE );
+					}
+				}
+				$cluster_values = array_merge( $cluster_values, $time_meta );
+				$clusters[] = $cluster_values;
+			}
+		}
+		echo json_encode( $clusters );
+	}
+	
+
+	/**
 	 * show stats related to a specific bounding box
 	 * example url: http://vampireweekend.local/fom/index.php/cluster/dzstat/since=/until=/swLat=45.80/swLon=12.70/neLat=47.40/neLon=15.00
 	 * 
@@ -273,7 +324,67 @@ class Cluster extends CI_Controller
 		$stat_output->chartUrl = $url;
 		echo json_encode( $stat_output );
 	}
+	
+	
+	function search_topic( $string )
+	{
+		// profiling! save some log in the database
+		$id_user = $this->session->userdata('id_user');
+		if( !$id_user ) {
+			$id_user = 1;
+		}
+		$this->fom_logger->log($id_user, 'cluster_search_topic', array('string'=>$string));
+		
+		$query = $this->db->query('select * from fom_cluster where terms_meta LIKE \'%"'.$string.'%\'');
+		$results = array();
+		
+		$riga = 0;
+		
+		foreach( $query->result() as $row ) {
+			$meta = json_decode( $row->meta );
+			$score = isset( $meta->score ) ? $meta->score : 0;
 
+			$matches = array();
+			$pattern = '("'.$string.'[a-z]*")';
+			
+			// fetch topics and scores
+			preg_match_all($pattern, $row->terms_meta, $matches);
+			foreach( $matches as $match ) {
+				// TODO: check this out, might be a bug: why should it be empty?
+				$key = isset( $match[0] ) ? $match[0] : 'empty';
+
+				if( array_key_exists($key, $results)) {
+					$results[$key]['score'] += $score;
+					$results[$key]['parents'] .= ' '.$row->id_parent;
+				} else {
+					$results[$key]['score'] = $score;
+					$results[$key]['parents'] = $row->id_parent;
+				}
+			}
+			
+			// calculate size and averate, and create sortable aray
+			$sortable = array();
+			foreach( $results as $key => $result ) {
+				$parents = explode(' ', $result['parents']);
+				$parents_count = count($parents);
+				$results[$key]['count'] = $parents_count;
+				$results[$key]['score_avg'] = $result['score'] / $parents_count;
+				$sortable[$key] = $parents_count;
+			}
+			
+			// recreate the output with the correct sorting method
+			arsort( $sortable );
+			$output = array();
+			foreach( $sortable as $key => $value ) {
+				$output[$key]['score'] = $results[$key]['score'];
+				$output[$key]['parents'] = $results[$key]['parents'];
+				$output[$key]['count'] = $results[$key]['count'];
+				$output[$key]['score_avg'] = $results[$key]['score_avg'];
+			}
+		}
+		echo json_encode( $output );
+	}
+	
 	/**
 	 * called when a geo-cluster is selected, returns the list of semantic metadata associated to this geo-cluster
 	 * 
@@ -302,6 +413,39 @@ class Cluster extends CI_Controller
 	{
 		$this->load->model('Cluster_model');
 		echo $this->Cluster_model->read_keywords( $id_parent, 'json' );
+	}
+
+	function export_posts( $id_cluster, $format = 'json' )
+	{
+		// profiling! save some log in the database
+		$id_user = $this->session->userdata('id_user');
+		if( !$id_user ) {
+			$id_user = 1;
+		}
+		$this->fom_logger->log($id_user, 'cluster_export_posts', array('id_cluster'=>$id_cluster));
+		
+		$this->load->model('Cluster_model');
+		if( 'json' == $format ) {
+			echo $this->Cluster_model->export_posts( $id_cluster, 'json' );
+		} else {
+			$posts = $this->Cluster_model->export_posts( $id_cluster, 'object' );
+			$output = "date\tlat\tlon\tlang\tcontent\tuser_location\tuser_id\tfoll_count\ttweet_id\n";
+			foreach( $posts as $post ) {
+				$post_meta = json_decode( $post->meta );
+				$output .= $post->created."\t";
+				$output .= $post->lat."\t";
+				$output .= $post->lon."\t";
+				$output .= $post->lang."\t";
+				$output .= $post->content."\t";
+				$output .= $post->user_location."\t";
+				$output .= $post_meta->twitterUserId."\t";
+				$output .= $post_meta->followerCount."\t";
+				$output .= $post_meta->tweetId."\n";
+			}
+			$this->load->helper('download');
+			force_download('cluster'.$id_cluster.'_posts.csv', $output);
+			echo $output;
+		}
 	}
 	
 	/**

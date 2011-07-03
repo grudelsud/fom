@@ -4,6 +4,7 @@
 var map;
 var markersArray = [];
 var circlesArray = [];
+var dateColoursArray = [];
 
 function initialize( initialLocation )
 {
@@ -56,7 +57,7 @@ function showQueryStats()
 	} else {
 		// display a spinner while waiting result from the server
 		var queryId = $('#queries').val();
-		$('#ajax_loader').empty().html('<img src="'+assetsUrl+'/img/ajax-loader.gif" alt="loading">');
+		$('#ajax_loader').show();
 		
 		$('#query_meta').empty();
 		
@@ -78,7 +79,7 @@ function showQueryStats()
 				queryStats.append('<li>tot terms: '+data.termsNumTot+' ('+data.termsNumOverbias+' over a bias of '+data.tfBias+')</li>');
 
 				$('#query_meta').append( queryStats ).append('<img src="'+data.chartUrl+'" title="TF-IDF chart"/>').toggle('fast');
-				$('#ajax_loader').empty();
+				$('#ajax_loader').hide();
 			}
 		});
 	}
@@ -225,6 +226,26 @@ function showPostStats()
 	});
 }
 
+function searchTopics( query, scope )
+{
+	var searchUrl = siteUrl + '/cluster/search_topic/'+ query + '/' + scope;
+	$('#search_ajax_loader').show();
+	$.ajax({
+		url: searchUrl,
+		dataType: 'json',
+		success: function(data) {
+			var results = $('<ul></ul>');
+			$.each( data, function(key, scores) {
+				var parents = scores.parents;
+				var clusterSetUrl = siteUrl + '/cluster/read_list/' + parents.replace(/\s/g,'x');
+				results.append('<li><a href="'+clusterSetUrl+'">'+key+' - '+scores.count+' clusters, avg: '+scores.score_avg+'</a></li>')
+			});
+			$('#search_result').empty().append( results );
+			$('#search_ajax_loader').hide();
+		}
+	});
+}
+
 function loadMarkers( clusterUrl )
 {
 	$.ajax({
@@ -235,6 +256,26 @@ function loadMarkers( clusterUrl )
 			$.each(data, function(i, cluster) {
 				addMarker( cluster );
 			});
+		}
+	});
+}
+
+function letBreathe( searchUrl )
+{
+	$.ajax({
+		url: searchUrl,
+		dataType: 'json',
+		success: function(data) {
+			deleteOverlays();
+			$.each(data, function(i, cluster) {
+				addBreather( cluster );
+			});
+			var legend = $('<ul></ul>');
+			$.each(dateColoursArray, function(i, data) {
+				console.log( data );
+				legend.append('<li style="background: '+data.colour+';">'+data.date+'</li>');
+			});
+			$('#legend_content').empty().append(legend).dialog('open');
 		}
 	});
 }
@@ -266,6 +307,43 @@ function addMarker( cluster )
 		});
 		circlesArray.push(circle);
 		loadContent(cluster);
+	});
+}
+
+function addBreather( cluster )
+{
+	var location = new google.maps.LatLng( cluster.meanLat, cluster.meanLon );
+
+	marker = new google.maps.Marker({
+		flat: true,
+		position: location,
+		map: map,
+		zIndex: 2
+	});
+	markersArray.push(marker);	
+
+	var dateColour = {};
+
+	dateColour.date = cluster.startTime;
+	dateColour.colour = '#'+Math.floor(Math.random()*16777215).toString(16);
+	
+	dateColoursArray.push(dateColour);
+
+	circle = new google.maps.Circle({
+		center: location,
+		clickable: false,
+		fillColor: dateColour.colour,
+		fillOpacity: clusterOpacity( cluster.posts_meta ),
+		map: map,
+		radius: 80 * clusterArea(cluster.stdDevLat, cluster.stdDevLon),
+		strokeColor: "#FFFFFF",
+		strokeWeight: 2,
+		zIndex: 1
+	});
+	circlesArray.push(circle);
+
+	google.maps.event.addListener(marker, 'click', function(event) {
+		loadBreatherContent(cluster);
 	});
 }
 
@@ -320,6 +398,13 @@ function dec2degminsec( value )
 	degminsec.push( sec );
 	
 	return degminsec;
+}
+
+function loadBreatherContent( cluster )
+{
+	loadContent( cluster );
+	var time_info = '<h3>Time info</h3><ul><li>from: '+cluster.startTime+'</li><li>until: '+cluster.endTime+'</li></ul>';
+	$('#content').append( time_info );
 }
 
 /**
@@ -387,13 +472,15 @@ function loadContent( cluster )
 	var postList = '';
 	var postArray = (cluster.posts_meta).split( ' ' );
 	for( i in postArray ) {
-		postList += '<a href="'+siteUrl+'/cluster/read_post/'+postArray[i]+'">'+i+'</a> ';
+		postList += '<a href="'+siteUrl+'/cluster/read_post/'+postArray[i]+'" class="postUrl">'+i+'</a> ';
 	}
-	$('#content').append('<h3 class="cluster_posts">Post list [total: '+postArray.length+']:</h3><p>'+postList+'</p>');
+	var exp_url = '<a href="'+siteUrl+'/cluster/export_posts/'+cluster.id_cluster+'/csv">export</a> ';
+	$('#content').append('<h3 class="cluster_posts">Post list [total: '+postArray.length+' - '+exp_url+']:</h3><p>'+postList+'</p>');
 }
 
 /**
- * function is called when user clicks on a link in div #content
+ * function is called when user clicks on a post_id in div #content and displays content of clicked post
+ * 
  * @param postUrl is defined in function loadContent
  */
 function loadClusterContent( postUrl )
@@ -507,6 +594,7 @@ function deleteOverlays() {
 		}
 		circlesArray.length = 0;
 	}
+	dateColoursArray.length = 0;
 }
 
 

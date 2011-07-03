@@ -16,7 +16,14 @@ th { background: #DDD; text-align: left; font-weight: normal; color: #FFF; }
 td, th { border: 1px solid #DDD; border-width: 0 1px 1px 0; padding: 3px; }
 
 #header { background: #333; position: fixed; top: 0; z-index: 100; height: 50px; width: 100%; }
-#navigation { padding: 11px 0 0; }
+#header img { border: 0; padding-left: 5px; }
+
+#navigation { float: left; padding: 11px 0 0; }
+#navigation ul { list-style-type: none; }
+#navigation span img, #subnav span img { position: relative; top: 5px; }
+
+#subnav { float: right; padding: 11px; }
+
 #menu { position: fixed; left: 25px; top: 50px; }
 #menu ul { list-style-type: none; margin: 0; padding: 0; }
 #menu li a { display: block; width: 200px; padding: 15px; background: #333; border-top: 1px solid #DDD; }
@@ -25,8 +32,24 @@ td, th { border: 1px solid #DDD; border-width: 0 1px 1px 0; padding: 3px; }
 
 #map_canvas { position: absolute; top: 50px; z-index: 10; width: 100%; height: 100%; }
 
+#search_content #t_query { width: 240px; }
+#search_content #t_query, #search_content #submit { display: block; margin: 5px 0; }
+#search_content #search_ajax_loader { float: right; display: none; }
+
+#search_result ul { list-style-type: none; padding: 0; }
+#search_result li {}
+#search_result a { display: block; padding: 5px; border-bottom: 1px solid #444; }
+#search_result a:hover { background: #335; text-decoration: none; }
+
+#legend_content ul { list-style-type: none; padding: 0; }
+#legend_content li { padding: 4px; border-bottom: 1px solid #000; }
+
 #content { background: url('../img/alpha70_333.png'); position: fixed; right: 0; top: 0; width: 380px; height: 100%; z-index: 1000; padding: 50px 10px; overflow: scroll; }
+#content h3 { border-bottom: 1px solid #777; }
+
 #post_content { background: url('../img/alpha70_333.png'); position: fixed; right: 400px; top: 0; width: 380px; height: 100%; z-index: 1000; padding: 50px 10px; overflow: scroll; }
+#post_content h3 { border-bottom: 1px solid #777; }
+
 #content_wide { margin: 55px 25px 0; color: #333; }
 
 #content label, #post_content label, #content_wide label { display: block; margin: 0 0 3px; }
@@ -36,13 +59,6 @@ td, th { border: 1px solid #DDD; border-width: 0 1px 1px 0; padding: 3px; }
 
 #footer { background: #333; position: fixed; bottom: 0; z-index: 100; height: 20px; width: 100%; padding: 3px 25px 0; }
 
-/**
- * ID presentation
- */
-#header img { border: 0; padding-left: 5px; }
-#navigation ul { list-style-type: none; }
-
-#content h3, #post_content h3 { border-bottom: 1px solid #777; }
 
 .ui-widget { font-family: Trebuchet, Arial, sans-serif; font-size: 0.9em; }
 .dataTables_filter { float: none; text-align: left; }
