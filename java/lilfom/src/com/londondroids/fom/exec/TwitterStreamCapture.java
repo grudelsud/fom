@@ -1,5 +1,11 @@
 package com.londondroids.fom.exec;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
 import twitter4j.StatusListener;
@@ -15,12 +21,24 @@ public class TwitterStreamCapture {
 	public static void main(String[] args) 
 	{
 		ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+		Properties settings = new Properties();
 		
-		configurationBuilder.setDebugEnabled(true)
-			.setOAuthConsumerKey("*********************")
-			.setOAuthConsumerSecret("******************************************")
-			.setOAuthAccessToken("**************************************************")
-			.setOAuthAccessTokenSecret("******************************************");
+		try {
+			settings.load(new FileInputStream( "settings.properties" ));
+
+			configurationBuilder.setDebugEnabled(true)
+			.setOAuthConsumerKey( settings.getProperty("TwitterOAuthConsumerKey") )
+			.setOAuthConsumerSecret( settings.getProperty("TwitterOAuthConsumerSecret") )
+			.setOAuthAccessToken( settings.getProperty("TwitterOAuthAccessToken") )
+			.setOAuthAccessTokenSecret( settings.getProperty("TwitterOAuthAccessTokenSecret") );
+
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		TwitterStream twitterStream = new TwitterStreamFactory( configurationBuilder.build() ).getInstance();
 		StatusListener statusListener = new StatusListener() {
