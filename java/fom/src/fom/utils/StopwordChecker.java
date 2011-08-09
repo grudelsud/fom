@@ -26,7 +26,7 @@ public class StopwordChecker {
 			String stopword = null;
 			if(bufRead.ready()){
 				while((stopword=bufRead.readLine())!=null){
-					stopwords.add(stopword);
+					stopwords.add(stopword.toLowerCase().trim());
 				}
 				bufRead.close();
 			}

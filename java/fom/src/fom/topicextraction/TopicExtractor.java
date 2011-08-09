@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import cc.mallet.pipe.CharSequence2TokenSequence;
+import cc.mallet.pipe.FeatureSequence2FeatureVector;
 import cc.mallet.pipe.Pipe;
 import cc.mallet.pipe.SerialPipes;
 import cc.mallet.pipe.TokenSequence2FeatureSequence;
@@ -27,16 +30,18 @@ public class TopicExtractor {
 	public static List<Topic> extractTopics(List<Post> posts, int numberOfTopics, int numberOfWords, boolean disableLangDetection, boolean excludeRelLinksText, Language language){
 		
 		ArrayList<Pipe> pipelist = new ArrayList<Pipe>();
-		pipelist.add(new CharSequence2TokenSequence());
-		pipelist.add(new TokenSequenceLowercase());
-		pipelist.add(new TokenSequenceRemoveStopwords());
-		pipelist.add(new TokenSequence2FeatureSequence());
+		pipelist.add( new CharSequence2TokenSequence() );
+		pipelist.add( new TokenSequenceLowercase() );
+//		pipelist.add( new TokenSequenceRemoveStopwords() );
+		pipelist.add( new TokenSequence2FeatureSequence() );
 		
 		InstanceList instances = new InstanceList(new SerialPipes(pipelist));
 		
 		List<Instance> tmpInstanceList = new ArrayList<Instance>();
 		
-		for(Post post : posts){
+		String bigInstance = "";
+		
+		for(Post post : posts) {
 			String sanitizedPost = post.getContent();
 			sanitizedPost = StringOperations.removeURLfromString(sanitizedPost);
 			sanitizedPost = StringOperations.removeMentions(sanitizedPost);
@@ -47,8 +52,7 @@ public class TopicExtractor {
 			}
 			
 			if(!sanitizedPost.trim().equalsIgnoreCase("")){
-				Instance inst = new Instance(sanitizedPost, null, post, post.getContent());
-				tmpInstanceList.add(inst);
+				bigInstance += " " + sanitizedPost;
 			}
 			
 			if(!excludeRelLinksText){
@@ -60,13 +64,16 @@ public class TopicExtractor {
 						sanitizedLink = StringOperations.removeStopwords(sanitizedLink, link.getLanguage());						
 					}
 					if(!sanitizedLink.trim().equalsIgnoreCase("")){
-						Instance linkInst = new Instance(sanitizedLink, null, link, link.getContent());
-						tmpInstanceList.add(linkInst);
+						bigInstance += " " + sanitizedLink;
 					}
 				}				
 			}
 		}
 		
+		// eccoci qua
+		Instance inst = new Instance(bigInstance, null, "data", "data");
+		tmpInstanceList.add(inst);
+
 		instances.addThruPipe(tmpInstanceList.iterator());		
 		
 		MalletLogger.getLogger(ParallelTopicModel.class.getName()).setLevel(Level.OFF);
@@ -84,15 +91,33 @@ public class TopicExtractor {
 			
 		}
 		
-		//	System.out.println(lda.displayTopWords(5, true));
 		Object[][] topWords = lda.getTopWords(numberOfWords);
-		int limit = posts.size()<numberOfTopics?posts.size():numberOfTopics;
-		for(int topicCount=0; topicCount<limit && topicCount<topWords.length; topicCount++){
-			Topic topic = new Topic(lda.alpha[topicCount], language);
-			for(Object word : topWords[topicCount]){
-				topic.addWord(word.toString());
+		int limit = posts.size() < numberOfTopics ? posts.size() : numberOfTopics;
+		int bigInstanceLength = bigInstance.length();
+
+		for(int i = 0; i < limit && i < topWords.length; i++) {
+			Topic topic = new Topic(lda.alpha[i], language);
+			int keywordsInTopic = 0;
+			for(Object word : topWords[i]) {
+				
+				String keyword = word.toString();
+				
+				if( keyword.length() > 2 ) {
+					int keywordOccurrences = 0;
+					Pattern pattern = Pattern.compile( keyword, Pattern.CASE_INSENSITIVE );
+					Matcher matcher = pattern.matcher(bigInstance);
+					while( matcher.find() ) {
+						keywordOccurrences++;
+					}
+					keywordsInTopic++;
+					Float score = (float)(100.0 * keyword.length() * keywordOccurrences) / (float)bigInstanceLength;
+					if( score == 0.0 ) System.err.println( "--- 0 DETECTED ---" );
+					topic.addWord(keyword, score);
+				}
 			}
-			topics.add(topic);
+			if( keywordsInTopic > 0 ) {
+				topics.add(topic);
+			}
 		}
 		
 		return topics;

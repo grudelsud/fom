@@ -4,6 +4,7 @@ public class Term {
 
 	private long id;
 	private String name;
+	private float score;
 	private String url;
 	private Term syn;
 	private Term parent;
@@ -24,8 +25,22 @@ public class Term {
 		this.vocabulary = vocabulary;
 	}
 	
+	public Term(String name, float score, String url, Term syn, Term parent, Vocabulary vocabulary) {
+		super();
+		this.name = name;
+		this.score = score;
+		this.url = url;
+		this.syn = syn;
+		this.parent = parent;
+		this.vocabulary = vocabulary;
+	}
+	
 	public String getName() {
 		return name;
+	}
+
+	public String getNameScore() {
+		return "\"" + name + "\":\"" + score + "\"";
 	}
 
 	public String getUrl() {

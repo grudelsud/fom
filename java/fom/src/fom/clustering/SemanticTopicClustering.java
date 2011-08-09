@@ -52,8 +52,9 @@ public class SemanticTopicClustering {
 				List<Topic> topics = TopicExtractor.extractTopics(languagePostsMap.get(lang), numberOfTopics, numberOfWords, disableLangDetection, excludeRelLinksText, lang);
 				for(Topic topic : topics){
 					TopicCluster currentCluster = new TopicCluster(originatingQuery, parentCluster, topic.getAlpha(), lang);
+					Map<String, Float> scores = topic.getScores();
 					for(String word : topic.getWords()){
-						currentCluster.addTerm(new Term(word, "", null, null, voc));
+						currentCluster.addTerm(new Term(word, scores.get(word), "", null, null, voc));
 					}
 					clusters.add(currentCluster);
 				}	

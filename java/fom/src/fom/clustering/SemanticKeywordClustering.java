@@ -30,13 +30,14 @@ public class SemanticKeywordClustering {
 	public KeywordCluster performClustering(){
 		KeywordCluster keywordClust = new KeywordCluster(originatingQuery, parentCluster);
 		Map<String, Integer> keywords = new HashMap<String, Integer>();
-				
+		int kwTot = 0;
 		for(Post p : posts){
 			//Extract the hashtags:
 			List<String> hashtags = StringOperations.extractHashtags(p.getContent());
 			for(String hashtag : hashtags){
 				hashtag = StringOperations.removeHash(hashtag);
 				Integer htagCount = keywords.get(hashtag.toLowerCase());
+				kwTot++;
 				if(htagCount==null){
 					keywords.put(hashtag.toLowerCase(), 1);
 				} else {
@@ -50,6 +51,7 @@ public class SemanticKeywordClustering {
 					String[] keyws = l.getMeta().get("keywords").split("[,;!]");
 					for(String keyw : keyws){
 						Integer keywCount = keywords.get(keyw.toLowerCase());
+						kwTot++;
 						if(keywCount==null){
 							keywords.put(keyw.toLowerCase(), 1);
 						} else {
@@ -66,11 +68,11 @@ public class SemanticKeywordClustering {
 			keywordQueue.add(new Keyword(k.getKey(), k.getValue()));
 		}
 		
-		int limit = keywordQueue.size()>numberOfKeywords?numberOfKeywords:keywordQueue.size();
+		int limit = keywordQueue.size() > numberOfKeywords ? numberOfKeywords : keywordQueue.size();
 		for(int i=0; i<limit; i++){
 			Keyword kw = keywordQueue.remove();
 	//		System.out.println("Added term " + kw.keyword + " with frequency of " + kw.occurrences );
-			keywordClust.addTerm(new Term(kw.keyword, "", null, null, null));
+			keywordClust.addTerm(new Term(kw.keyword, (float)kw.occurrences / (float)kwTot, "", null, null, null));
 		}
 		
 	//	System.out.println(keywords);

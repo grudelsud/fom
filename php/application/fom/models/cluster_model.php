@@ -100,10 +100,11 @@ class Cluster_model extends CI_Model
 			$clusters = array();
 			foreach( $results as $result ) {
 				$cluster_values = json_decode( $result->meta, TRUE );
+				
 				$cluster_values['id_cluster'] = $result->id_cluster;
 				$cluster_values['id_query'] = $result->id_query;
 				// include terms_meta for semantic clusters
-				$cluster_values['terms_meta'] = $result->terms_meta;
+				$cluster_values['terms_meta'] = json_decode( $result->terms_meta, TRUE );
 				$clusters[] = $cluster_values;
 			}
 			return json_encode( $clusters );
@@ -126,7 +127,7 @@ class Cluster_model extends CI_Model
 				$cluster_values['id_cluster'] = $result->id_cluster;
 				$cluster_values['id_query'] = $result->id_query;
 				// include terms_meta for semantic clusters
-				$cluster_values['terms_meta'] = $result->terms_meta;
+				$cluster_values['terms_meta'] = json_decode( $result->terms_meta, TRUE );
 				$clusters[] = $cluster_values;
 			}
 			return json_encode( $clusters );

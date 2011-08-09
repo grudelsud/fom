@@ -67,12 +67,13 @@ public class LocalDBClusterDAO implements ClusterDAO {
 			
 			String terms_meta = new String("");
 			for(int i=0; i<cluster.getTerms().size(); i++){
-				terms_meta = terms_meta.concat("\"" + cluster.getTerms().get(i).getName() + "\"");
 				if(i!=cluster.getTerms().size()-1){
-					terms_meta = terms_meta.concat(";");
+					terms_meta = terms_meta.concat( cluster.getTerms().get(i).getNameScore() + ", ");
+				} else {
+					terms_meta = terms_meta.concat( cluster.getTerms().get(i).getNameScore() );
 				}
 			}
-			stm.setString(2, terms_meta);
+			stm.setString(2, "{" + terms_meta + "}");
 			
 			String posts_meta = new String("");
 			for(int i=0; i<cluster.getPosts().size(); i++){

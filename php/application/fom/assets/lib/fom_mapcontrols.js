@@ -5,6 +5,16 @@ var map;
 var markersArray = [];
 var circlesArray = [];
 var dateColoursArray = [];
+var initialLocation = new google.maps.LatLng(45, 10);
+google.load("visualization", "1", {packages:["corechart"]});
+
+$(document).ready(function() {	
+	initialize( initialLocation );
+	loadMarkers( clusterUrl );
+
+	$('#logo').hover(function(e) { $('#menu').fadeIn('fast'); } );
+	$('#menu').hover(function(e) {}, function(e) {$('#menu').fadeOut('fast');});
+});
 
 function initialize( initialLocation )
 {
@@ -46,8 +56,55 @@ function initialize( initialLocation )
 	});
 }
 
+function loadMarkers( clusterUrl )
+{
+	$.ajax({
+		url: clusterUrl,
+		dataType: 'json',
+		success: function(data) {
+			deleteOverlays();
+			$.each(data, function(i, cluster) {
+				addMarker( cluster );
+			});
+		}
+	});
+}
+
+function addMarker( cluster ) 
+{
+	var location = new google.maps.LatLng( cluster.meanLat, cluster.meanLon );
+
+	marker = new google.maps.Marker({
+		flat: true,
+		position: location,
+		map: map,
+		zIndex: 2
+	});
+	markersArray.push(marker);	
+	
+	google.maps.event.addListener(marker, 'click', function(event) {
+		deleteCircles();
+		circle = new google.maps.Circle({
+			center: location,
+			clickable: false,
+			fillColor: "#FF0000",
+			fillOpacity: clusterOpacity( cluster.posts_meta ),
+			map: map,
+			radius: 80 * clusterArea(cluster.stdDevLat, cluster.stdDevLon),
+			strokeColor: "#FFFFFF",
+			strokeWeight: 2,
+			zIndex: 1
+		});
+		circlesArray.push(circle);
+		loadContent(cluster);
+	});
+}
+
 /**
- * this function called after click on top-left icon for query details
+ * showQueryStats
+ * 
+ * this function shows an overlay panel containing stats of selected query (where query usually equals a day)
+ * it is called upon click on "table" icon in the tob bar, right of the select menu
  */
 function showQueryStats()
 {
@@ -141,6 +198,9 @@ function dragZoom(bnds)
 	});
 }
 
+/**
+ * shows google chart of dragzoom zone
+ */
 function showClusterStats()
 {
 	var params = $('#cluster_stat_form').serialize();
@@ -160,6 +220,9 @@ function showClusterStats()
 	});
 }
 
+/**
+ * shows language breakdown of dragzoom zone
+ */
 function showPostStats() 
 {
 	var params = $('#post_stat_form').serialize();
@@ -191,14 +254,6 @@ function showPostStats()
 			datatable += '<tbody></tbody>';
 			datatable += '</table>';
 
-//			$.each(data.result, function(day, langs) {
-//				var values = '';
-//				$.each(langs, function(lang, count) {
-//					values += lang+'['+count+'] ';
-//				});
-//				res.append('<li>'+day+': '+values+'</li>');
-//			});
-			
 			$('#div_post_stat_result').empty().append( title ).append( datatable );
 
 			var oTable = $('#datatable').dataTable({
@@ -226,6 +281,22 @@ function showPostStats()
 	});
 }
 
+/**
+ * searchTopics
+ * 
+ * this function called while typing a query in the search form, will update content real time within the dialog frame
+ * scope is one of: all, topics, keywords
+ * 
+ * example request:
+ * http://vampireweekend.local/fom/index.php/cluster/search_topic/terr/all
+ * 
+ * example response: 
+ * {"\"terremoto\"":{"score":-223.345155693,"parents":"10884 10920 11009 11351 11425 11976 12018","count":55,"score_avg":-4.0608210126},"\"terra\"":{"score":-23.4907930995,"parents":"14955 18615","count":2,"score_avg":-11.7453965497}}
+ * 
+ * the above example makes clear the reason of regexp replace below, as the next step will be a click on one of the links would load ajax from:
+ * http://vampireweekend.local/fom/index.php/cluster/read_list/10884x10920x11009x11351x11425x11976x12018
+ * 
+ */
 function searchTopics( query, scope )
 {
 	var searchUrl = siteUrl + '/cluster/search_topic/'+ query + '/' + scope;
@@ -246,67 +317,24 @@ function searchTopics( query, scope )
 	});
 }
 
-function loadMarkers( clusterUrl )
-{
-	$.ajax({
-		url: clusterUrl,
-		dataType: 'json',
-		success: function(data) {
-			deleteOverlays();
-			$.each(data, function(i, cluster) {
-				addMarker( cluster );
-			});
-		}
-	});
-}
 
 function letBreathe( searchUrl )
-{
+{	
 	$.ajax({
 		url: searchUrl,
 		dataType: 'json',
 		success: function(data) {
 			deleteOverlays();
+//			var data = new google.visualization.DataTable();		
 			$.each(data, function(i, cluster) {
 				addBreather( cluster );
 			});
 			var legend = $('<ul></ul>');
 			$.each(dateColoursArray, function(i, data) {
-				console.log( data );
 				legend.append('<li style="background: '+data.colour+';">'+data.date+'</li>');
 			});
 			$('#legend_content').empty().append(legend).dialog('open');
 		}
-	});
-}
-
-function addMarker( cluster ) 
-{
-	var location = new google.maps.LatLng( cluster.meanLat, cluster.meanLon );
-
-	marker = new google.maps.Marker({
-		flat: true,
-		position: location,
-		map: map,
-		zIndex: 2
-	});
-	markersArray.push(marker);	
-	
-	google.maps.event.addListener(marker, 'click', function(event) {
-		deleteCircles();
-		circle = new google.maps.Circle({
-			center: location,
-			clickable: false,
-			fillColor: "#FF0000",
-			fillOpacity: clusterOpacity( cluster.posts_meta ),
-			map: map,
-			radius: 80 * clusterArea(cluster.stdDevLat, cluster.stdDevLon),
-			strokeColor: "#FFFFFF",
-			strokeWeight: 2,
-			zIndex: 1
-		});
-		circlesArray.push(circle);
-		loadContent(cluster);
 	});
 }
 
@@ -323,7 +351,7 @@ function addBreather( cluster )
 	markersArray.push(marker);	
 
 	var dateColour = {};
-
+	
 	dateColour.date = cluster.startTime;
 	dateColour.colour = '#'+Math.floor(Math.random()*16777215).toString(16);
 	
@@ -440,8 +468,13 @@ function loadContent( cluster )
 			$.each(data, function(i, semCluster) {
 				var score = Math.round(semCluster.score*1000)/1000;
 				var terms = semCluster.terms_meta;
-				terms = '[lang: '+semCluster.language+']'+terms.replace(/[^a-zA-Z 0-9]+/g, ' ');
-				scoreArray[score] = terms;
+				var termsReadable = '';
+				$.each(terms, function(word, score) {
+					termsReadable += word + ' (' + Math.round(score * 100)/100 + ') ';
+				});
+
+//				terms = '[lang: '+semCluster.language+']'+terms.replace(/[^a-zA-Z 0-9]+/g, ' ');
+				scoreArray[score] = termsReadable;
 				keysArray.push( score );
 			});
 			var semClusterList = $('<ul class="cluster_topics"></ul>');
@@ -449,7 +482,7 @@ function loadContent( cluster )
 			keysArray.sort(function(a,b) {return b-a;});
 			for( var i = 0; i < keysArray.length; i++ ) {
 				var key = keysArray[i];
-				semClusterList.append('<li>[score: '+key+']'+scoreArray[key]+'</li>');
+				semClusterList.append('<li>[score: '+key+'] '+scoreArray[key]+'</li>');
 			}
 			$('h3.cluster_topics').after( semClusterList );
 		}
@@ -462,8 +495,13 @@ function loadContent( cluster )
 			var semClusterList = $('<ul class="cluster_topics"></ul>');
 			$.each(data, function(i, semCluster) {
 				var terms = semCluster.terms_meta;
-				terms = terms.replace(/[^a-zA-Z 0-9]+/g, ' ');
-				semClusterList.append('<li>keywords: '+terms+'</li>');
+				var termsReadable = '';
+				$.each(terms, function(word, score) {
+					termsReadable += word + ' (' + Math.round(score * 100)/100 + ') ';
+				});
+
+//				terms = terms.replace(/[^a-zA-Z 0-9]+/g, ' ');
+				semClusterList.append('<li>keywords: '+termsReadable+'</li>');
 			});
 			$('h3.cluster_topics').after( semClusterList );
 		}
