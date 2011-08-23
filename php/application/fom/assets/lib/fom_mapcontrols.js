@@ -335,7 +335,7 @@ function createScatter( searchUrl )
 			var topicScatter = new Object;
 			var totCluster = 0;
 			var start = true;
-			var dateMin, dateMax;
+			var dateMin, dateMax, dateArray = new Array();
 //			var data = new google.visualization.DataTable();		
 			$.each(data, function(i, cluster) {
 				var clusterDate = new Date( Date.parse( cluster.startTime ) );
@@ -354,16 +354,19 @@ function createScatter( searchUrl )
 					}
 				}
 				if( topicScatter[readableDate] == undefined ) {
+					dateArray.push( readableDate );
 					topicScatter[readableDate] = new Array( cluster );
 				} else {
 					topicScatter[readableDate].push( cluster );
 				}
 			});
+			dateArray.sort();
 			$('#legend_content').empty();
 			var legend = $('<ul></ul>');
 
-			for( var date in topicScatter ) {
+			for( var j = 0; j < dateArray.length; j++ ) {
 
+				var date = dateArray[j];
 				var clusterArray = topicScatter[date];
 				var clusterSize = 0;
 				for( var i = 0; i < clusterArray.length; i++ ) {
