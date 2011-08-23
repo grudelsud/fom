@@ -4,7 +4,6 @@
 var map;
 var markersArray = [];
 var circlesArray = [];
-var dateColoursArray = [];
 var initialLocation = new google.maps.LatLng(45, 10);
 google.load("visualization", "1", {packages:["corechart"]});
 
@@ -299,7 +298,7 @@ function showPostStats()
  */
 function searchTopics( query, scope )
 {
-	var searchUrl = siteUrl + '/cluster/search_topic/'+ query + '/' + scope;
+	var searchUrl = siteUrl + '/cluster/search_topic_tf/'+ query + '/' + scope;
 	$('#search_ajax_loader').show();
 	$.ajax({
 		url: searchUrl,
@@ -317,28 +316,80 @@ function searchTopics( query, scope )
 	});
 }
 
+function DateString(d){
+	 function pad(n){return n<10 ? '0'+n : n}
+	 var dow = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+	 return d.getUTCFullYear()+'-'
+	      + pad(d.getUTCMonth()+1)+'-'
+	      + pad(d.getUTCDate())+'-'
+	      + dow[d.getUTCDay()];
+}
 
-function letBreathe( searchUrl )
+function createScatter( searchUrl )
 {	
 	$.ajax({
 		url: searchUrl,
 		dataType: 'json',
 		success: function(data) {
 			deleteOverlays();
+			var topicScatter = new Object;
+			var totCluster = 0;
+			var start = true;
+			var dateMin, dateMax;
 //			var data = new google.visualization.DataTable();		
 			$.each(data, function(i, cluster) {
-				addBreather( cluster );
+				var clusterDate = new Date( Date.parse( cluster.startTime ) );
+				var readableDate = DateString(clusterDate);
+				totCluster++;
+				if( start == true ) {
+					dateMin = clusterDate;
+					dateMax = clusterDate;
+					start = false;
+				} else {
+					if( clusterDate < dateMin ) {
+						dateMin = clusterDate;
+					}
+					if( clusterDate > dateMax ) {
+						dateMax = clusterDate;
+					}
+				}
+				if( topicScatter[readableDate] == undefined ) {
+					topicScatter[readableDate] = new Array( cluster );
+				} else {
+					topicScatter[readableDate].push( cluster );
+				}
 			});
+			$('#legend_content').empty();
 			var legend = $('<ul></ul>');
-			$.each(dateColoursArray, function(i, data) {
-				legend.append('<li style="background: '+data.colour+';">'+data.date+'</li>');
-			});
-			$('#legend_content').empty().append(legend).dialog('open');
+
+			for( var date in topicScatter ) {
+
+				var clusterArray = topicScatter[date];
+				var clusterSize = 0;
+				for( var i = 0; i < clusterArray.length; i++ ) {
+					var cluster = clusterArray[i];
+					var clusterDate = new Date( Date.parse( cluster.startTime ) );
+
+					var saturation = (clusterDate.getTime() - dateMin.getTime()) / (1+(dateMax.getTime() - dateMin.getTime()));
+					var c1 = Math.floor(255*(1-saturation)).toString(16);
+					var c2 = Math.floor(255*saturation).toString(16);
+					if( c1.length < 2 ) c1 = '0'+c1;
+					if( c2.length < 2 ) c2 = '0'+c2;
+					
+					var clusterColour = '#'+c2+c1+'00';
+
+					addBreather( cluster, clusterColour, Math.floor((clusterDate.getTime() - dateMin.getTime())/1000));
+					clusterSize += cluster.posts_meta.split(' ').length;
+				}
+				var clusterAvg = Math.floor( 100 * clusterSize / clusterArray.length ) / 100;
+				legend.append('<li style="background:'+clusterColour+'">[' + date + '] Avg size: '+ clusterAvg +'</li>');
+			}
+			$('#legend_content').append( legend ).dialog('open');
 		}
 	});
 }
 
-function addBreather( cluster )
+function addBreather( cluster, colour, z_index )
 {
 	var location = new google.maps.LatLng( cluster.meanLat, cluster.meanLon );
 
@@ -348,25 +399,18 @@ function addBreather( cluster )
 		map: map,
 		zIndex: 2
 	});
-	markersArray.push(marker);	
-
-	var dateColour = {};
-	
-	dateColour.date = cluster.startTime;
-	dateColour.colour = '#'+Math.floor(Math.random()*16777215).toString(16);
-	
-	dateColoursArray.push(dateColour);
+	markersArray.push(marker);
 
 	circle = new google.maps.Circle({
 		center: location,
 		clickable: false,
-		fillColor: dateColour.colour,
+		fillColor: colour,
 		fillOpacity: clusterOpacity( cluster.posts_meta ),
 		map: map,
 		radius: 80 * clusterArea(cluster.stdDevLat, cluster.stdDevLon),
 		strokeColor: "#FFFFFF",
 		strokeWeight: 2,
-		zIndex: 1
+		zIndex: z_index
 	});
 	circlesArray.push(circle);
 
@@ -632,7 +676,6 @@ function deleteOverlays() {
 		}
 		circlesArray.length = 0;
 	}
-	dateColoursArray.length = 0;
 }
 
 

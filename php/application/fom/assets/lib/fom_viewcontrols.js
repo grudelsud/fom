@@ -3,7 +3,7 @@ $(function() {
 		event.preventDefault();
 		var searchUrl = $(this).attr('href');
 		$( "#search_content" ).dialog( 'close' );
-		letBreathe( searchUrl );
+		createScatter( searchUrl );
 	});
 });
 

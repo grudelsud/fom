@@ -325,7 +325,6 @@ class Cluster extends CI_Controller
 		echo json_encode( $stat_output );
 	}
 	
-	
 	function search_topic( $string )
 	{
 		// profiling! save some log in the database
@@ -362,7 +361,7 @@ class Cluster extends CI_Controller
 				}
 			}
 			
-			// calculate size and averate, and create sortable aray
+			// calculate size and average, and create sortable array
 			$sortable = array();
 			foreach( $results as $key => $result ) {
 				$parents = explode(' ', $result['parents']);
@@ -384,7 +383,60 @@ class Cluster extends CI_Controller
 		}
 		echo json_encode( $output );
 	}
+
+	function search_topic_tf( $string )
+	{
+		// profiling! save some log in the database
+		$id_user = $this->session->userdata('id_user');
+		if( !$id_user ) {
+			$id_user = 1;
+		}
+		$this->fom_logger->log($id_user, 'cluster_search_topic_tf', array('string'=>$string));
 	
+		$query = $this->db->query('select * from fom_cluster where terms_meta LIKE \'%"'.$string.'%\'');
+		$results = array();
+
+		$pattern = '/^'.$string.'/';
+		
+		foreach( $query->result() as $row ) {
+			$scores = json_decode( $row->terms_meta, TRUE );
+			
+			// fetch substring within terms_meta array and add score to results
+			foreach ($scores as $term => $score) {
+				if( preg_match($pattern, $term) ) {
+					if( array_key_exists($term, $results)) {
+						$results[$term]['score'] += $score;
+						$results[$term]['parents'] .= ' '.$row->id_parent;
+					} else {
+						$results[$term]['score'] = $score;
+						$results[$term]['parents'] = $row->id_parent;
+					}
+				}
+			}
+			
+			// calculate size and average, and create sortable array
+			$sortable = array();
+			foreach( $results as $key => $result ) {
+				$parents = explode(' ', $result['parents']);
+				$parents_count = count($parents);
+				$results[$key]['count'] = $parents_count;
+				$results[$key]['score_avg'] = $result['score'] / $parents_count;
+				$sortable[$key] = $parents_count;
+			}
+				
+			// recreate the output with the correct sorting method
+			arsort( $sortable );
+			$output = array();
+			foreach( $sortable as $key => $value ) {
+				$output[$key]['score'] = $results[$key]['score'];
+				$output[$key]['parents'] = $results[$key]['parents'];
+				$output[$key]['count'] = $results[$key]['count'];
+				$output[$key]['score_avg'] = $results[$key]['score_avg'];
+			}
+		}
+		echo json_encode( $output );
+	}
+
 	/**
 	 * called when a geo-cluster is selected, returns the list of semantic metadata associated to this geo-cluster
 	 * 
