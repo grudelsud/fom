@@ -376,13 +376,13 @@ function createScatter( searchUrl )
 					if( c1.length < 2 ) c1 = '0'+c1;
 					if( c2.length < 2 ) c2 = '0'+c2;
 					
-					var clusterColour = '#'+c2+c1+'00';
+					var clusterColour = '#'+c1+c2+'00';
 
 					addBreather( cluster, clusterColour, Math.floor((clusterDate.getTime() - dateMin.getTime())/1000));
 					clusterSize += cluster.posts_meta.split(' ').length;
 				}
 				var clusterAvg = Math.floor( 100 * clusterSize / clusterArray.length ) / 100;
-				legend.append('<li style="background:'+clusterColour+'">[' + date + '] Avg size: '+ clusterAvg +'</li>');
+				legend.prepend('<li style="background:'+clusterColour+'">[' + date + '] count: '+ clusterArray.length +' avg: '+ clusterAvg +'</li>');
 			}
 			$('#legend_content').append( legend ).dialog('open');
 		}
