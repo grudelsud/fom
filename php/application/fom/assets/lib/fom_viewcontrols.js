@@ -34,6 +34,7 @@ $(function() {
 
 $(function() {
 	$( "#legend_content" ).dialog({
+		width: 500,
 		autoOpen: false
 	});
 });

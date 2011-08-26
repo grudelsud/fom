@@ -42,7 +42,7 @@ td, th { border: 1px solid #DDD; border-width: 0 1px 1px 0; padding: 3px; }
 #search_result a:hover { background: #335; text-decoration: none; }
 
 #legend_content ul { list-style-type: none; padding: 0; }
-#legend_content li { padding: 4px; border-bottom: 1px solid #000; }
+#legend_content li { padding: 4px; border: 1px solid #000; border-width: 0 1px 1px 0; width: 110px; float: left; }
 
 #content { background: url('../img/alpha70_333.png'); position: fixed; right: 0; top: 0; width: 380px; height: 100%; z-index: 1000; padding: 50px 10px; overflow: scroll; }
 #content h3 { border-bottom: 1px solid #777; }

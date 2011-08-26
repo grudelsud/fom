@@ -5,6 +5,7 @@ var map;
 var markersArray = [];
 var circlesArray = [];
 var initialLocation = new google.maps.LatLng(45, 10);
+
 google.load("visualization", "1", {packages:["corechart"]});
 
 $(document).ready(function() {	
@@ -326,21 +327,20 @@ function DateString(d){
 }
 
 function createScatter( searchUrl )
-{	
+{
 	$.ajax({
 		url: searchUrl,
 		dataType: 'json',
 		success: function(data) {
 			deleteOverlays();
+
 			var topicScatter = new Object;
-			var totCluster = 0;
 			var start = true;
 			var dateMin, dateMax, dateArray = new Array();
-//			var data = new google.visualization.DataTable();		
+
 			$.each(data, function(i, cluster) {
 				var clusterDate = new Date( Date.parse( cluster.startTime ) );
 				var readableDate = DateString(clusterDate);
-				totCluster++;
 				if( start == true ) {
 					dateMin = clusterDate;
 					dateMax = clusterDate;
@@ -364,14 +364,21 @@ function createScatter( searchUrl )
 			$('#legend_content').empty();
 			var legend = $('<ul></ul>');
 
+			var chartDiv = $('<div id="div_chart"></div>');
+			var chartData = new google.visualization.DataTable();
+			chartData.addColumn('date', 'Date');
+			chartData.addColumn('number', 'Count');
+			chartData.addColumn('number', 'Avg');
+	        
 			for( var j = 0; j < dateArray.length; j++ ) {
 
 				var date = dateArray[j];
 				var clusterArray = topicScatter[date];
 				var clusterSize = 0;
+				var clusterDate;
 				for( var i = 0; i < clusterArray.length; i++ ) {
 					var cluster = clusterArray[i];
-					var clusterDate = new Date( Date.parse( cluster.startTime ) );
+					clusterDate = new Date( Date.parse( cluster.startTime ) );
 
 					var saturation = (clusterDate.getTime() - dateMin.getTime()) / (1+(dateMax.getTime() - dateMin.getTime()));
 					var c1 = Math.floor(255*(1-saturation)).toString(16);
@@ -385,9 +392,25 @@ function createScatter( searchUrl )
 					clusterSize += cluster.posts_meta.split(' ').length;
 				}
 				var clusterAvg = Math.floor( 100 * clusterSize / clusterArray.length ) / 100;
-				legend.prepend('<li style="background:'+clusterColour+'">[' + date + '] count: '+ clusterArray.length +' avg: '+ clusterAvg +'</li>');
+				legend.prepend('<li style="background:'+clusterColour+'">' + date + '<br/>n. '+ clusterArray.length +' avg. '+ clusterAvg +'</li>');
+
+				chartData.addRow( [clusterDate, clusterArray.length, clusterAvg] );
 			}
-			$('#legend_content').append( legend ).dialog('open');
+			$('#legend_content').append( chartDiv ).append( legend ).dialog('open');
+			
+			var chart = new google.visualization.ScatterChart(document.getElementById('div_chart'));
+			chart.draw(chartData, {width: 477, height: 240,
+				title: 'Scatter plot',
+				titleTextStyle: {color: '#FFF'},
+				lineWidth: 1,
+				pointSize: 5,
+				colors: ['#FF776B','#30A8C0'],
+				backgroundColor: '#333',
+				hAxis: {title: 'Date',  titleTextStyle: {color: '#FFF'}, textStyle: {color: '#FFF'}, baselineColor: '#FFF'},
+				vAxis: {title: 'Cluster',  titleTextStyle: {color: '#FFF'}, textStyle: {color: '#FFF'}, baselineColor: '#FFF'},
+				legend: 'right',
+				legendTextStyle: {color: '#FFF'}
+			});
 		}
 	});
 }
