@@ -258,70 +258,54 @@ class Cluster extends CI_Controller
 		$this->fom_logger->log($id_user, 'query_stat', array('id_query'=>$id_query, 't_start'=>$query->t_start));
 		
 		$tf_idf = array();
+		$tf = array();
+
 		$geo_clusters = $this->Cluster_model->read( $id_query, 'object' );
 		$count_semclusters = 0;
 		
+		$bias_termlength = 2;
+		$bias_termcount = 3;
+		$count_overbias = 0;
+
 		// fetching term stats (sem_clusters) for each geo_cluster
 		foreach( $geo_clusters as $geo_cluster ) {
 			$sem_clusters = $this->Cluster_model->read_semantic( $geo_cluster->id_cluster, 'object' );
 			$count_semclusters += count( $sem_clusters );
 
 			foreach( $sem_clusters as $sem_cluster ) {
-				$terms = explode(';', preg_replace('/\"/', '', $sem_cluster->terms_meta));
-				$terms = array_filter( $terms, function($value) { return strlen($value) > 2; });
-				$tf_idf = array_merge( $tf_idf, $terms );
+				$terms = json_decode( $sem_cluster->terms_meta, TRUE );
+				
+				foreach( $terms as $term => $val ) {
+					if( strlen( $term ) > $bias_termlength ) {
+						if( !isset( $tf_idf[$term] ) ) {
+							$tf_idf[$term]['sum'] = $val;
+							$tf_idf[$term]['count'] = 1;
+						} else {
+							$tf_idf[$term]['sum'] += $val;
+							$tf_idf[$term]['count'] += 1;
+						}
+					}
+				}
 			}
 		}
 		
 		$stat_output->gClusterNumTot = count( $geo_clusters );
 		$stat_output->sClusterNumTot = $count_semclusters;
 		
-		// creating TF-IDF array
-		$tf_idf = array_count_values( $tf_idf );
-		// maybe we can get rid of this using protovis?
-		arsort( $tf_idf );
-
-		$chart_data = array();
-		$chart_label = array();
-		
-		$freq_bias = 5;
-		$count_overbias = 0;
-
-		// creating chart
-		foreach( $tf_idf as $key => $val ) {
-			$count_overbias ++;
-			if( $val < $freq_bias ) {
-				$stat_output->termsNumTot = count($tf_idf);
-				$stat_output->termsNumOverbias = $count_overbias - 1;
-				$stat_output->tfBias = $freq_bias;
-				break;
+		foreach( $tf_idf as $term => $stat ) {
+			if( $stat['count'] >= $bias_termcount ) {
+				$count_overbias++;
+				$tf[$term] = $stat['sum'] / $stat['count'];
 			}
-			$chart_data[] = $val;
-			$chart_label[] = urlencode( $key );
 		}
 
-		$max = $chart_data[0];
-		
-		$stat_output->chartData = $chart_data;
-		$stat_output->chartLabel = $chart_label;
+		arsort( $tf );
 
-		$url  = 'http://chart.apis.google.com/chart';
-		$url .= '?chf=bg,s,333333';	// background
-		$url .= '&chxl=1:|'.implode('|', array_reverse( $chart_label ));
-		$url .= '&chxr=0,0,'.$max.'|1,0,0';	// axis scale
-		$url .= '&chxs=0,676767,11.5,1,_,676767|1,676767,11.5,1,l,676767';
-		$url .= '&chxt=x,y';	// visible axis
-		$url .= '&chbh=a';		// bar chart type
-		$url .= '&chs=450x470';	// chart size
-		$url .= '&cht=bhs';		// chart type = bars
-		$url .= '&chco=30A8C0';	// bar colours
-		$url .= '&chd='.googlechart_extencode($chart_data);
-		$url .= '&chdl=TF-IDF';	// chart legend
-		$url .= '&chdlp=t';		// legend position
-		$url .= '&chma=|11';	// chart margins
-		$url .= '&chtt=Query+Stats';
+		$stat_output->termsNumTot = count($tf_idf);
+		$stat_output->termsNumOverbias = $count_overbias;
+		$stat_output->tfBias = $bias_termcount;
 
-		$stat_output->chartUrl = $url;
+		$stat_output->tf = $tf;
 		echo json_encode( $stat_output );
 	}
 	
@@ -384,7 +368,7 @@ class Cluster extends CI_Controller
 		echo json_encode( $output );
 	}
 
-	function search_topic_tf( $string )
+	function search_topic_tf( $string, $context = 'all' )
 	{
 		// profiling! save some log in the database
 		$id_user = $this->session->userdata('id_user');
@@ -392,12 +376,26 @@ class Cluster extends CI_Controller
 			$id_user = 1;
 		}
 		$this->fom_logger->log($id_user, 'cluster_search_topic_tf', array('string'=>$string));
-	
-		$query = $this->db->query('select * from fom_cluster where terms_meta LIKE \'%"'.$string.'%\'');
+
+		$prefix = $this->db->dbprefix;
+		
+		switch( $context ) {
+		case 'topics':
+			$sql = 'select * from '.$prefix.'cluster where type = 3 AND terms_meta LIKE \'%'.$string.'%\'';
+			break;
+		case 'keywords':
+			$sql = 'select * from '.$prefix.'cluster where type = 4 terms_meta LIKE \'%'.$string.'%\'';
+			break;
+		default:
+			$sql = 'select * from '.$prefix.'cluster where terms_meta LIKE \'%'.$string.'%\'';
+			break;
+		}
+		$query = $this->db->query( $sql );
 		$results = array();
 
+		$output = array();
 		$pattern = '/^'.$string.'/';
-		
+
 		foreach( $query->result() as $row ) {
 			$scores = json_decode( $row->terms_meta, TRUE );
 			
@@ -420,13 +418,12 @@ class Cluster extends CI_Controller
 				$parents = explode(' ', $result['parents']);
 				$parents_count = count($parents);
 				$results[$key]['count'] = $parents_count;
-				$results[$key]['score_avg'] = $result['score'] / $parents_count;
+				$results[$key]['score_avg'] = round( $result['score'] / $parents_count, 3 );
 				$sortable[$key] = $parents_count;
 			}
 				
 			// recreate the output with the correct sorting method
 			arsort( $sortable );
-			$output = array();
 			foreach( $sortable as $key => $value ) {
 				$output[$key]['score'] = $results[$key]['score'];
 				$output[$key]['parents'] = $results[$key]['parents'];

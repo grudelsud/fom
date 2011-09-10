@@ -1,3 +1,4 @@
+/* basic html */
 html { height: 100% }
 body { height: 100%; margin: 0px; padding: 0px; font-family: Trebuchet, Arial, sans-serif; font-size: 0.8em; color: #DDD; overflow: hidden; }
 
@@ -8,67 +9,75 @@ h1, h2, h3, h4, h5, h6 { font-size: 1em; font-weight: normal; font-variant: smal
 h1 { font-size: 1.2em; }
 h2 { font-size: 1.1em; }
 p { padding-bottom: 5px; }
-input, select, textarea, button { border: 1px solid #DDD; padding: 5px; }
+input, select, textarea, button { border: 1px solid #DDD; padding: 5px; background: none; color: #DDD; }
 img { border: 0; }
 textarea { font-size: 0.9em; }
 table { width: 100%; font-size: 0.8em; }
 th { background: #DDD; text-align: left; font-weight: normal; color: #FFF; }
 td, th { border: 1px solid #DDD; border-width: 0 1px 1px 0; padding: 3px; }
 
-#header { background: #333; position: fixed; top: 0; z-index: 100; height: 50px; width: 100%; }
-#header img { border: 0; padding-left: 5px; }
+/* structure */
+#content_auth { position: absolute; z-index: 10; left: 100px; width: 315px; top: 65px; background: url('../img/alpha70.png'); padding: 10px; }
+	#content_auth label { display: block; margin: 0 0 3px; }
+	#content_auth input { width: 300px; margin: 0 0 10px; background: none; color: #DDD; }
+	#content_auth #submit { width: 100px; clear: both; }
 
-#navigation { float: left; padding: 11px 0 0; }
-#navigation ul { list-style-type: none; }
-#navigation span img, #subnav span img { position: relative; top: 5px; }
-
-#subnav { float: right; padding: 11px; }
-
-#menu { position: fixed; left: 25px; top: 50px; }
-#menu ul { list-style-type: none; margin: 0; padding: 0; }
-#menu li a { display: block; width: 200px; padding: 15px; background: #333; border-top: 1px solid #DDD; }
-
-#query_meta { background: url('../img/bg_query_stat.png') no-repeat; position: fixed; left: 90px; top: 45px; width: 455px; height: 620px; z-index: 1000; padding: 30px 10px; }
+#header { background: #000; position: fixed; top: 0; z-index: 100; height: 50px; width: 100%; }
+	#logo { float: left; }
+	#logo img { border: 0; padding: 5px 0 0 15px; }
+	#search { float: left; padding: 10px; }
+		#search input { width: 180px; }
+		#ajax_loader_search { background: url('../img/ajax-loader.gif') 0 0 no-repeat; width: 16px; height: 16px; display: none; position: absolute; top: 17px; left: 475px; }
+	#search_result { position: absolute; top: 50px; left: 80px; background: url('../img/alpha70.png'); }
+		#search_result ul { list-style-type: none; margin: 0; padding: 0; }
+		#search_result a { display: block; padding: 5px; border-bottom: 1px solid #444; color: #FF776B; }
+		#search_result a:hover { background: #000; text-decoration: none; }
+	#functions { float: right; padding: 10px; }
 
 #map_canvas { position: absolute; top: 50px; z-index: 10; width: 100%; height: 100%; }
 
-#search_content #t_query { width: 240px; }
-#search_content #t_query, #search_content #submit { display: block; margin: 5px 0; }
-#search_content #search_ajax_loader { float: right; display: none; }
+#legend_content {}
+	#legend_content ul { list-style-type: none; padding: 0; }
+	#legend_content li { padding: 4px; border: 1px solid #000; width: 106px; float: left; cursor: pointer; }
+	#legend_content li.hidden { border: 1px dashed #FFDD33; }
 
-#search_result ul { list-style-type: none; padding: 0; }
-#search_result li {}
-#search_result a { display: block; padding: 5px; border-bottom: 1px solid #444; }
-#search_result a:hover { background: #335; text-decoration: none; }
+#help_content {}
+	#help_content h3 { border-bottom: 1px solid #777; clear: both; padding: 3px; }
+	#help_content ul { list-style-type: none; padding: 0; }
+	#help_content ul img { float: left; border: 1px solid #777; padding: 3px; margin: 0 10px 10px 0; }
+	#help_content ul li { clear: both; }
 
-#legend_content ul { list-style-type: none; padding: 0; }
-#legend_content li { padding: 4px; border: 1px solid #000; border-width: 0 1px 1px 0; width: 110px; float: left; }
+#content { background: url('../img/alpha70.png'); position: fixed; right: 0; top: 50px; width: 380px; height: 90%; z-index: 99; padding: 0 10px 0; overflow: scroll; }
+	#content h3 { border-bottom: 1px solid #777; }
+	#content label { display: block; margin: 0 0 3px; }
+	#content input { width: 300px; margin: 0 0 10px; }
+	#content input.radio { width: 20px; }
+	#content #submit { width: 100px; clear: both; }
 
-#content { background: url('../img/alpha70_333.png'); position: fixed; right: 0; top: 0; width: 380px; height: 100%; z-index: 1000; padding: 50px 10px; overflow: scroll; }
-#content h3 { border-bottom: 1px solid #777; }
+#post_content { background: url('../img/alpha70.png'); position: fixed; right: 400px; top: 50px; width: 380px; height: 90%; z-index: 99; padding: 0 10px 0; overflow: scroll; }
+	#post_content h3 { border-bottom: 1px solid #777; }
+	#post_content label { display: block; margin: 0 0 3px; }
+	#post_content input { width: 300px; margin: 0 0 10px; }
+	#post_content input.radio { width: 20px; }
+	#post_content #submit { width: 100px; clear: both; }
 
-#post_content { background: url('../img/alpha70_333.png'); position: fixed; right: 400px; top: 0; width: 380px; height: 100%; z-index: 1000; padding: 50px 10px; overflow: scroll; }
-#post_content h3 { border-bottom: 1px solid #777; }
+#footer { background: #000; position: fixed; bottom: 0; z-index: 100; height: 30px; width: 100%; padding: 3px 25px 0; }
+	#query_select { position: fixed; bottom: 5px; left: 10px; }
+	#show_query_stats { background: url('../img/chart_line_icon.png') 0 0 no-repeat; cursor: pointer; line-height: 24px; display: inline-block; text-indent: 28px; }
+	#ajax_loader_stats { background: url('../img/ajax-loader.gif') 0 0 no-repeat; width: 16px; height: 16px; display: none; position: absolute; bottom: 5px; left: 460px; }
+	#geo_coords { position: fixed; bottom: 3px; right: 40px; line-height: 24px; }
+	#about { position: fixed; bottom: 2px; right: 10px; }
 
-#content_wide { margin: 55px 25px 0; color: #333; }
-
-#content label, #post_content label, #content_wide label { display: block; margin: 0 0 3px; }
-#content input, #post_content input, #content_wide input { width: 300px; margin: 0 0 10px; }
-#content input.radio, #post_content input.radio, #content_wide input.radio { width: 20px; }
-#content #submit, #post_content #submit, #content_wide #submit { width: 100px; clear: both; }
-
-#footer { background: #333; position: fixed; bottom: 0; z-index: 100; height: 20px; width: 100%; padding: 3px 25px 0; }
-
-
+/* other stuff */
 .ui-widget { font-family: Trebuchet, Arial, sans-serif; font-size: 0.9em; }
 .dataTables_filter { float: none; text-align: left; }
 .dataTables_length { float: none; }
 div.dataTables_filter input { width: 200px !important; }
-#datatable thead th {  background-color: #FFF; color: #333; }
+#datatable thead th {  background-color: #FFF; color: #000; }
 #datatable tr.odd {  background-color: #446; }
 #datatable tr.odd td.sorting_1 {  background-color: #335; }
 #datatable tr.even { background-color: #444; }
-#datatable tr.even td.sorting_1 { background-color: #333; }
+#datatable tr.even td.sorting_1 { background-color: #000; }
 
 button.DTTT_button { color: #DDD; }
 div.DTTT_container { margin-top: 1em; }

@@ -11,9 +11,6 @@ google.load("visualization", "1", {packages:["corechart"]});
 $(document).ready(function() {	
 	initialize( initialLocation );
 	loadMarkers( clusterUrl );
-
-	$('#logo').hover(function(e) { $('#menu').fadeIn('fast'); } );
-	$('#menu').hover(function(e) {}, function(e) {$('#menu').fadeOut('fast');});
 });
 
 function initialize( initialLocation )
@@ -23,11 +20,50 @@ function initialize( initialLocation )
 		center: initialLocation,
 		mapTypeId: google.maps.MapTypeId.HYBRID
 	};
+	var map_style = [
+		{
+			featureType: "administrative",
+			stylers: [
+				{ saturation: 51 },
+				{ lightness: 15 },
+				{ gamma: 0.95 },
+				{ visibility: "on" }
+			]
+		},{
+			featureType: "road",
+			stylers: [
+				{ visibility: "off" }
+			]
+		},{
+			featureType: "poi",
+			stylers: [
+				{ visibility: "off" }
+			]
+		},{
+			featureType: "landscape",
+			stylers: [
+				{ hue: "#ff0000" }
+			]
+		},{
+			stylers: [
+				{ hue: "#ff0000" },
+				{ saturation: -61 },
+				{ gamma: 0.4 }
+			]
+		}
+	];
+
 	map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+
+	map.mapTypes.set('map_style', new google.maps.StyledMapType(map_style));
+	map.setMapTypeId('map_style');
+	
 	mgr = new MarkerManager(map);
+
 	google.maps.event.addListener(map, 'click', function(event) {
-		$('#footer').empty().append( 'clicked on: ' + event.latLng.toString() );
+		$('#geo_coords').empty().append( 'clicked on: ' + event.latLng.toString() );
 	});
+
 	map.enableKeyDragZoom({
 		boxStyle: {
 			border: "1px dashed #DDDDDD",
@@ -35,8 +71,8 @@ function initialize( initialLocation )
 			opacity: 1.0
 		},
 		veilStyle: {
-			backgroundColor: "#333355",
-			opacity: 0.70,
+			backgroundColor: "#FF776B",
+			opacity: 0.50,
 			cursor: "crosshair"
 		},
 		visualEnabled: true,
@@ -77,6 +113,7 @@ function addMarker( cluster )
 	marker = new google.maps.Marker({
 		flat: true,
 		position: location,
+		icon: assetsUrl + '/img/lighting_icon.png',
 		map: map,
 		zIndex: 2
 	});
@@ -87,12 +124,12 @@ function addMarker( cluster )
 		circle = new google.maps.Circle({
 			center: location,
 			clickable: false,
-			fillColor: "#FF0000",
+			fillColor: "#993399",
 			fillOpacity: clusterOpacity( cluster.posts_meta ),
 			map: map,
 			radius: 80 * clusterArea(cluster.stdDevLat, cluster.stdDevLon),
-			strokeColor: "#FFFFFF",
-			strokeWeight: 2,
+			strokeColor: "#444444",
+			strokeWeight: 1,
 			zIndex: 1
 		});
 		circlesArray.push(circle);
@@ -108,38 +145,53 @@ function addMarker( cluster )
  */
 function showQueryStats()
 {
-	// if it's already visible, just turn it off
-	if( $('#query_meta').is(':visible') ) {
-		$('#query_meta').empty().toggle('fast');
-	} else {
-		// display a spinner while waiting result from the server
-		var queryId = $('#queries').val();
-		$('#ajax_loader').show();
-		
-		$('#query_meta').empty();
-		
-		$.ajax({
-			url: siteUrl + '/cluster/stat/'+queryId,
-			dataType: 'json',
-			success: function(data) {
-				// all good, received results! remove the spinner and display the stats
-				var queryStats = $('<ul></ul>');
-				queryStats.append('<li>topics/cluster: '+data.numberOfTopics+'</li>');
-				queryStats.append('<li>terms/topic: '+data.numberOfWords+'</li>');
-				queryStats.append('<li>min followers:'+data.minFollCount+'</li>');
+	var queryId = $('#queries').val();
+	$('#ajax_loader_stats').show();
+	
+	$('#query_meta').empty();
+	
+	$.ajax({
+		url: siteUrl + '/cluster/stat/'+queryId,
+		dataType: 'json',
+		success: function(data) {
+			// all good, received results! remove the spinner and display the stats
+			var queryStats = $('<ul></ul>');
+			queryStats.append('<li>topics/cluster: '+data.numberOfTopics+'</li>');
+			queryStats.append('<li>terms/topic: '+data.numberOfWords+'</li>');
+			queryStats.append('<li>min followers:'+data.minFollCount+'</li>');
 
-				queryStats.append('<li>time granularity: '+data.tGranularity+'</li>');
-				queryStats.append('<li>geo granularity: '+data.geoGranularity+'</li>');
+			queryStats.append('<li>time granularity: '+data.tGranularity+'</li>');
+			queryStats.append('<li>geo granularity: '+data.geoGranularity+'</li>');
 
-				queryStats.append('<li>geo clusters: '+data.gClusterNumTot+'</li>');
-				queryStats.append('<li>sem clusters: '+data.sClusterNumTot+'</li>');
-				queryStats.append('<li>tot terms: '+data.termsNumTot+' ('+data.termsNumOverbias+' over a bias of '+data.tfBias+')</li>');
+			queryStats.append('<li>geo clusters: '+data.gClusterNumTot+'</li>');
+			queryStats.append('<li>sem clusters: '+data.sClusterNumTot+'</li>');
+			queryStats.append('<li>tot terms: '+data.termsNumTot+' ('+data.termsNumOverbias+' over a bias of '+data.tfBias+')</li>');
 
-				$('#query_meta').append( queryStats ).append('<img src="'+data.chartUrl+'" title="TF-IDF chart"/>').toggle('fast');
-				$('#ajax_loader').hide();
-			}
-		});
-	}
+			var chartDiv = $('<div id="div_chart_querystat"></div>');
+			var chartData = new google.visualization.DataTable();
+			chartData.addColumn('string', 'term');
+			chartData.addColumn('number', 'frequency');
+
+			$.each(data.tf, function(key, score) {
+				chartData.addRow( [key, score] );
+			});
+			
+			$('#query_meta').append( chartDiv ).append( queryStats ).dialog('open');
+			$('#ajax_loader_stats').hide();
+
+			var chart = new google.visualization.BarChart(document.getElementById('div_chart_querystat'));
+
+			chart.draw(chartData, {width: 477, height: 240,
+				title: 'Query stats',
+				titleTextStyle: {color: '#FFF'},
+				colors: ['#FF776B'],
+				backgroundColor: '#333',
+				hAxis: {title: 'Frequency',  titleTextStyle: {color: '#FFF'}, textStyle: {color: '#FFF'}, baselineColor: '#FFF'},
+				vAxis: {title: 'Term',  titleTextStyle: {color: '#FFF'}, textStyle: {color: '#FFF'}, baselineColor: '#FFF'},
+				legend: 'none'
+			});
+		}
+	});
 }
 
 /**
@@ -238,7 +290,6 @@ function showPostStats()
 			var res = $('<ul></ul>');
 
 			// 'english', 'italian', 'french', 'spanish', 'german', 'portuguese'
-
 			var datatable = '<table cellpadding="0" cellspacing="0" border="0" id="datatable">';
 			datatable += '<thead><tr>';
 			datatable += '<th width="18%">Date</th>';
@@ -300,7 +351,7 @@ function showPostStats()
 function searchTopics( query, scope )
 {
 	var searchUrl = siteUrl + '/cluster/search_topic_tf/'+ query + '/' + scope;
-	$('#search_ajax_loader').show();
+	$('#ajax_loader_search').show();
 	$.ajax({
 		url: searchUrl,
 		dataType: 'json',
@@ -309,10 +360,10 @@ function searchTopics( query, scope )
 			$.each( data, function(key, scores) {
 				var parents = scores.parents;
 				var clusterSetUrl = siteUrl + '/cluster/read_list/' + parents.replace(/\s/g,'x');
-				results.append('<li><a href="'+clusterSetUrl+'">'+key+' - '+scores.count+' clusters, avg: '+scores.score_avg+'</a></li>')
+				results.append('<li><a href="'+clusterSetUrl+'" title="'+key+'">'+key+' - '+scores.count+' clusters, avg: '+scores.score_avg+'</a></li>')
 			});
-			$('#search_result').empty().append( results );
-			$('#search_ajax_loader').hide();
+			$('#search_result').empty().append( results ).show();
+			$('#ajax_loader_search').hide();
 		}
 	});
 }
@@ -326,8 +377,10 @@ function DateString(d){
 	      + dow[d.getUTCDay()];
 }
 
-function createScatter( searchUrl )
+function createScatter( searchUrl, searchTerm )
 {
+	$('#ajax_loader_search').show();
+
 	$.ajax({
 		url: searchUrl,
 		dataType: 'json',
@@ -338,6 +391,9 @@ function createScatter( searchUrl )
 			var start = true;
 			var dateMin, dateMax, dateArray = new Array();
 
+			// browse all the clusters, create a sortable date-based descriptor and store everything in
+			// arrays dateArray and topicScatter (topicScatter is an object, but used as an associative array here
+			// along with min and max date of the selection
 			$.each(data, function(i, cluster) {
 				var clusterDate = new Date( Date.parse( cluster.startTime ) );
 				var readableDate = DateString(clusterDate);
@@ -364,12 +420,13 @@ function createScatter( searchUrl )
 			$('#legend_content').empty();
 			var legend = $('<ul></ul>');
 
-			var chartDiv = $('<div id="div_chart"></div>');
+			var chartDiv = $('<div id="div_chart_scatter"></div>');
 			var chartData = new google.visualization.DataTable();
 			chartData.addColumn('date', 'Date');
-			chartData.addColumn('number', 'Count');
-			chartData.addColumn('number', 'Avg');
+			chartData.addColumn('number', 'Daily count');
+			chartData.addColumn('number', 'Average size');
 	        
+			// create markers and datatable for scattered plot
 			for( var j = 0; j < dateArray.length; j++ ) {
 
 				var date = dateArray[j];
@@ -380,34 +437,51 @@ function createScatter( searchUrl )
 					var cluster = clusterArray[i];
 					clusterDate = new Date( Date.parse( cluster.startTime ) );
 
+					// saturation goes from 0 to 1
 					var saturation = (clusterDate.getTime() - dateMin.getTime()) / (1+(dateMax.getTime() - dateMin.getTime()));
-					var c1 = Math.floor(255*(1-saturation)).toString(16);
-					var c2 = Math.floor(255*saturation).toString(16);
-					if( c1.length < 2 ) c1 = '0'+c1;
-					if( c2.length < 2 ) c2 = '0'+c2;
 					
-					var clusterColour = '#'+c1+c2+'00';
+					// 993399 is kind of dark purple
+					var r_past = 153;
+					var g_past = 51;
+					var b_past = 153;
+					
+					// 33ff33 some sort of bright green
+					var r_now = 51;
+					var g_now = 255;
+					var b_now = 51;
 
-					addBreather( cluster, clusterColour, Math.floor((clusterDate.getTime() - dateMin.getTime())/1000));
+					var r = Math.floor(r_past - (r_past - r_now)*saturation).toString(16);
+					var g = Math.floor(g_past - (g_past - g_now)*saturation).toString(16);
+					var b = Math.floor(b_past - (b_past - b_now)*saturation).toString(16);
+
+					if( r.length < 2 ) r = '0'+r;
+					if( g.length < 2 ) g = '0'+g;
+					if( b.length < 2 ) b = '0'+b;
+
+					var clusterColour = '#'+r+g+b;
+
+					addBreather( cluster, clusterColour, Math.floor((clusterDate.getTime() - dateMin.getTime())/1000), date);
 					clusterSize += cluster.posts_meta.split(' ').length;
 				}
 				var clusterAvg = Math.floor( 100 * clusterSize / clusterArray.length ) / 100;
-				legend.prepend('<li style="background:'+clusterColour+'">' + date + '<br/>n. '+ clusterArray.length +' avg. '+ clusterAvg +'</li>');
+				legend.prepend('<li style="background:'+clusterColour+'" id="'+date+'">' + date + '<br/>n. '+ clusterArray.length +' avg. '+ clusterAvg +'</li>');
 
 				chartData.addRow( [clusterDate, clusterArray.length, clusterAvg] );
 			}
 			$('#legend_content').append( chartDiv ).append( legend ).dialog('open');
-			
-			var chart = new google.visualization.ScatterChart(document.getElementById('div_chart'));
+			$('#ajax_loader_search').hide();
+
+			var chart = new google.visualization.ScatterChart(document.getElementById('div_chart_scatter'));
+
 			chart.draw(chartData, {width: 477, height: 240,
-				title: 'Scatter plot',
+				title: 'Results for: '+searchTerm,
 				titleTextStyle: {color: '#FFF'},
 				lineWidth: 1,
 				pointSize: 5,
 				colors: ['#FF776B','#30A8C0'],
 				backgroundColor: '#333',
 				hAxis: {title: 'Date',  titleTextStyle: {color: '#FFF'}, textStyle: {color: '#FFF'}, baselineColor: '#FFF'},
-				vAxis: {title: 'Cluster',  titleTextStyle: {color: '#FFF'}, textStyle: {color: '#FFF'}, baselineColor: '#FFF'},
+				vAxis: {title: 'Cluster Info',  titleTextStyle: {color: '#FFF'}, textStyle: {color: '#FFF'}, baselineColor: '#FFF', logScale: true},
 				legend: 'right',
 				legendTextStyle: {color: '#FFF'}
 			});
@@ -415,32 +489,38 @@ function createScatter( searchUrl )
 	});
 }
 
-function addBreather( cluster, colour, z_index )
+function addBreather( cluster, colour, z_index, category )
 {
 	var location = new google.maps.LatLng( cluster.meanLat, cluster.meanLon );
 
-	marker = new google.maps.Marker({
+	var marker = new google.maps.Marker({
 		flat: true,
+		icon: assetsUrl + '/img/lighting_icon.png',
 		position: location,
+		title: category,
 		map: map,
 		zIndex: 2
 	});
 	markersArray.push(marker);
 
-	circle = new google.maps.Circle({
+	var circle = new google.maps.Circle({
 		center: location,
-		clickable: false,
+		clickable: true,
 		fillColor: colour,
 		fillOpacity: clusterOpacity( cluster.posts_meta ),
 		map: map,
 		radius: 80 * clusterArea(cluster.stdDevLat, cluster.stdDevLon),
-		strokeColor: "#FFFFFF",
-		strokeWeight: 2,
+		strokeColor: "#444444",
+		strokeWeight: 1,
 		zIndex: z_index
 	});
 	circlesArray.push(circle);
+	circle.scatterCategory = category;
 
 	google.maps.event.addListener(marker, 'click', function(event) {
+		loadBreatherContent(cluster);
+	});
+	google.maps.event.addListener(circle, 'click', function(event) {
 		loadBreatherContent(cluster);
 	});
 }
