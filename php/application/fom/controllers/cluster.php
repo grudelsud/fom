@@ -263,8 +263,8 @@ class Cluster extends CI_Controller
 		$geo_clusters = $this->Cluster_model->read( $id_query, 'object' );
 		$count_semclusters = 0;
 		
-		$bias_termlength = 2;
-		$bias_termcount = 3;
+		$bias_termlength = 3;
+		$bias_termcount = 6;
 		$count_overbias = 0;
 
 		// fetching term stats (sem_clusters) for each geo_cluster
