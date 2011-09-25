@@ -1,5 +1,20 @@
 $(function() {
 
+	$('#legend_toggle_hidden').live('click', function(event) {
+		$(this).toggleClass('hidden');
+		if( $(this).is('.hidden') ) {
+			$('#legend_content li').addClass('hidden');
+			for(var i = 0; i < circlesArray.length; i++) {
+				circlesArray[i].setMap(null);
+			}
+		} else {
+			$('#legend_content li').removeClass('hidden');			
+			for(var i = 0; i < circlesArray.length; i++) {
+				circlesArray[i].setMap(map);
+			}
+		}
+	});
+
 	// click on scatter element
 	$('#legend_content li').live('click', function(event) {
 		var category = $(this).attr('id');

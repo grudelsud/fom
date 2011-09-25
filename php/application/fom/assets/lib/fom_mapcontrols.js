@@ -468,7 +468,8 @@ function createScatter( searchUrl, searchTerm )
 
 				chartData.addRow( [clusterDate, clusterArray.length, clusterAvg] );
 			}
-			$('#legend_content').append( chartDiv ).append( legend ).dialog('open');
+			var showHide = '<h3><a href="#" id="legend_toggle_hidden">[Toggle all]</a></h3>';
+			$('#legend_content').append( chartDiv ).append( showHide ).append( legend ).dialog('open');
 			$('#ajax_loader_search').hide();
 
 			var chart = new google.visualization.ScatterChart(document.getElementById('div_chart_scatter'));
