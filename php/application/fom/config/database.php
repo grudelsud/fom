@@ -38,29 +38,16 @@
 | the active record class
 */
 
-if( FALSE === stripos($_SERVER['HTTP_HOST'], 'local') ) {
-	$active_group = 'default';
-} else {
-	$active_group = 'dev';
+switch (ENVIRONMENT) {
+	case 'development' : 
+		$active_group = 'dev'; 
+		break;
+	default : 
+		$active_group = 'default'; 
+		break;
 }
 
 $active_record = TRUE;
-
-$db['default']['hostname'] = 'localhost';
-$db['default']['username'] = 'user';
-$db['default']['password'] = 'password';
-$db['default']['database'] = 'fom_fom';
-$db['default']['dbdriver'] = 'mysql';
-$db['default']['dbprefix'] = 'fom_';
-$db['default']['pconnect'] = TRUE;
-$db['default']['db_debug'] = TRUE;
-$db['default']['cache_on'] = FALSE;
-$db['default']['cachedir'] = '';
-$db['default']['char_set'] = 'utf8';
-$db['default']['dbcollat'] = 'utf8_general_ci';
-$db['default']['swap_pre'] = '';
-$db['default']['autoinit'] = TRUE;
-$db['default']['stricton'] = FALSE;
 
 $db['dev']['hostname'] = 'localhost';
 $db['dev']['username'] = 'root';
@@ -77,6 +64,22 @@ $db['dev']['dbcollat'] = 'utf8_general_ci';
 $db['dev']['swap_pre'] = '';
 $db['dev']['autoinit'] = TRUE;
 $db['dev']['stricton'] = FALSE;
+
+$db['default']['hostname'] = 'localhost';
+$db['default']['username'] = 'user';
+$db['default']['password'] = 'password';
+$db['default']['database'] = 'fom_fom';
+$db['default']['dbdriver'] = 'mysql';
+$db['default']['dbprefix'] = 'fom_';
+$db['default']['pconnect'] = TRUE;
+$db['default']['db_debug'] = TRUE;
+$db['default']['cache_on'] = FALSE;
+$db['default']['cachedir'] = '';
+$db['default']['char_set'] = 'utf8';
+$db['default']['dbcollat'] = 'utf8_general_ci';
+$db['default']['swap_pre'] = '';
+$db['default']['autoinit'] = TRUE;
+$db['default']['stricton'] = FALSE;
 
 /* End of file database.php */
 /* Location: ./application/config/database.php */

@@ -18,7 +18,17 @@
  * NOTE: If you change these, also change the error_reporting() code below
  *
  */
-	define('ENVIRONMENT', 'development');
+
+switch ($_SERVER['SERVER_NAME']) {
+	case 'fom.net':
+		$env = 'development';
+		break;
+	default:
+		$env = 'production';
+		break;
+}
+
+	define('ENVIRONMENT', $env);
 /*
  *---------------------------------------------------------------
  * ERROR REPORTING
