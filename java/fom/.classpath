@@ -26,11 +26,6 @@
 	<classpathentry kind="lib" path="lib/lucene-core-3.0.3.jar"/>
 	<classpathentry kind="lib" path="lib/json.jar"/>
 	<classpathentry kind="lib" path="lib/trove-3.0.0rc1.jar"/>
-	<classpathentry kind="lib" path="lib/twitter4j/twitter4j-async-2.2.1-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/twitter4j/twitter4j-core-2.2.1-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/twitter4j/twitter4j-examples-2.2.1-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/twitter4j/twitter4j-media-support-2.2.1-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/twitter4j/twitter4j-stream-2.2.1-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/textcat-1.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/lc4j/colt.jar"/>
 	<classpathentry kind="lib" path="lib/lc4j/concurrent.jar"/>
@@ -42,5 +37,9 @@
 	<classpathentry kind="lib" path="lib/jargs.jar"/>
 	<classpathentry kind="lib" path="lib/jdom.jar"/>
 	<classpathentry kind="lib" path="lib/rome-1.0.jar"/>
+	<classpathentry kind="lib" path="/Users/alisi/Documents/Projects/Flux of MEME/dev/java/fom/lib/twitter4j/twitter4j-async-2.2.4.jar"/>
+	<classpathentry kind="lib" path="/Users/alisi/Documents/Projects/Flux of MEME/dev/java/fom/lib/twitter4j/twitter4j-core-2.2.4.jar"/>
+	<classpathentry kind="lib" path="/Users/alisi/Documents/Projects/Flux of MEME/dev/java/fom/lib/twitter4j/twitter4j-media-support-2.2.4.jar"/>
+	<classpathentry kind="lib" path="/Users/alisi/Documents/Projects/Flux of MEME/dev/java/fom/lib/twitter4j/twitter4j-stream-2.2.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
