@@ -37,9 +37,9 @@
 	<classpathentry kind="lib" path="lib/jargs.jar"/>
 	<classpathentry kind="lib" path="lib/jdom.jar"/>
 	<classpathentry kind="lib" path="lib/rome-1.0.jar"/>
-	<classpathentry kind="lib" path="/Users/alisi/Documents/Projects/Flux of MEME/dev/java/fom/lib/twitter4j/twitter4j-async-2.2.4.jar"/>
-	<classpathentry kind="lib" path="/Users/alisi/Documents/Projects/Flux of MEME/dev/java/fom/lib/twitter4j/twitter4j-core-2.2.4.jar"/>
-	<classpathentry kind="lib" path="/Users/alisi/Documents/Projects/Flux of MEME/dev/java/fom/lib/twitter4j/twitter4j-media-support-2.2.4.jar"/>
-	<classpathentry kind="lib" path="/Users/alisi/Documents/Projects/Flux of MEME/dev/java/fom/lib/twitter4j/twitter4j-stream-2.2.4.jar"/>
+	<classpathentry kind="lib" path="lib/twitter4j/twitter4j-async-2.2.5-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/twitter4j/twitter4j-core-2.2.5-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/twitter4j/twitter4j-media-support-2.2.5-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/twitter4j/twitter4j-stream-2.2.5-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
